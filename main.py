@@ -30,6 +30,6 @@ with connect("publications.db") as con:
     con.commit()  # commit the current transaction to the database
 
 
-print(csv_file)
+
 
 
