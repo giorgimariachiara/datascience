@@ -26,8 +26,11 @@ class Publication(IdentifiableEntity):
         self.author = author 
         super().__init__(id)
 
-    def getPublicationYear(self): #aggiungere integer or none 
-        return self.publicationYear
+    def getPublicationYear(self):
+        if self.publicationYear:
+            return self.publicationYear
+        else:
+            return None
     
     def getTitle(self):
         return self.title
@@ -86,6 +89,19 @@ class JournalArticle(Publication):
         self.volume = volume
         super().__init__(id, publicationYear, title, publicationVenue, cite, author)
 
+    def getIssue(self):
+        if self.issue:
+            return self.issue
+        else:
+            return None
+
+    def getVolume(self):
+        if self.volume:
+            return self.volume
+        else:
+            return None
+
+    
 
 class BookChapter(Publication):
     def __init__(self, id, publicationYear, title, publicationVenue, cite, author, chapterNumber):
