@@ -1,10 +1,5 @@
-# from impl import nomi classi
-
-
-
 # read csv file with pandas 
 
-from os import listxattr
 import pandas as pd
 from pandas import read_csv, Series, DataFrame
 
@@ -25,8 +20,14 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv", keep_
                         },encoding="utf-8")
 
 
+#create and connect db
+
+from sqlite3 import connect
+
+with connect("publications.db") as con:
+    # do some operation with the new connection
+    
+    con.commit()  # commit the current transaction to the database
 
 
-
-
-
+print(csv_file)
