@@ -4,7 +4,10 @@
 
 class IdentifiableEntity(object):
     def __init__(self, id):
-        self.id = id
+        self.id = set()
+        for identifiers in id:
+            self.id.add(identifiers)
+
     def getIds(self):
         result = []
         for identifier in self.id:
@@ -15,79 +18,86 @@ class IdentifiableEntity(object):
     
 
 class Publication(IdentifiableEntity):
-    def __init__(self, id, publicationYear, title, publicationVenue):
+    def __init__(self, id, publicationYear, title, publicationVenue, cite, author):
         self.publicationYear = publicationYear
         self.title = title
         self.publicationVenue = publicationVenue
+        self.cite = cite
+        self.author = author 
         super().__init__(id)
 
-    def getPublicationYear(self):
+    def getPublicationYear(self): #aggiungere integer or none 
         return self.publicationYear
     
     def getTitle(self):
         return self.title
     
+    def getCitedPublucations(self):
+        result= []
+        for citations in self.cite:
+            result.append(citations)
+        return result 
+
     def getPublicationVenue(self):
         return self.publicationVenue
 
-
-
-
-    
-class Venue(object):
-    def __init__(self, identifiers, name):
-        self.id = set()
-        for identifier in identifiers:
-            self.id.add(identifier)
-            
-        self.name = name
-    
-    def getIds(self):
-        result = []
-        for identifier in self.id:
-            result.append(identifier)
-        result.sort()
+    def getAuthors(self):
+        result = set()
+        for p in self.author:
+            result.add(p)
         return result
-    
+
+
+class Venue(IdentifiableEntity):
+    def __init__(self, id, title, publisher):
+        self.title = title
+        self.publisher = publisher 
+        super().__init__(id)
+        
+    def getTitle(self):
+        return self.title
+
+    def getPublisher(self):
+        return self.publisher
+
+class Organization(IdentifiableEntity):
+    def __init__(self, id, name):
+        self.name = name
+        super().__init__(id)
+
     def getName(self):
         return self.name
+class Person(IdentifiableEntity):
+    def __init__(self, id, givenName, familyName):
+        self.givenName = givenName 
+        self.familyName = familyName
+        super().__init__(id)
+
+    def getGivenName(self):
+        return self.givenName
     
-    def addId(self, identifier):
-        result = True
-        if identifier not in self.id:
-            self.id.add(identifier)
-        else:
-            result = False
-        return result
-    
-    def removeId(self, identifier):
-        result = True
-        if identifier in self.id:
-            self.id.remove(identifier)
-        else:
-            result = False
-        return result
-    
+    def getFamilyName(self):
+        return self.familyName
+
 
 class JournalArticle(Publication):
-    def __init__(self, doi, publicationYear, title, publicationVenue, issue, volume):
+    def __init__(self, id, publicationYear, title, publicationVenue, cite, author, issue, volume):
         self.issue = issue
         self.volume = volume
-        
-        # Here is where the constructor of the superclass is explicitly recalled, so as
-        # to handle the input parameters as done in the superclass
-        super().__init__(doi, publicationYear, title, publicationVenue)
-    
-    def getIssue(self):
-        return self.issue
-    
-    def getVolume(self):
-        return self.volume
+        super().__init__(id, publicationYear, title, publicationVenue, cite, author)
 
 
 class BookChapter(Publication):
-    pass
+    def __init__(self, id, publicationYear, title, publicationVenue, cite, author, chapterNumber):
+        self.chapterNumber = chapterNumber
+          
+        super().__init__(id, publicationYear, title, publicationVenue, cite, author)
+    
+    def getChapterNumber(self):
+        return self.chapterNumber
 
+class ProceedingsPaper(Publication):
+    pass
 
 class Journal(Venue):
     pass
@@ -95,6 +105,14 @@ class Journal(Venue):
 
 class Book(Venue):
     pass
+
+class Proceedings(Venue):
+    def __init__(self, id, title, publisher, event):
+        self.event = event
+        super().__init__(id, title, publisher)
+   
+    def getEvent(self): 
+        return self.event
 
 
 
