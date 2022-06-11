@@ -1,7 +1,7 @@
 import pandas as pd
-from pandas import read_csv, Series
+from pandas import read_csv, Series, DataFrame
 
-csv_file = pd.read_csv("./relational_db/relational_publication.csv", keep_default_na=False,
+publication_df = pd.read_csv("./relational_db/relational_publication.csv", keep_default_na=False,
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -17,4 +17,4 @@ csv_file = pd.read_csv("./relational_db/relational_publication.csv", keep_defaul
 
                         },encoding="utf-8")
 
-print(csv_file)
+print(publication_df)
