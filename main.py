@@ -19,15 +19,14 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv", keep_
 
                         },encoding="utf-8")
 
+for column_name, column in publication_df.items(7):
+    print("\nThe name of the current column is", column_name)
+    print("The content of the column is as follows:")
+    print(column)
 
 #create and connect db
 
-from sqlite3 import connect
-
-with connect("publications.db") as con:
-    # do some operation with the new connection
-    
-    con.commit()  # commit the current transaction to the database
 
 
-print(csv_file)
+
+
