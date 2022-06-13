@@ -127,19 +127,62 @@ for idx, row in proceedings_dfF.iterrows():
 proceedings_dfF.insert(0, "ProceedingsId", Series(proceedings_internal_id, dtype="string"))
 
 
-print(proceedings_dfF)
-
-
 #dataframe journal article
-#manca cite e author
+#manca cite e author e un suo internal id
 from pandas import merge 
 
 journal_article_df = publication_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 
 #join journal article e venue che quindi crea il collegamento anche con journal 
-df_joinJAV = merge(journal_article_df, venue_ids, left_on="publication_venue", right_on = "publication_venue") 
+df_joinJAV = merge(journal_article_df, venue_ids, left_on="id", right_on = "id") 
 
-print(df_joinBV)
+journal_article_df = df_joinJAV[["id", "publication_year", "title", "venueId", "issue", "volume"]]
+journal_article_df = journal_article_df.rename(columns={"venueId":"publication_venue"})
+
+
+
+#dataframe person
+from json import load
+import json
+import pandas as pd
+
+# importing authors from JSON
+
+from collections import deque
+
+with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+
+
+person = json_doc["authors"]
+
+df_person=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
+
+df_person=pd.json_normalize(json.loads(df_authors.to_json(orient="records")))
+df_person.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+
+df_person=pd.DataFrame(df_person)
+
+df_person = df_person.drop_duplicates(subset =["orc_id"], keep=False) 
+
+
+
+print(df_person)
+
+
+
+#dataframe book chapter
+# manca cite e author 
+from pandas import merge
+
+book_chapter_df = publication_df[["id", "publication_year", "title", "publication_venue", "chapter"]]
+
+df_joinBCV = merge(book_chapter_df, venue_ids, left_on="id", right_on = "id") 
+
+book_chapter_df = df_joinBCV[["id", "publication_year", "title", "venueId", "chapter"]]
+book_chapter_df = book_chapter_df.rename(columns={"venueId":"publication_venue"})
+
+df_joinBCP = merge(book_chapter_df, df_person, left_on="id", right_on = "doi")
 
 
 
