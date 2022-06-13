@@ -85,29 +85,6 @@ journal_df = journal_df.rename(columns={"venueId":"internalId"})
 
 
 
-
-
-<<<<<<< HEAD
-=======
-
-<<<<<<< HEAD
->>>>>>> e55092251d9989e3900530fbb6163b0118eb6ed8
-=======
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 from json import load
 import json
 import pandas as pd
@@ -148,20 +125,3 @@ df_publishersF = df_publishers[["crossref", "name"]]
 
 print(df_publishersF)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
->>>>>>> f00a654f38900ee680b2a84d30880e7ce526ddf6
