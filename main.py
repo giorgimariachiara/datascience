@@ -1,7 +1,5 @@
 # read csv file with pandas 
 
-
-
 import pandas as pd
 from pandas import read_csv, Series, read_json 
 
@@ -21,6 +19,10 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv", keep_
 
                         },encoding="utf-8")
 
+for column_name, column in publication_df.items(7):
+    print("\nThe name of the current column is", column_name)
+    print("The content of the column is as follows:")
+    print(column)
 
 
 # This will create a new data frame starting from 'venues' one,
@@ -64,6 +66,28 @@ book_df = book_df.rename(columns={"venueId":"internalId"})
 
 #dataframe di organization che er ora si chiama df_publishersF
 
+proceedings_df = publication_df.query("venue_type =='journal'")
+
+from pandas import merge 
+
+df_joinJV = merge(journal_df, venue_ids, left_on="id", right_on = "id") 
+
+journal_df = df_joinJV[["venueId", "id", "title", "publisher"]]
+journal_df = journal_df.rename(columns={"venueId":"internalId"})
+
+
+
+
+
+#create and connect db
+
+
+
+from json import load
+import json
+import pandas as pd
+
+# importing authors from JSON
 
 from json import load
 import json
@@ -104,60 +128,4 @@ for idx, row in df_publishersF.iterrows():
 df_publishersF.insert(0, "publisherId", Series(publishers_internal_id, dtype="string"))
 
 print(df_publishersF)
-
-# questo in teoria dovrebbe essere il dataframe di organization che ha id e name e manca solo internal id 
-
-#dataframe of proceedings 
-
-proceedings_df = publication_df[["id", "title", "publisher", "event"]]
-
-from pandas import merge 
-
-df_joinPP = merge(proceedings_df, df_publishersF, left_on="publisher", right_on = "crossref") 
-
-print(df_joinPP) 
-
-
-
-
-
-
-#create and connect db
-
-from sqlite3 import connect
-
-with connect("publications.db") as con:
-    # do some operation with the new connection
-    
-    con.commit()  # commit the current transaction to the database
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
