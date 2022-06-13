@@ -35,7 +35,7 @@ class Publication(IdentifiableEntity):
     def getTitle(self):
         return self.title
     
-    def getCitedPublucations(self):
+    def getCitedPublications(self):
         result= []
         for citations in self.cite:
             result.append(citations)
