@@ -165,7 +165,7 @@ df_person=pd.DataFrame(df_person)
 
 df_person = df_person.drop_duplicates(subset =["orc_id"], keep=False) 
 
-
+df_person.drop("doi", axis=1, inplace = True)
 
 print(df_person)
 
@@ -182,7 +182,7 @@ df_joinBCV = merge(book_chapter_df, venue_ids, left_on="id", right_on = "id")
 book_chapter_df = df_joinBCV[["id", "publication_year", "title", "venueId", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"venueId":"publication_venue"})
 
-df_joinBCP = merge(book_chapter_df, df_person, left_on="id", right_on = "doi")
+#df_joinBCP = merge(book_chapter_df, df_person, left_on="id", right_on = "doi")
 
 
 
