@@ -66,27 +66,6 @@ book_df = book_df.rename(columns={"venueId":"internalId"})
 
 #dataframe di organization che er ora si chiama df_publishersF
 
-proceedings_df = publication_df.query("venue_type =='journal'")
-
-from pandas import merge 
-
-df_joinJV = merge(journal_df, venue_ids, left_on="id", right_on = "id") 
-
-journal_df = df_joinJV[["venueId", "id", "title", "publisher"]]
-journal_df = journal_df.rename(columns={"venueId":"internalId"})
-
-
-
-
-
-#create and connect db
-
-
-
-from json import load
-import json
-import pandas as pd
-
 # importing authors from JSON
 
 from json import load
@@ -128,4 +107,24 @@ for idx, row in df_publishersF.iterrows():
 df_publishersF.insert(0, "publisherId", Series(publishers_internal_id, dtype="string"))
 
 print(df_publishersF)
+
+
+
+
+#dataframe di proceedings 
+
+proceedings_df = publication_df.query("venue_type =='journal'")
+
+from pandas import merge 
+
+df_joinJV = merge(journal_df, venue_ids, left_on="id", right_on = "id") 
+
+journal_df = df_joinJV[["venueId", "id", "title", "publisher"]]
+journal_df = journal_df.rename(columns={"venueId":"internalId"})
+
+
+
+
+
+
 
