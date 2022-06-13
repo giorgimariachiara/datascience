@@ -1,7 +1,5 @@
 # read csv file with pandas 
 
-
-
 import pandas as pd
 from pandas import read_csv, Series, read_json 
 
