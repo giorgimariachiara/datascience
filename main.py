@@ -36,8 +36,6 @@ venue_ids.insert(0, "venueId", Series(publication_venue_internal_id, dtype="stri
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-# Show the new data frame on screen
-
 
 #dataframe of journal 
 
@@ -49,6 +47,10 @@ df_joinJV = merge(journal_df, venue_ids, left_on="id", right_on = "id")
 
 journal_df = df_joinJV[["venueId", "id", "title", "publisher"]]
 journal_df = journal_df.rename(columns={"venueId":"internalId"})
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+print(journal_df)
+
 
 #dataframe of book
 
@@ -92,19 +94,21 @@ df_authors=pd.DataFrame(df_authors)
 
 publishers = json_doc["publishers"]
 
-df_publishers=pd.DataFrame(publishers.items(),columns=['id', 'name'])
+df_organization=pd.DataFrame(publishers.items(),columns=['id', 'name'])
 
-df_publishers=pd.json_normalize(json.loads(df_publishers.to_json(orient="records")))
-df_publishers.rename(columns={"id":"crossref1", "name.id":"crossref","name.name":"name"}, inplace = True)
+df_organization=pd.json_normalize(json.loads(df_organization.to_json(orient="records")))
+df_organization.rename(columns={"id":"crossref1", "name.id":"crossref","name.name":"name"}, inplace = True)
 
-df_publishersF = df_publishers[["crossref", "name"]]
+df_organization= df_organization[["crossref", "name"]]
 
 publishers_internal_id = []
-for idx, row in df_publishersF.iterrows():
+for idx, row in df_organization.iterrows():
     publishers_internal_id.append("publisherId-" + str(idx))
 
-df_publishersF.insert(0, "publisherId", Series(publishers_internal_id, dtype="string"))
+df_organization.insert(0, "publisherId", Series(publishers_internal_id, dtype="string"))
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+print(df_organization)
 
 
 #dataframe di proceedings 
@@ -114,9 +118,9 @@ proceedings_df = publication_df[["id", "title", "publisher", "event"]]
 
 from pandas import merge 
 
-df_joinPP = merge(proceedings_df, df_publishersF, left_on="publisher", right_on = "crossref") 
+df_joinPO = merge(proceedings_df, df_organization, left_on="publisher", right_on = "crossref") 
 
-proceedings_dfF = df_joinPP[["id", "title", "event", "publisherId"]]
+proceedings_dfF = df_joinPO[["id", "title", "event", "publisherId"]]
 
 
 proceedings_dfF = proceedings_dfF.rename(columns={"publisherId":"publisher"})
@@ -167,7 +171,7 @@ df_person=pd.DataFrame(df_person)
 df_person = df_person.drop_duplicates(subset =["orc_id"], keep=False) 
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 df_person.drop("doi", axis =1, inplace = True)
-print(df_person)
+
 
 #dataframe author che ha colonna doi e orcid 
 
@@ -213,6 +217,17 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 #df_joinBCP = merge(book_chapter_df, df_person, left_on="id", right_on = "doi")
 
 
+#dataframe cites
+from collections import deque
+
+with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+
+
+references = json_doc["references"]
+
+df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 
