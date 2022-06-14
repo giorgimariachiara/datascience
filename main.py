@@ -234,6 +234,8 @@ references = json_doc["references"]
 df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
+
+
 #tentiamo di popolarlo hahaha 
 with connect("publications.db") as con:
     venue_ids.to_sql("VenueId", con, if_exists="replace", index=False)
@@ -248,3 +250,8 @@ with connect("publications.db") as con:
     df_cites.to_sql("Cites", con, if_exists="replace", index=False)
 
     con.commit()
+
+
+
+
+
