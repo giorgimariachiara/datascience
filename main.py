@@ -1,4 +1,5 @@
 # read csv file with pandas 
+from sqlite3 import connect
 from pprint import pprint
 import pandas as pd
 from pandas import read_csv, Series, read_json 
@@ -205,7 +206,7 @@ df_author.drop("family_name", axis=1, inplace = True)
 df_author.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-
+print(df_author)
 
 #dataframe book chapter = book_chapter_df
 # manca cite e author ma misa che non serve perchè sono tabelle a parte che si uniscono tramite l'id  
@@ -233,4 +234,15 @@ references = json_doc["references"]
 df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-
+#tentiamo di popolarlo hahaha 
+#with connect("publications.db") as con:
+    #venue_ids.to_sql("VenueId", con, if_exists="replace", index=False)
+    #journal_df.to_sql("Journal", con, if_exists="replace", index=False)
+    #book_df.to_sql("Book", con, if_exists="replace", index=False)
+    #journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
+    #book_chapter_df.to_sql("BookChapter", con, if_exists="replace", index=False)
+    #proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
+    #df_organization.to_sql("Organization", con, if_exists="replace", index=False)
+    #df_person.to_sql("Person", con, if_exists="replace", index=False)
+    #df_author.to_sql("Authors", con, if_exists="replace", index=False)
+    #df_cites.to_sql("Cites", con, if_exists="replace", index=False)
