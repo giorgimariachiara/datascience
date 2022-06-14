@@ -19,7 +19,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv", keep_
 
                         },encoding="utf-8")
 
-#dataframe venues
+#dataframe venue che Luca dice "NON SERVE!!!!!!!!" e luca la vuole chiamare publication veditela tu maria grazie 
 
 # This will create a new data frame starting from 'venues' one,
 # and it will include only the column "id"
@@ -49,7 +49,7 @@ journal_df = df_joinJV[["venueId", "id", "title", "publisher"]]
 journal_df = journal_df.rename(columns={"venueId":"internalId"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(journal_df)
+
 
 
 #dataframe of book
@@ -63,6 +63,7 @@ df_joinBV = merge(book_df, venue_ids, left_on="id", right_on = "id")
 book_df = df_joinBV[["venueId", "id", "title", "publisher"]]
 book_df = book_df.rename(columns={"venueId":"internalId"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
 
 
 #dataframe di organization che per ora si chiama df_publishersF
@@ -133,6 +134,8 @@ proceedings_dfF.insert(0, "ProceedingsId", Series(proceedings_internal_id, dtype
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
+
+
 #dataframe journal article
 #manca cite e author e un suo internal id
 from pandas import merge 
@@ -145,6 +148,7 @@ df_joinJAV = merge(journal_article_df, venue_ids, left_on="id", right_on = "id")
 journal_article_df = df_joinJAV[["id", "publication_year", "title", "venueId", "issue", "volume"]]
 journal_article_df = journal_article_df.rename(columns={"venueId":"publication_venue"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
 
 #dataframe person con colonna nome, cognome e orcid
 from json import load
@@ -230,5 +234,5 @@ df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-
-
+p = publication_df.describe(include="all")
+print(p)
