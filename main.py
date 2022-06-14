@@ -151,7 +151,7 @@ journal_article_df = journal_article_df.rename(columns={"venueId":"publication_v
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-#dataframe person con colonna nome, cognome e orcid = df_person
+#dataframe person con colonna nome, cognome e orcid = df_person 
 from json import load
 import json
 import pandas as pd
@@ -177,7 +177,7 @@ df_person = df_person.drop_duplicates(subset =["orc_id"], keep=False)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 df_person.drop("doi", axis =1, inplace = True)
 
-
+print(df_person)
 #dataframe author che ha colonna doi e orcid = df_author
 
 
@@ -206,7 +206,7 @@ df_author.drop("family_name", axis=1, inplace = True)
 df_author.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(df_author)
+
 
 #dataframe book chapter = book_chapter_df
 # manca cite e author ma misa che non serve perchè sono tabelle a parte che si uniscono tramite l'id  
@@ -246,3 +246,5 @@ with connect("publications.db") as con:
     df_person.to_sql("Person", con, if_exists="replace", index=False)
     df_author.to_sql("Authors", con, if_exists="replace", index=False)
     df_cites.to_sql("Cites", con, if_exists="replace", index=False)
+
+    con.commit()
