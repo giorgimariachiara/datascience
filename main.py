@@ -208,7 +208,7 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 #dataframe book chapter = book_chapter_df
-# manca cite e author 
+# manca cite e author ma misa che non serve perchè sono tabelle a parte che si uniscono tramite l'id  
 from pandas import merge
 
 book_chapter_df = publication_df[["id", "publication_year", "title", "publication_venue", "chapter"]]
@@ -232,3 +232,5 @@ references = json_doc["references"]
 
 df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+
