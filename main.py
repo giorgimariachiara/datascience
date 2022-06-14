@@ -19,15 +19,11 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv", keep_
 
                         },encoding="utf-8")
 
-for column_name, column in publication_df.items(7):
-    print("\nThe name of the current column is", column_name)
-    print("The content of the column is as follows:")
-    print(column)
-
+#dataframe venues
 
 # This will create a new data frame starting from 'venues' one,
 # and it will include only the column "id"
-venue_ids = publication_df[["id"]]
+venue_ids = publication_df[["publication_venue", "id"]]
 
 # Generate a list of internal identifiers for the venues
 publication_venue_internal_id = []
@@ -38,8 +34,10 @@ for idx, row in venue_ids.iterrows():
 # of the data frame via the class 'Series'
 venue_ids.insert(0, "venueId", Series(publication_venue_internal_id, dtype="string"))
 
-# Show the new data frame on screen
+print(venue_ids)
 
+
+# Show the new data frame on screen
 
 
 #dataframe of journal 
@@ -106,22 +104,85 @@ for idx, row in df_publishersF.iterrows():
 
 df_publishersF.insert(0, "publisherId", Series(publishers_internal_id, dtype="string"))
 
-print(df_publishersF)
-
-
 
 
 #dataframe di proceedings 
 
-proceedings_df = publication_df.query("venue_type =='journal'")
+proceedings_df = publication_df[["id", "title", "publisher", "event"]]
+
 
 from pandas import merge 
 
-df_joinJV = merge(journal_df, venue_ids, left_on="id", right_on = "id") 
+df_joinPP = merge(proceedings_df, df_publishersF, left_on="publisher", right_on = "crossref") 
 
-journal_df = df_joinJV[["venueId", "id", "title", "publisher"]]
-journal_df = journal_df.rename(columns={"venueId":"internalId"})
+proceedings_dfF = df_joinPP[["id", "title", "event", "publisherId"]]
 
+
+proceedings_dfF = proceedings_dfF.rename(columns={"publisherId":"publisher"})
+
+proceedings_internal_id = []
+for idx, row in proceedings_dfF.iterrows():
+    proceedings_internal_id.append("proceedignsId-" + str(idx))
+
+proceedings_dfF.insert(0, "ProceedingsId", Series(proceedings_internal_id, dtype="string"))
+
+
+#dataframe journal article
+#manca cite e author e un suo internal id
+from pandas import merge 
+
+journal_article_df = publication_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+
+#join journal article e venue che quindi crea il collegamento anche con journal 
+df_joinJAV = merge(journal_article_df, venue_ids, left_on="id", right_on = "id") 
+
+journal_article_df = df_joinJAV[["id", "publication_year", "title", "venueId", "issue", "volume"]]
+journal_article_df = journal_article_df.rename(columns={"venueId":"publication_venue"})
+
+
+
+#dataframe person
+from json import load
+import json
+import pandas as pd
+
+# importing authors from JSON
+
+from collections import deque
+
+with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+
+
+person = json_doc["authors"]
+
+df_person=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
+
+df_person=pd.json_normalize(json.loads(df_authors.to_json(orient="records")))
+df_person.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+
+df_person=pd.DataFrame(df_person)
+
+df_person = df_person.drop_duplicates(subset =["orc_id"], keep=False) 
+
+df_person.drop("doi", axis=1, inplace = True)
+
+print(df_person)
+
+
+
+#dataframe book chapter
+# manca cite e author 
+from pandas import merge
+
+book_chapter_df = publication_df[["id", "publication_year", "title", "publication_venue", "chapter"]]
+
+df_joinBCV = merge(book_chapter_df, venue_ids, left_on="id", right_on = "id") 
+
+book_chapter_df = df_joinBCV[["id", "publication_year", "title", "venueId", "chapter"]]
+book_chapter_df = book_chapter_df.rename(columns={"venueId":"publication_venue"})
+
+#df_joinBCP = merge(book_chapter_df, df_person, left_on="id", right_on = "doi")
 
 
 
