@@ -1,5 +1,5 @@
 # read csv file with pandas 
-
+from pprint import pprint
 import pandas as pd
 from pandas import read_csv, Series, read_json 
 
@@ -33,8 +33,7 @@ for idx, row in venue_ids.iterrows():
 # Add the list of venues internal identifiers as a new column
 # of the data frame via the class 'Series'
 venue_ids.insert(0, "venueId", Series(publication_venue_internal_id, dtype="string"))
-
-print(venue_ids)
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 # Show the new data frame on screen
@@ -61,8 +60,10 @@ df_joinBV = merge(book_df, venue_ids, left_on="id", right_on = "id")
 
 book_df = df_joinBV[["venueId", "id", "title", "publisher"]]
 book_df = book_df.rename(columns={"venueId":"internalId"})
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-#dataframe di organization che er ora si chiama df_publishersF
+
+#dataframe di organization che per ora si chiama df_publishersF
 
 # importing authors from JSON
 
@@ -103,7 +104,7 @@ for idx, row in df_publishersF.iterrows():
     publishers_internal_id.append("publisherId-" + str(idx))
 
 df_publishersF.insert(0, "publisherId", Series(publishers_internal_id, dtype="string"))
-
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 #dataframe di proceedings 
@@ -125,6 +126,7 @@ for idx, row in proceedings_dfF.iterrows():
     proceedings_internal_id.append("proceedignsId-" + str(idx))
 
 proceedings_dfF.insert(0, "ProceedingsId", Series(proceedings_internal_id, dtype="string"))
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 #dataframe journal article
@@ -138,10 +140,9 @@ df_joinJAV = merge(journal_article_df, venue_ids, left_on="id", right_on = "id")
 
 journal_article_df = df_joinJAV[["id", "publication_year", "title", "venueId", "issue", "volume"]]
 journal_article_df = journal_article_df.rename(columns={"venueId":"publication_venue"})
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-
-
-#dataframe person
+#dataframe person con colonna nome, cognome e orcid
 from json import load
 import json
 import pandas as pd
@@ -164,10 +165,37 @@ df_person.rename(columns={"author.family":"family_name","author.given":"given_na
 df_person=pd.DataFrame(df_person)
 
 df_person = df_person.drop_duplicates(subset =["orc_id"], keep=False) 
-
-df_person.drop("doi", axis=1, inplace = True)
-
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+df_person.drop("doi", axis =1, inplace = True)
 print(df_person)
+
+#dataframe author che ha colonna doi e orcid 
+
+
+from json import load
+import json
+import pandas as pd
+
+# importing authors from JSON
+
+from collections import deque
+
+with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+
+
+person = json_doc["authors"]
+
+df_author=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
+
+df_author=pd.json_normalize(json.loads(df_authors.to_json(orient="records")))
+df_author.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+
+df_author=pd.DataFrame(df_author)
+
+df_author.drop("family_name", axis=1, inplace = True)
+df_author.drop("given_name", axis =1, inplace = True)
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 
@@ -181,7 +209,7 @@ df_joinBCV = merge(book_chapter_df, venue_ids, left_on="id", right_on = "id")
 
 book_chapter_df = df_joinBCV[["id", "publication_year", "title", "venueId", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"venueId":"publication_venue"})
-
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 #df_joinBCP = merge(book_chapter_df, df_person, left_on="id", right_on = "doi")
 
 
