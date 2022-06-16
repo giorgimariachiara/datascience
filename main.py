@@ -121,9 +121,9 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
 Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
-#pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(Proceedings_paper_df)
+
 
 
 # Cites DataFrame
@@ -186,7 +186,7 @@ proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"
 
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(proceedings_df)
+
 
 
 
