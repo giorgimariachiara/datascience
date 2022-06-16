@@ -1,6 +1,32 @@
 
 
-# defining classes
+# defining classes 
+ 
+class RelationalProcessor(object):
+    def __init__(self, dbPath):
+        self.dbPath = dbPath 
+       
+    def getDbPath(self):
+        return self.dbPath 
+    def setDbPath(self, dbPath):
+        result = ""
+        if dbPath:
+            result = dbPath 
+
+class TriplestoreProcessor (object):
+    def __init__(self) -> None:
+        pass
+
+class RelationalDataProcessor(object):
+    def __init__(self) -> None:
+        pass
+    def uploadData(self):
+
+
+      
+class RelationalQueryProcessor():
+      pass
+
 
 class IdentifiableEntity(object):
     def __init__(self, id):
@@ -14,8 +40,6 @@ class IdentifiableEntity(object):
             result.append(identifier)
         result.sort()
         return result
-
-    
 
 class Publication(IdentifiableEntity):
     def __init__(self, id, publicationYear, title, publicationVenue, cite, author):
@@ -70,6 +94,7 @@ class Organization(IdentifiableEntity):
 
     def getName(self):
         return self.name
+
 class Person(IdentifiableEntity):
     def __init__(self, id, givenName, familyName):
         self.givenName = givenName 
