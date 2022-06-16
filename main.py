@@ -59,6 +59,7 @@ df_author.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 print(df_author)
+
 # person DataFrame
 
 person=json_doc["authors"]
@@ -118,10 +119,13 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 # Proceedings paper DataFrame
-#Proceedings_paper_df = publication_df.query("type == 'proceeding-paper")
-#Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-#Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
+Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
+Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 #pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+print(Proceedings_paper_df)
+
 
 # Cites DataFrame
 
@@ -148,6 +152,8 @@ journal_df = journal_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
+
+
 # Venue DataFrame
 
 Venue=json_doc["venues_id"]
@@ -171,103 +177,35 @@ venue_df = publication_df[["id", "publication_venue", "publisher"]]
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
 venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-print(venue_df)
-
-
-""""
-person_l = []
-for item in name_orcid_l:
-    if item not in person_l:
-        person_l.append(item)
-
-family_names_l = []
-for item in person_l:
-   family_names_l.append(item.get("family"))
-
-
-orcid_l = []
-for item in person_l:
-    orcid_l.append(item.get("orcid"))
-
-person_df = pd.DataFrame({
-    "orcid": Series(orcid_l, dtype="string", name="orc_id"),
-    "given": Series(given_names_l, dtype="string", name="given_name"),
-    "family": Series(family_names_l, dtype="string", name="family_name"),
-})
-
-"""
-
-"""
-# create issn_isbn series
-venues_id = json_doc.get("venues_id")
-issn_isbn = venues_id.values()
-issn_isbn_series = pd.Series(issn_isbn)
+#with pd.option_context("display.max_rows", None, "display.max_columns", None):
 
 
 
+#dataframe di proceedings
+proceedings_df = publication_df.query("venue_type =='proceedings'")
+proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 
-# create publication_venue series
-publication_venue_series = pd.Series(publication_df["publication_venue"])
-
-
-"""
-
-
-"""
-
-#dataframe di proceedings = proceedings_df
-
-proceedings_df = publication_df[["id", "title", "publisher", "event"]]
-
-
-
-
-df_joinPO = merge(proceedings_df, df_organization, left_on="publisher", right_on = "crossref") 
-
-proceedings_df = df_joinPO[["id", "title", "event", "publisherId"]]
-
-
-proceedings_df = proceedings_df.rename(columns={"publisherId":"publisher"})
-
-proceedings_internal_id = []
-for idx, row in proceedings_df.iterrows():
-    proceedings_internal_id.append("proceedignsId-" + str(idx))
-
-proceedings_df.insert(0, "ProceedingsId", Series(proceedings_internal_id, dtype="string"))
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-
-#dataframe cites = df_cites
-
-
-with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
-
-
-references = json_doc["references"]
-
-df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+print(proceedings_df)
 
 
 
 #tentiamo di popolarlo hahaha 
-# with connect("publications.db") as con:
-#    venue_ids.to_sql("VenueId", con, if_exists="replace", index=False)
-#    journal_df.to_sql("Journal", con, if_exists="replace", index=False)
- #   book_df.to_sql("Book", con, if_exists="replace", index=False)
- #   journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
- #   book_chapter_df.to_sql("BookChapter", con, if_exists="replace", index=False)
- #  proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
- #   df_organization.to_sql("Organization", con, if_exists="replace", index=False)
- #   df_person.to_sql("Person", con, if_exists="replace", index=False)
- #   df_author.to_sql("Authors", con, if_exists="replace", index=False)
- #   df_cites.to_sql("Cites", con, if_exists="replace", index=False)
-
- #   con.commit()
-
-"""
+with connect("publications.db") as con:
+    venue_df.to_sql("Venue", con, if_exists="replace", index=False)
+    journal_df.to_sql("Journal", con, if_exists="replace", index=False)
+    book_df.to_sql("Book", con, if_exists="replace", index=False)
+    journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
+    book_chapter_df.to_sql("BookChapter", con, if_exists="replace", index=False)
+    proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
+    organization_df.to_sql("Organization", con, if_exists="replace", index=False)
+    person_df.to_sql("Person", con, if_exists="replace", index=False)
+    df_author.to_sql("Author", con, if_exists="replace", index=False)
+    df_cites.to_sql("Cites", con, if_exists="replace", index=False)
+    Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
+  
+    con.commit()
 
 
 
