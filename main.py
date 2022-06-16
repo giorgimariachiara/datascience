@@ -10,9 +10,6 @@ from sqlite3 import connect
 from pprint import pprint
 import pandas as pd
 from pandas import read_csv, Series, read_json
-from pyrsistent import v
-
-from impl import ProceedingsPaper 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
