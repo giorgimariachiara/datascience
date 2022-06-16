@@ -146,6 +146,8 @@ journal_df = journal_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
+
+
 # Venue DataFrame
 
 Venue=json_doc["venues_id"]
@@ -169,86 +171,18 @@ venue_df = publication_df[["id", "publication_venue", "publisher"]]
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
 venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+#with pd.option_context("display.max_rows", None, "display.max_columns", None):
+
 print(venue_df)
 
 
-""""
-person_l = []
-for item in name_orcid_l:
-    if item not in person_l:
-        person_l.append(item)
+#dataframe di proceedings che bisogna capire se è ok
 
-family_names_l = []
-for item in person_l:
-   family_names_l.append(item.get("family"))
+proceedings_df = publication_df[["id", "publication_venue", "publisher", "event"]]
 
-
-orcid_l = []
-for item in person_l:
-    orcid_l.append(item.get("orcid"))
-
-person_df = pd.DataFrame({
-    "orcid": Series(orcid_l, dtype="string", name="orc_id"),
-    "given": Series(given_names_l, dtype="string", name="given_name"),
-    "family": Series(family_names_l, dtype="string", name="family_name"),
-})
-
-"""
-
-"""
-# create issn_isbn series
-venues_id = json_doc.get("venues_id")
-issn_isbn = venues_id.values()
-issn_isbn_series = pd.Series(issn_isbn)
-
-
-
-
-# create publication_venue series
-publication_venue_series = pd.Series(publication_df["publication_venue"])
-
-
-"""
-
-
-"""
-
-#dataframe di proceedings = proceedings_df
-
-proceedings_df = publication_df[["id", "title", "publisher", "event"]]
-
-
-
-
-df_joinPO = merge(proceedings_df, df_organization, left_on="publisher", right_on = "crossref") 
-
-proceedings_df = df_joinPO[["id", "title", "event", "publisherId"]]
-
-
-proceedings_df = proceedings_df.rename(columns={"publisherId":"publisher"})
-
-proceedings_internal_id = []
-for idx, row in proceedings_df.iterrows():
-    proceedings_internal_id.append("proceedignsId-" + str(idx))
-
-proceedings_df.insert(0, "ProceedingsId", Series(proceedings_internal_id, dtype="string"))
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-
-#dataframe cites = df_cites
-
-
-with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
-
-
-references = json_doc["references"]
-
-df_cites=pd.DataFrame(references.items(),columns=['cited_doi','citing_doi'])
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-
+print(proceedings_df)
 
 #tentiamo di popolarlo hahaha 
 # with connect("publications.db") as con:
@@ -264,8 +198,6 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
  #   df_cites.to_sql("Cites", con, if_exists="replace", index=False)
 
  #   con.commit()
-
-"""
 
 
 
