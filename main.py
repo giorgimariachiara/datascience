@@ -108,6 +108,8 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 # Book chapter DataFrame
+
+
 book_chapter_df = publication_df.query("type == 'book-chapter'")
 book_chapter_df = book_chapter_df[["id", "publication_year", "title", "chapter"]]
 
