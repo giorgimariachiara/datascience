@@ -59,6 +59,7 @@ df_author.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 print(df_author)
+
 # person DataFrame
 
 person=json_doc["authors"]
@@ -116,10 +117,13 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 # Proceedings paper DataFrame
-#Proceedings_paper_df = publication_df.query("type == 'proceeding-paper")
-#Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-#Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
+Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
+Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 #pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+print(Proceedings_paper_df)
+
 
 # Cites DataFrame
 
@@ -173,31 +177,33 @@ df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id")
 venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
 #with pd.option_context("display.max_rows", None, "display.max_columns", None):
 
-print(venue_df)
 
 
-#dataframe di proceedings che bisogna capire se è ok
-
-proceedings_df = publication_df[["id", "publication_venue", "publisher", "event"]]
+#dataframe di proceedings
+proceedings_df = publication_df.query("venue_type =='proceedings'")
+proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 print(proceedings_df)
 
-#tentiamo di popolarlo hahaha 
-# with connect("publications.db") as con:
-#    venue_ids.to_sql("VenueId", con, if_exists="replace", index=False)
-#    journal_df.to_sql("Journal", con, if_exists="replace", index=False)
- #   book_df.to_sql("Book", con, if_exists="replace", index=False)
- #   journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
- #   book_chapter_df.to_sql("BookChapter", con, if_exists="replace", index=False)
- #  proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
- #   df_organization.to_sql("Organization", con, if_exists="replace", index=False)
- #   df_person.to_sql("Person", con, if_exists="replace", index=False)
- #   df_author.to_sql("Authors", con, if_exists="replace", index=False)
- #   df_cites.to_sql("Cites", con, if_exists="replace", index=False)
 
- #   con.commit()
+
+#tentiamo di popolarlo hahaha 
+with connect("publications.db") as con:
+    venue_df.to_sql("Venue", con, if_exists="replace", index=False)
+    journal_df.to_sql("Journal", con, if_exists="replace", index=False)
+    book_df.to_sql("Book", con, if_exists="replace", index=False)
+    journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
+    book_chapter_df.to_sql("BookChapter", con, if_exists="replace", index=False)
+    proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
+    organization_df.to_sql("Organization", con, if_exists="replace", index=False)
+    person_df.to_sql("Person", con, if_exists="replace", index=False)
+    df_author.to_sql("Author", con, if_exists="replace", index=False)
+    df_cites.to_sql("Cites", con, if_exists="replace", index=False)
+    Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
+  
+    con.commit()
 
 
 
