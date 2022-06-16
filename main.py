@@ -200,7 +200,7 @@ with connect("publications.db") as con:
     proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
-    df_author.to_sql("Author", con, if_exists="replace", index=False)
+    df_author.to_sql("Authors", con, if_exists="replace", index=False)
     df_cites.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
   
