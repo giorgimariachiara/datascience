@@ -24,7 +24,7 @@ class RelationalDataProcessor(object):
 
 
       
-class RelationalQueryProcessor():
+#class RelationalQueryProcessor():
       pass
 
 

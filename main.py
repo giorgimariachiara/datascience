@@ -11,6 +11,11 @@ from pprint import pprint
 import pandas as pd
 from pandas import read_csv, Series, read_json
 
+with connect("publications.db") as con:
+    # do some operation with the new connection
+    
+    con.commit()
+
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
                                     "id": "string",
