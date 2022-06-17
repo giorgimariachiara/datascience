@@ -1,5 +1,3 @@
-
-from encodings import normalize_encoding
 from locale import normalize
 from operator import index
 from numpy import index_exp
@@ -133,7 +131,6 @@ References = json_doc["references"]
 
 df_cites=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-print(df_cites)
 
 
 # Book Dataframe
@@ -150,8 +147,6 @@ journal_df = publication_df.query("venue_type =='journal'")
 journal_df= journal_df[["id", "publication_venue", "publisher"]]
 journal_df = journal_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-
 
 
 # Venue DataFrame
@@ -206,6 +201,7 @@ with connect("publications.db") as con:
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
   
     con.commit()
+
 
 
 
