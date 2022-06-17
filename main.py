@@ -1,14 +1,11 @@
-
-from encodings import normalize_encoding
 from locale import normalize
 from operator import index
 from colorama import Cursor
 from numpy import index_exp
 from pandas import DataFrame, merge 
 from collections import deque
-from json import load
 import json
-import pandas as pd
+from json import load
 from sqlite3 import connect
 from pprint import pprint
 import pandas as pd
@@ -60,7 +57,6 @@ df_author.drop("family_name", axis=1, inplace = True)
 df_author.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(df_author)
 
 # person DataFrame
 
@@ -143,7 +139,6 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 # pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-
 # Book Dataframe
 
 book_df = publication_df.query("venue_type =='book'")
@@ -158,8 +153,6 @@ journal_df = publication_df.query("venue_type =='journal'")
 journal_df= journal_df[["id", "publication_venue", "publisher"]]
 journal_df = journal_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-
 
 
 # Venue DataFrame
@@ -194,7 +187,7 @@ venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
 
 
 
-
+""""
 #tentiamo di popolarlo hahaha 
 with connect("publications.db") as con:
     venue_df.to_sql("Venue", con, if_exists="replace", index=False)
@@ -211,8 +204,7 @@ with connect("publications.db") as con:
 
     con.commit()
 
+"""
 
-#print(Proceedings_paper_df)
-print(proceedings_df)
-
+print(df_cites)
 
