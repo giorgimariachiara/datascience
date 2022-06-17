@@ -1,7 +1,9 @@
 
+from encodings import normalize_encoding
+from locale import normalize
 from operator import index
 from numpy import index_exp
-from pandas import merge 
+from pandas import DataFrame, merge 
 from collections import deque
 from json import load
 import json
@@ -117,7 +119,7 @@ book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-# Proceedings paper DataFrame
+#Proceedings paper DataFrame
 Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
 Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
@@ -207,7 +209,7 @@ with connect("publications.db") as con:
     con.commit()
 
 
-
-
+#print(Proceedings_paper_df)
+print(proceedings_df)
 
 
