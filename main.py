@@ -1,4 +1,4 @@
-# read csv file with pandas
+
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -10,6 +10,8 @@ from sqlite3 import connect
 from pprint import pprint
 import pandas as pd
 from pandas import read_csv, Series, read_json
+
+
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
@@ -119,9 +121,9 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
 Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
-#pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(Proceedings_paper_df)
+
 
 
 # Cites DataFrame
@@ -184,7 +186,7 @@ proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"
 
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(proceedings_df)
+
 
 
 
@@ -198,7 +200,7 @@ with connect("publications.db") as con:
     proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
-    df_author.to_sql("Author", con, if_exists="replace", index=False)
+    df_author.to_sql("Authors", con, if_exists="replace", index=False)
     df_cites.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
   
