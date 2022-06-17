@@ -3,9 +3,8 @@ from operator import index
 from numpy import index_exp
 from pandas import DataFrame, merge 
 from collections import deque
-from json import load
 import json
-import pandas as pd
+from json import load
 from sqlite3 import connect
 from pprint import pprint
 import pandas as pd
@@ -185,7 +184,7 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 
-
+""""
 #tentiamo di popolarlo hahaha 
 with connect("publications.db") as con:
     venue_df.to_sql("Venue", con, if_exists="replace", index=False)
@@ -202,7 +201,7 @@ with connect("publications.db") as con:
   
     con.commit()
 
+"""
 
-
-
+print(df_cites)
 
