@@ -46,15 +46,15 @@ organization_df = pd.DataFrame(id_and_name)
 # author dataframe
 author = json_doc["authors"]
 
-df_author=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
+author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
 
-df_author=pd.json_normalize(json.loads(df_author.to_json(orient="records")))
-df_author.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
+author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
 
-df_author=pd.DataFrame(df_author)
+author_df=pd.DataFrame(author_df)
 
-df_author.drop("family_name", axis=1, inplace = True)
-df_author.drop("given_name", axis =1, inplace = True)
+author_df.drop("family_name", axis=1, inplace = True)
+author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
@@ -135,9 +135,15 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 # References = json_doc["references"]
 
-# df_cites=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
-# pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+# cites_df=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
 
+#pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+# Cites DataFrame 2
+
+References = json_doc["references"]
+cites_df = pd.DataFrame.from_dict(References, orient="index")
+#print(cites_df)
 
 # Book Dataframe
 
@@ -198,13 +204,13 @@ with connect("publications.db") as con:
     proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
-    df_author.to_sql("Authors", con, if_exists="replace", index=False)
-    #df_cites.to_sql("Cites", con, if_exists="replace", index=False)
+    author_df.to_sql("Authors", con, if_exists="replace", index=False)
+    cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
 
     con.commit()
 
 
 
-#print(df_cites)
+#print(cites_df)
 
