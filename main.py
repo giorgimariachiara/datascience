@@ -143,7 +143,7 @@ cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('ci
 cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
 cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
 cites_df=pd.DataFrame(cites_df)
-print(cites_df)
+#print(cites_df)
 
 
 
@@ -207,7 +207,7 @@ with connect("publications.db") as con:
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
     author_df.to_sql("Authors", con, if_exists="replace", index=False)
-    #cites_df.to_sql("Cites", con, if_exists="replace", index=False)
+    cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
 
     con.commit()
