@@ -1,32 +1,42 @@
-
-
 # defining classes 
- 
+rel_path = "relational.db"
+rel_dp = RelationalDataProcessor()
+rel_dp.setDbPath(rel_path) 
+
+#for uploading csv
+if (rel_dp.uploadData("data/relational_publications.csv")):
+    print("csv data uploaded")
+
+#for uploading json
+if (rel_dp.uploadData("data/relational_other_data.json")):
+    print("json data uploaded")
+     else: 
+        print("json data not uploaded")
+
 class RelationalProcessor(object):
     def __init__(self, dbPath):
-        self.dbPath = dbPath 
+        self.dbPath = '' 
        
     def getDbPath(self):
         return self.dbPath 
-    def setDbPath(self, dbPath):
-        result = ""
-        if dbPath:
-            result = dbPath 
+
+    def setDbPath(self, Path):
+        self.dbPath = Path 
+        
 
 class TriplestoreProcessor (object):
     def __init__(self) -> None:
         pass
 
 class RelationalDataProcessor(object):
-    def __init__(self) -> None:
+    def __init__(self):
         pass
     def uploadData(self):
 
 
-      
-class RelationalQueryProcessor():
-      pass
-
+class RelationalQueryProcessor(object):
+       pass
+ 
 
 class IdentifiableEntity(object):
     def __init__(self, id):
