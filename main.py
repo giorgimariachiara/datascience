@@ -59,7 +59,6 @@ df_author.drop("family_name", axis=1, inplace = True)
 df_author.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(df_author)
 
 # person DataFrame
 
@@ -134,7 +133,7 @@ References = json_doc["references"]
 
 df_cites=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
+print(df_cites)
 
 
 # Book Dataframe
@@ -209,7 +208,5 @@ with connect("publications.db") as con:
     con.commit()
 
 
-#print(Proceedings_paper_df)
-print(proceedings_df)
 
 
