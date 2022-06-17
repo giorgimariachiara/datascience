@@ -134,16 +134,18 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 # Cites DataFrame
 
 # References = json_doc["references"]
-
 # cites_df=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
-
 #pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 # Cites DataFrame 2
-
 References = json_doc["references"]
-cites_df = pd.DataFrame.from_dict(References, orient="index")
-#print(cites_df)
+cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
+cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
+cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
+cites_df=pd.DataFrame(cites_df)
+print(cites_df)
+
+
 
 # Book Dataframe
 
@@ -205,7 +207,7 @@ with connect("publications.db") as con:
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
     author_df.to_sql("Authors", con, if_exists="replace", index=False)
-    cites_df.to_sql("Cites", con, if_exists="replace", index=False)
+    #cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
 
     con.commit()
