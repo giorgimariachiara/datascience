@@ -2,6 +2,7 @@
 from encodings import normalize_encoding
 from locale import normalize
 from operator import index
+from colorama import Cursor
 from numpy import index_exp
 from pandas import DataFrame, merge 
 from collections import deque
@@ -125,15 +126,21 @@ Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", 
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
+#dataframe di proceedings
+proceedings_df = publication_df.query("venue_type =='proceedings'")
+proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
+
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
 
 
 
 # Cites DataFrame
 
-References = json_doc["references"]
+# References = json_doc["references"]
 
-df_cites=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+# df_cites=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
+# pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 
@@ -182,11 +189,7 @@ venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
 
 
 
-#dataframe di proceedings
-proceedings_df = publication_df.query("venue_type =='proceedings'")
-proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 
@@ -203,9 +206,9 @@ with connect("publications.db") as con:
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
     df_author.to_sql("Authors", con, if_exists="replace", index=False)
-    df_cites.to_sql("Cites", con, if_exists="replace", index=False)
+    #df_cites.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
-  
+
     con.commit()
 
 
