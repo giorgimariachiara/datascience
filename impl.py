@@ -1,7 +1,17 @@
-# defining classes 
+#defining classes 
+class RelationalDataProcessor(object):
+    def __init__(self):
+        pass
+    def uploadData(self):
+        pass
+
+#----------------------------------------
+
 rel_path = "relational.db"
 rel_dp = RelationalDataProcessor()
 rel_dp.setDbPath(rel_path) 
+
+#----------------------------------------
 
 #for uploading csv
 if (rel_dp.uploadData("data/relational_publications.csv")):
@@ -10,8 +20,13 @@ if (rel_dp.uploadData("data/relational_publications.csv")):
 #for uploading json
 if (rel_dp.uploadData("data/relational_other_data.json")):
     print("json data uploaded")
-     else: 
-        print("json data not uploaded")
+else: 
+    print("json data not uploaded")
+
+#----------------------------------------
+
+class Queryprocessor(object):
+    pass
 
 class RelationalProcessor(object):
     def __init__(self, dbPath):
@@ -22,21 +37,38 @@ class RelationalProcessor(object):
 
     def setDbPath(self, Path):
         self.dbPath = Path 
-        
 
-class TriplestoreProcessor (object):
-    def __init__(self) -> None:
-        pass
-
-class RelationalDataProcessor(object):
-    def __init__(self):
-        pass
-    def uploadData(self):
-
+#----------------------------------------
 
 class RelationalQueryProcessor(object):
        pass
- 
+
+
+#----------------------------------------
+
+class GenericQueryProcessor(object):
+    def __init__(self, queryProcessor):
+        self.queryProcessor = []
+    
+    def cleanQueryProcessors(self, queryProcessor):
+        queryProcessor.clear() 
+
+    def addQueryProcessor(self, QueryProcessor, queryProcessor):
+        result = queryProcessor.append(QueryProcessor)
+        return result 
+
+    def getPublicationsPublishedInYear(year):
+        result= []
+        for date in publicationYear: 
+            if date == year:
+                result = Publication.getPublicationYear(
+
+#----------------------------------------
+
+class QueryProcessor(object):
+    pass 
+
+#----------------------------------------
 
 class IdentifiableEntity(object):
     def __init__(self, id):
@@ -50,6 +82,8 @@ class IdentifiableEntity(object):
             result.append(identifier)
         result.sort()
         return result
+
+#----------------------------------------
 
 class Publication(IdentifiableEntity):
     def __init__(self, id, publicationYear, title, publicationVenue, cite, author):
@@ -84,6 +118,7 @@ class Publication(IdentifiableEntity):
             result.add(p)
         return result
 
+#----------------------------------------
 
 class Venue(IdentifiableEntity):
     def __init__(self, id, title, publisher):
