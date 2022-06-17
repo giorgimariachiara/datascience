@@ -69,11 +69,11 @@ class GenericQueryProcessor(object):
         result = queryProcessor.append(QueryProcessor)
         return result 
 
-    def getPublicationsPublishedInYear(year):
-        result= []
-        for date in publicationYear: 
-            if date == year:
-                result = Publication.getPublicationYear()
+ #   def getPublicationsPublishedInYear(year):
+   #     result= []
+    #   for date in publicationYear: 
+       #     if date == year:
+         #       result = Publication.getPublicationYear()
 
 #----------------------------------------
 
@@ -138,6 +138,8 @@ class Venue(IdentifiableEntity):
 
     def getPublisher(self):
         return self.publisher
+
+#----------------------------------------
 
 class Organization(IdentifiableEntity):
     def __init__(self, id, name):
