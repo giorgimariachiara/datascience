@@ -1,9 +1,6 @@
 #defining classes 
-class RelationalDataProcessor(object):
-    def __init__(self):
-        pass
-    def uploadData(self):
-        pass
+from typing_extensions import Self
+
 
 #----------------------------------------
 
@@ -25,7 +22,7 @@ else:
 
 #----------------------------------------
 
-class Queryprocessor(object):
+class QueryProcessor(object):
     pass
 
 class RelationalProcessor(object):
@@ -43,7 +40,22 @@ class RelationalProcessor(object):
 class RelationalQueryProcessor(object):
        pass
 
+#----------------------------------------
 
+class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
+    def __init__(self):
+        super().__init__()
+
+
+    def uploadData(self,path):
+
+        if path.split(".")[1] == 'json':
+            #checking if database exists or not
+            if os.path.exists(self.getDbPath()):
+              #if existed do things....
+            
+            #else: 
+            #start create dataframes and so on...
 #----------------------------------------
 
 class GenericQueryProcessor(object):
@@ -61,12 +73,7 @@ class GenericQueryProcessor(object):
         result= []
         for date in publicationYear: 
             if date == year:
-                result = Publication.getPublicationYear(
-
-#----------------------------------------
-
-class QueryProcessor(object):
-    pass 
+                result = Publication.getPublicationYear()
 
 #----------------------------------------
 
