@@ -1,7 +1,9 @@
 
+from encodings import normalize_encoding
+from locale import normalize
 from operator import index
 from numpy import index_exp
-from pandas import merge 
+from pandas import DataFrame, merge 
 from collections import deque
 from json import load
 import json
@@ -118,10 +120,10 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 # Proceedings paper DataFrame
-Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
-Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+#Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
+#Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+#Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
+#pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 
@@ -202,12 +204,12 @@ with connect("publications.db") as con:
     person_df.to_sql("Person", con, if_exists="replace", index=False)
     df_author.to_sql("Authors", con, if_exists="replace", index=False)
     df_cites.to_sql("Cites", con, if_exists="replace", index=False)
-    Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
+    #Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
   
     con.commit()
 
 
-
-
+#print(Proceedings_paper_df)
+print(proceedings_df)
 
 
