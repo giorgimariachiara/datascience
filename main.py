@@ -10,6 +10,8 @@ from sqlite3 import connect
 from pprint import pprint
 import pandas as pd
 from pandas import read_csv, Series, read_json
+from impl import GenericQueryProcessor
+from impl import RelationalDataProcessor, RelationalQueryProcessor 
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
