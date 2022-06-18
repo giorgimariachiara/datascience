@@ -63,6 +63,8 @@ crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
 
+
+
 #----------------------------------------
 
 # Author dataframe
@@ -238,7 +240,7 @@ venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
 
 # Populate the SQL database 
 with connect("publications.db") as con:
-    venue_df.to_sql("Venue", con, if_exists="replace", index=False)
+    venue_df.to_sql("Venueid", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
     book_df.to_sql("Book", con, if_exists="replace", index=False)
     journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
@@ -257,11 +259,11 @@ with connect("publications.db") as con:
 
 #print(result_q1)
 
-
+"""
 with connect("publications.db") as con:
     query = "SELECT title FROM JournalArticle LEFT JOIN Journal ON JournalArticle.doi == Journal.doi WHERE doi='doi:10.1016/s1367-5931(02)00332-0';"
 
 
     df_sql = read_sql(query, con)
-
-print(df_sql)  # show the content of the result of the query
+  # show the content of the result of the query
+"""
