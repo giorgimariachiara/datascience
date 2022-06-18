@@ -34,12 +34,12 @@ with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") a
     json_doc = load(f)
 
 
-# organization DataFrame
+# Organization DataFrame
 crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
 
-# author dataframe
+# Author dataframe
 author = json_doc["authors"]
 
 author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
@@ -54,7 +54,7 @@ author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-# person DataFrame
+# Person DataFrame
 
 person=json_doc["authors"]
 
@@ -94,7 +94,8 @@ person_df = pd.DataFrame({
 
 
 
-# Journal article DataFrame
+# Journal Article DataFrame
+
 journal_article_df = publication_df.query("type =='journal-article'")
 
 journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
@@ -112,26 +113,29 @@ book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-#Proceedings paper DataFrame
+# Proceedings paper DataFrame
+
 Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
 Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-#dataframe di proceedings
+
+# Proceedings DataFrame
+
 proceedings_df = publication_df.query("venue_type =='proceedings'")
 proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-# Cites DataFrame 
+# Cites DataFrame
+ 
 References = json_doc["references"]
 cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
 cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
 cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
 cites_df=pd.DataFrame(cites_df)
-#print(cites_df)
 
 
 
@@ -142,6 +146,7 @@ book_df = publication_df.query("venue_type =='book'")
 book_df= book_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
+
 
 # Journal DataFrame
 
@@ -174,12 +179,10 @@ venue_df = publication_df[["id", "publication_venue", "publisher"]]
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
 venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
-#with pd.option_context("display.max_rows", None, "display.max_columns", None):
 
 
 
-
-#tentiamo di popolarlo hahaha 
+# Populate the SQL database 
 with connect("publications.db") as con:
     venue_df.to_sql("Venue", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
@@ -196,6 +199,4 @@ with connect("publications.db") as con:
     con.commit()
 
 
-
-#print(cites_df)
 
