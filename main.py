@@ -30,10 +30,6 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         },encoding="utf-8")
 
 
-
-
-
-
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
 
@@ -129,15 +125,7 @@ proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
-
-
-# Cites DataFrame
-
-# References = json_doc["references"]
-# cites_df=pd.DataFrame(References.items(),columns=['cited_doi','citing_doi'])
-#pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-# Cites DataFrame 2
+# Cites DataFrame 
 References = json_doc["references"]
 cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
 cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
@@ -187,11 +175,6 @@ df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id")
 
 venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
 #with pd.option_context("display.max_rows", None, "display.max_columns", None):
-
-
-
-
-
 
 
 
