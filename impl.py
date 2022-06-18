@@ -68,16 +68,13 @@ class RelationalQueryProcessor(RelationalProcessor):
 #----------------------------------------
 
 class GenericQueryProcessor(object):
-    def __init__(self, QueryProcessor):
-        self.QueryProcessor = []
+    def __init__(self):
+        self.queryProcessor = list()
     
-    def cleanQueryProcessors(self, QueryProcessor):
-        QueryProcessor.clear() 
+    def cleanQueryProcessors(self, queryProcessor):
+        queryProcessor.clear() 
 
-    def addQueryProcessor(self, QueryProcessor):
-        result = []
-        result.append(QueryProcessor)
-        return result 
+    def addQueryProcessor(self, queryProcessor)
 
  #   def getPublicationsPublishedInYear(year):
    #     result= []
