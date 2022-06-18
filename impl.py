@@ -1,5 +1,7 @@
 #defining classes 
 from typing_extensions import Self
+import pandas as pd
+from pandas import DataFrame
 import os 
   
 
@@ -33,19 +35,28 @@ class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
         if path.split(".")[1] == 'json':
             #checking if database exists or not
             if os.path.exists(self.getDbPath()):
+                pass
               #if existed do things....
             
             #else: 
             #start create dataframes and so on...
 #----------------------------------------
 
-
-
-
 #----------------------------------------
 
-class RelationalQueryProcessor(object):
-       pass
+class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
+    def __init__(self):
+        super().__init__()
+    
+    def getPublicationsPublishedInYear(publicationYear):
+        result = list()
+        for year in Publication.publicationYear:
+            if year == publicationYear:
+                result.apppend(Publication.title)
+
+            return pd.Dataframe(result)
+
+
 
 
 class GenericQueryProcessor(object):
