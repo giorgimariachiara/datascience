@@ -1,5 +1,4 @@
 #defining classes 
-from typing_extensions import Self
 import pandas as pd
 from pandas import DataFrame, Series 
 import os 
@@ -9,7 +8,7 @@ import os
 
 
 class RelationalProcessor(object):
-    def __init__(self, dbPath):
+    def __init__(self):
         self.dbPath = '' 
        
     def getDbPath(self):
@@ -24,7 +23,11 @@ class RelationalProcessor(object):
 #----------------------------------------
 
 class QueryProcessor(object):
-    pass
+    def __init__(self):
+        pass
+
+
+#----------------------------------------
  
 class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
     def __init__(self):
@@ -32,19 +35,22 @@ class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
 
     def uploadData(self,path):
 
-        if path.split(".")[1] == 'json':
+        if path.split(".")[1] == 'csv':
             #checking if database exists or not
             if os.path.exists(self.getDbPath()):
-                pass
-              #if existed do things....
-            
-            #else: 
-            #start create dataframes and so on...
-#----------------------------------------
+                pd.read_csv(self.dbPath)
+
+            elif path.split(".")[1] == 'json':
+                pd.read_json(self.dbPath)
+
+            else: 
+                self.setDbPath(path)
 
 #----------------------------------------
 
-class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
+#----------------------------------------
+
+class RelationalQueryProcessor(RelationalProcessor):
     def __init__(self):
         super().__init__()
     
@@ -54,26 +60,23 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             if year == publicationYear:
                 result.append(Publication.title)
 
-            return pd.Dataframe({
-                "Publication": Series(result, dtype="string", name="Publication")
-                })     
+            return result 
     
     def getPublicationsbyAuthorID():
         pass 
     
-
-
-
+#----------------------------------------
 
 class GenericQueryProcessor(object):
-    def __init__(self, queryProcessor):
-        self.queryProcessor = []
+    def __init__(self, QueryProcessor):
+        self.QueryProcessor = []
     
-    def cleanQueryProcessors(self, queryProcessor):
-        queryProcessor.clear() 
+    def cleanQueryProcessors(self, QueryProcessor):
+        QueryProcessor.clear() 
 
-    def addQueryProcessor(self, QueryProcessor, queryProcessor):
-        result = queryProcessor.append(QueryProcessor)
+    def addQueryProcessor(self, QueryProcessor):
+        result = []
+        result.append(QueryProcessor)
         return result 
 
  #   def getPublicationsPublishedInYear(year):
