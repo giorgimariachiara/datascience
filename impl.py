@@ -1,29 +1,11 @@
 #defining classes 
 from typing_extensions import Self
+import os 
+  
 
 
 #----------------------------------------
 
-rel_path = "relational.db"
-rel_dp = RelationalDataProcessor()
-rel_dp.setDbPath(rel_path) 
-
-#----------------------------------------
-
-#for uploading csv
-if (rel_dp.uploadData("data/relational_publications.csv")):
-    print("csv data uploaded")
-
-#for uploading json
-if (rel_dp.uploadData("data/relational_other_data.json")):
-    print("json data uploaded")
-else: 
-    print("json data not uploaded")
-
-#----------------------------------------
-
-class QueryProcessor(object):
-    pass
 
 class RelationalProcessor(object):
     def __init__(self, dbPath):
@@ -35,17 +17,17 @@ class RelationalProcessor(object):
     def setDbPath(self, Path):
         self.dbPath = Path 
 
-#----------------------------------------
+#triplestoreprocessor class da fare
 
-class RelationalQueryProcessor(object):
-       pass
 
 #----------------------------------------
 
+class QueryProcessor(object):
+    pass
+ 
 class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
     def __init__(self):
         super().__init__()
-
 
     def uploadData(self,path):
 
@@ -57,6 +39,15 @@ class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
             #else: 
             #start create dataframes and so on...
 #----------------------------------------
+
+
+
+
+#----------------------------------------
+
+class RelationalQueryProcessor(object):
+       pass
+
 
 class GenericQueryProcessor(object):
     def __init__(self, queryProcessor):
