@@ -66,7 +66,7 @@ class RelationalQueryProcessor(RelationalProcessor):
         pass 
     
 #----------------------------------------
-
+""""
 class GenericQueryProcessor(object):
     def __init__(self):
         self.queryProcessor = list()
@@ -74,7 +74,8 @@ class GenericQueryProcessor(object):
     def cleanQueryProcessors(self, queryProcessor):
         queryProcessor.clear() 
 
-    def addQueryProcessor(self, queryProcessor)
+    def addQueryProcessor(self, queryProcessor):
+        pass
 
  #   def getPublicationsPublishedInYear(year):
    #     result= []
@@ -83,7 +84,7 @@ class GenericQueryProcessor(object):
          #       result = Publication.getPublicationYear()
 
 #----------------------------------------
-
+"""
 class IdentifiableEntity(object):
     def __init__(self, id):
         self.id = set()

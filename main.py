@@ -8,13 +8,14 @@ import json
 from json import load
 from sqlite3 import connect
 from pprint import pprint
+from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
-from impl import GenericQueryProcessor
+#from impl import GenericQueryProcessor
 from impl import RelationalDataProcessor, RelationalQueryProcessor 
 
 #----------------------------------------
-
+""""
 #codici che ci ha dato Peroni 
 
 rel_path = "publications.db"
@@ -30,7 +31,7 @@ rel_qp.setDbPath(rel_path)
 generic = GenericQueryProcessor()
 generic.addQueryProcessor(rel_qp)
 
-
+"""
 #----------------------------------------
 
 
@@ -252,6 +253,15 @@ with connect("publications.db") as con:
     con.commit()
 
  
-result_q1 = generic.getPublicationsPublishedInYear(2020)
+#result_q1 = generic.getPublicationsPublishedInYear(2020)
 
-print(result_q1)
+#print(result_q1)
+
+
+with connect("publications.db") as con:
+    query = "SELECT title FROM JournalArticle LEFT JOIN Journal ON JournalArticle.doi == Journal.doi WHERE doi='doi:10.1016/s1367-5931(02)00332-0';"
+
+
+    df_sql = read_sql(query, con)
+
+print(df_sql)  # show the content of the result of the query
