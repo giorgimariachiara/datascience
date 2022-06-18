@@ -1,7 +1,7 @@
 #defining classes 
 from typing_extensions import Self
 import pandas as pd
-from pandas import DataFrame
+from pandas import DataFrame, Series 
 import os 
   
 
@@ -52,9 +52,15 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         result = list()
         for year in Publication.publicationYear:
             if year == publicationYear:
-                result.apppend(Publication.title)
+                result.append(Publication.title)
 
-            return pd.Dataframe(result)
+            return pd.Dataframe({
+                "Publication": Series(result, dtype="string", name="Publication")
+                })     
+    
+    def getPublicationsbyAuthorID():
+        pass 
+    
 
 
 

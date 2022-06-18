@@ -12,33 +12,6 @@ import pandas as pd
 from pandas import read_csv, Series, read_json
 
 
-
-
-
-from impl import GenericQueryProcessor
-from impl import RelationalDataProcessor, RelationalQueryProcessor
-rel_path = "relational.db"
-rel_dp = RelationalDataProcessor()
-rel_dp.setDbPath(rel_path)
-rel_dp.uploadData("data/relational_publications.csv")
-rel_dp.uploadData("data/relational_other_data.json") 
-
-#for uploading csv
-if (rel_dp.uploadData("data/relational_publications.csv")):
-    print("csv data uploaded")
-
-#for uploading json
-if (rel_dp.uploadData("data/relational_other_data.json")):
-    print("json data uploaded")
-else: 
-    print("json data not uploaded")
-
-    
-
-
-
-
-
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
                                     "id": "string",
