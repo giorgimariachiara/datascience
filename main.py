@@ -126,7 +126,7 @@ person_df = pd.DataFrame({
 
 #----------------------------------------
 
-
+"""
 # Journal Article DataFrame
 
 journal_article_df = publication_df.query("type =='journal-article'")
@@ -135,10 +135,10 @@ journal_article_df = journal_article_df[["id", "publication_year", "title", "pub
 journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-
+df_joined = merge(journal_article_df, journal_df, left_on="doi", right_on="doi")
 
 #----------------------------------------
-
+"""
 
 # Book chapter DataFrame
 
@@ -203,11 +203,25 @@ book_df = book_df.rename(columns={"id":"doi"})
 
 journal_df = publication_df.query("venue_type =='journal'")
 journal_df= journal_df[["id", "publication_venue", "publisher"]]
-journal_df = journal_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
 #----------------------------------------
+
+# Journal Article DataFrame
+
+journal_article_df = publication_df.query("type =='journal-article'")
+
+journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+df_joined = merge(journal_article_df, journal_df, left_on="id", right_on="id")
+
+
+print(df_joined)
+
+journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+
 
 
 # Venue DataFrame
@@ -259,11 +273,12 @@ with connect("publications.db") as con:
 
 #print(result_q1)
 
-"""
+
 with connect("publications.db") as con:
-    query = "SELECT title FROM JournalArticle LEFT JOIN Journal ON JournalArticle.doi == Journal.doi WHERE doi='doi:10.1016/s1367-5931(02)00332-0';"
+    query = "SELECT title FROM JournalArticle LEFT JOIN Journal ON JournalArticle.id == Journal.id WHERE doi='10.1016/s1367-5931(02)00332-0'"
 
 
     df_sql = read_sql(query, con)
   # show the content of the result of the query
-"""
+
+print(df_sql)
