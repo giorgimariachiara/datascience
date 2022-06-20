@@ -1,15 +1,15 @@
-<<<<<<< HEAD
+#<<<<<<< HEAD
 # #defining classes 
 # from typing_extensions import Self
 # import pandas as pd
 # from pandas import DataFrame, Series 
 # import os 
-=======
+#=======
 #defining classes 
 import pandas as pd
 from pandas import DataFrame, Series 
 import os 
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
+
   
 
 # #----------------------------------------
@@ -23,7 +23,7 @@ import os
 class RelationalProcessor(object):
     def __init__(self):
         self.dbPath = '' 
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
+
        
 #     def getDbPath(self):
 #         return self.dbPath 
@@ -46,7 +46,7 @@ class QueryProcessor(object):
 
 
 #----------------------------------------
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
+
  
 # class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
 #     def __init__(self):
@@ -77,7 +77,6 @@ class QueryProcessor(object):
                 self.setDbPath(path)
 
 #----------------------------------------
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
 
 # #----------------------------------------
 
@@ -89,7 +88,6 @@ class QueryProcessor(object):
 class RelationalQueryProcessor(RelationalProcessor):
     def __init__(self):
         super().__init__()
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
     
 #     def getPublicationsPublishedInYear(publicationYear):
 #         result = list()
@@ -103,7 +101,6 @@ class RelationalQueryProcessor(RelationalProcessor):
 #                 })     
 =======
             return result 
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
     
 #     def getPublicationsbyAuthorID():
 #         pass 
@@ -158,7 +155,6 @@ class IdentifiableEntity(object):
         self.id = set()
         for identifiers in id:
             self.id.add(identifiers)
->>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
 
 #     def getIds(self):
 #         result = []

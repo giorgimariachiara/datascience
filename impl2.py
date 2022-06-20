@@ -160,18 +160,8 @@ class GenericQueryProcessor(object):
 
 def create_connection(db_file):
 
-    # forse si usa il "with()"
-
-    """ create a database connection to the SQLite database
-        specified by the db_file
-    :param db_file: database file
-    :return: Connection object or None
-    """
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-    except Error as e:
-        print(e)
+    with connect(db_file) as con:
+        con.commit()
 
     return conn
 
@@ -190,13 +180,15 @@ class RelationalProcessor(object):
 
 class RelationalQueryProcessor(RelationalProcessor):                 #, QueryProcessor):
 
-    def getPublicationsPublishedInYear(publicationYear):
+    def getPublicationsPublishedInYear(self, publicationYear):
         print(publicationYear)
         print("dahan")
         conn = create_connection(RelationalProcessor.getDbPath())
         cur = conn.cursor()
         cur.execute("SELECT * FROM JournalArticle WHERE publication_year = " + publicationYear + ";")
         return cur.fetchall()
+
+
 
 
 
