@@ -136,6 +136,7 @@ References = json_doc["references"]
 cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
 cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
 cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
+
 cites_df=pd.DataFrame(cites_df)
 
 
