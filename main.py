@@ -8,10 +8,31 @@ import json
 from json import load
 from sqlite3 import connect
 from pprint import pprint
+from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
-from impl import GenericQueryProcessor
+#from impl import GenericQueryProcessor
 from impl import RelationalDataProcessor, RelationalQueryProcessor 
+
+#----------------------------------------
+""""
+#codici che ci ha dato Peroni 
+
+rel_path = "publications.db"
+rel_dp = RelationalDataProcessor()
+rel_dp.setDbPath(rel_path)
+rel_dp.uploadData("./relational_db/relational_publications.csv")
+#rel_dp.uploadData("data/relational_other_data.json")
+
+rel_qp = RelationalQueryProcessor()
+rel_qp.setDbPath(rel_path) 
+
+
+generic = GenericQueryProcessor()
+generic.addQueryProcessor(rel_qp)
+
+"""
+#----------------------------------------
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
@@ -35,10 +56,16 @@ with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") a
     json_doc = load(f)
 
 
+#----------------------------------------
+
 # Organization DataFrame
 crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
+
+
+
+#----------------------------------------
 
 # Author dataframe
 author = json_doc["authors"]
@@ -53,6 +80,9 @@ author_df=pd.DataFrame(author_df)
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+
+#----------------------------------------
 
 
 # Person DataFrame
@@ -94,7 +124,9 @@ person_df = pd.DataFrame({
 })
 
 
+#----------------------------------------
 
+"""
 # Journal Article DataFrame
 
 journal_article_df = publication_df.query("type =='journal-article'")
@@ -103,6 +135,10 @@ journal_article_df = journal_article_df[["id", "publication_year", "title", "pub
 journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
+df_joined = merge(journal_article_df, journal_df, left_on="doi", right_on="doi")
+
+#----------------------------------------
+"""
 
 # Book chapter DataFrame
 
@@ -114,6 +150,9 @@ book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
+#----------------------------------------
+
+
 # Proceedings paper DataFrame
 
 Proceedings_paper_df = publication_df.query("type == 'proceeding-paper'")
@@ -122,12 +161,18 @@ Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
+#----------------------------------------
+
+
 # Proceedings DataFrame
 
 proceedings_df = publication_df.query("venue_type =='proceedings'")
 proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+
+#----------------------------------------
 
 
 # Cites DataFrame
@@ -140,6 +185,8 @@ cites_df.rename(columns={"References.keys()":"citing","References.values()":"cit
 cites_df=pd.DataFrame(cites_df)
 
 
+#----------------------------------------
+
 
 # Book Dataframe
 
@@ -150,12 +197,32 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
 
 
+#----------------------------------------
+
+
 # Journal DataFrame
 
 journal_df = publication_df.query("venue_type =='journal'")
 journal_df= journal_df[["id", "publication_venue", "publisher"]]
-journal_df = journal_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+
+#----------------------------------------
+
+# Journal Article DataFrame
+
+journal_article_df = publication_df.query("type =='journal-article'")
+
+journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+df_joined = merge(journal_article_df, journal_df, left_on="id", right_on="id")
+
+
+print(df_joined)
+
+journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+
 
 
 # Venue DataFrame
@@ -183,10 +250,12 @@ df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id")
 venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
 
 
+#----------------------------------------
+
 
 # Populate the SQL database 
 with connect("publications.db") as con:
-    venue_df.to_sql("Venue", con, if_exists="replace", index=False)
+    venue_df.to_sql("Venueid", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
     book_df.to_sql("Book", con, if_exists="replace", index=False)
     journal_article_df.to_sql("JournalArticle", con, if_exists="replace", index=False)
@@ -200,5 +269,17 @@ with connect("publications.db") as con:
 
     con.commit()
 
+ 
+#result_q1 = generic.getPublicationsPublishedInYear(2020)
+
+#print(result_q1)
 
 
+with connect("publications.db") as con:
+    query = "SELECT title FROM JournalArticle LEFT JOIN Journal ON JournalArticle.id == Journal.id WHERE doi='10.1016/s1367-5931(02)00332-0'"
+
+
+    df_sql = read_sql(query, con)
+  # show the content of the result of the query
+
+print(df_sql)

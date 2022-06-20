@@ -1,16 +1,29 @@
+<<<<<<< HEAD
 # #defining classes 
 # from typing_extensions import Self
 # import pandas as pd
 # from pandas import DataFrame, Series 
 # import os 
+=======
+#defining classes 
+import pandas as pd
+from pandas import DataFrame, Series 
+import os 
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
   
 
 # #----------------------------------------
 
 
+<<<<<<< HEAD
 # class RelationalProcessor(object):
 #     def __init__(self, dbPath):
 #         self.dbPath = '' 
+=======
+class RelationalProcessor(object):
+    def __init__(self):
+        self.dbPath = '' 
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
        
 #     def getDbPath(self):
 #         return self.dbPath 
@@ -23,8 +36,17 @@
 
 # #----------------------------------------
 
+<<<<<<< HEAD
 # class QueryProcessor(object):
 #     pass
+=======
+class QueryProcessor(object):
+    def __init__(self):
+        pass
+
+
+#----------------------------------------
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
  
 # class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
 #     def __init__(self):
@@ -32,6 +54,7 @@
 
 #     def uploadData(self,path):
 
+<<<<<<< HEAD
 #         if path.split(".")[1] == 'json':
 #             #checking if database exists or not
 #             if os.path.exists(self.getDbPath()):
@@ -41,12 +64,32 @@
 #             #else: 
 #             #start create dataframes and so on...
 # #----------------------------------------
+=======
+        if path.split(".")[1] == 'csv':
+            #checking if database exists or not
+            if os.path.exists(self.getDbPath()):
+                pd.read_csv(self.dbPath)
+
+            elif path.split(".")[1] == 'json':
+                pd.read_json(self.dbPath)
+
+            else: 
+                self.setDbPath(path)
+
+#----------------------------------------
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
 
 # #----------------------------------------
 
+<<<<<<< HEAD
 # class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 #     def __init__(self):
 #         super().__init__()
+=======
+class RelationalQueryProcessor(RelationalProcessor):
+    def __init__(self):
+        super().__init__()
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
     
 #     def getPublicationsPublishedInYear(publicationYear):
 #         result = list()
@@ -54,13 +97,18 @@
 #             if year == publicationYear:
 #                 result.append(Publication.title)
 
+<<<<<<< HEAD
 #             return pd.Dataframe({
 #                 "Publication": Series(result, dtype="string", name="Publication")
 #                 })     
+=======
+            return result 
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
     
 #     def getPublicationsbyAuthorID():
 #         pass 
     
+<<<<<<< HEAD
 
 
 
@@ -68,13 +116,25 @@
 # class GenericQueryProcessor(object):
 #     def __init__(self, queryProcessor):
 #         self.queryProcessor = []
+=======
+#----------------------------------------
+""""
+class GenericQueryProcessor(object):
+    def __init__(self):
+        self.queryProcessor = list()
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
     
 #     def cleanQueryProcessors(self, queryProcessor):
 #         queryProcessor.clear() 
 
+<<<<<<< HEAD
 #     def addQueryProcessor(self, QueryProcessor, queryProcessor):
 #         result = queryProcessor.append(QueryProcessor)
 #         return result 
+=======
+    def addQueryProcessor(self, queryProcessor):
+        pass
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
 
 #  #   def getPublicationsPublishedInYear(year):
 #    #     result= []
@@ -82,6 +142,7 @@
 #        #     if date == year:
 #          #       result = Publication.getPublicationYear()
 
+<<<<<<< HEAD
 # #----------------------------------------
 
 # class IdentifiableEntity(object):
@@ -89,6 +150,15 @@
 #         self.id = set()
 #         for identifiers in id:
 #             self.id.add(identifiers)
+=======
+#----------------------------------------
+"""
+class IdentifiableEntity(object):
+    def __init__(self, id):
+        self.id = set()
+        for identifiers in id:
+            self.id.add(identifiers)
+>>>>>>> 2478b39acd570bfc592d7bff6c8385350f746c4a
 
 #     def getIds(self):
 #         result = []
