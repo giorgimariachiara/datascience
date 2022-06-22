@@ -155,12 +155,16 @@ class GenericQueryProcessor(object):
 
     def getPublicationsPublishedInYear(self, publicationYear):
         xyz = RelationalQueryProcessor.getPublicationsPublishedInYear(publicationYear)
+        xyz = list(xyz)
         self.addQueryProcessor(xyz)
         return self.queryProcessor
 
+    def getPublicationsByAuthorId(self, orc_id):
+        result = RelationalQueryProcessor.getPublicationByAuthorId(orc_id)
+
 def create_connection(db_file):
 
-    # forse si usa il "with()"
+    # forse si usa il "with()" 
 
     """ create a database connection to the SQLite database
         specified by the db_file
@@ -187,6 +191,10 @@ class RelationalProcessor(object):
         return self.dbPath
 
 
+=======
+class QueryProcessor(object):
+    def __init__(self):
+        pass
 
 class RelationalQueryProcessor(RelationalProcessor):                 #, QueryProcessor):
 
