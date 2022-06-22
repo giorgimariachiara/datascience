@@ -155,7 +155,6 @@ class GenericQueryProcessor(object):
 
     def getPublicationsPublishedInYear(self, publicationYear):
         xyz = RelationalQueryProcessor.getPublicationsPublishedInYear(publicationYear)
-        xyz = list(xyz)
         self.addQueryProcessor(xyz)
         return self.queryProcessor
 
