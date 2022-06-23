@@ -189,7 +189,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
        rp0 = RelationalProcessor()
        rp0.setDbPath(dbPath)
        print("--->" + rp0.getDbPath())
-       with connect(rp0.getDbPath()) as con:   # da correggere, usare il metodo appropriato
+       with connect(rp0.getDbPath()) as con:   
             con.commit()
            
             JournalArticleDF = read_sql("SELECT * FROM JournalArticle WHERE publication_year = " + str(py), con)
@@ -205,7 +205,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
 
 
-rqp = RelationalQueryProcessor()
+# rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
@@ -229,5 +229,5 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(gqp.getPublicationsPublishedInYear(2017))
+print(gqp.getPublicationsPublishedInYear(2020))
 
