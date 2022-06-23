@@ -11,7 +11,7 @@ from pandas import DataFrame, Series
 import os 
 
   
-
+"""
 # #----------------------------------------
 
 
@@ -115,7 +115,8 @@ class RelationalQueryProcessor(RelationalProcessor):
 #         self.queryProcessor = []
 =======
 #----------------------------------------
-""""
+"""
+"""
 class GenericQueryProcessor(object):
     def __init__(self):
         self.queryProcessor = list()
@@ -149,7 +150,7 @@ class GenericQueryProcessor(object):
 #             self.id.add(identifiers)
 =======
 #----------------------------------------
-"""
+
 class IdentifiableEntity(object):
     def __init__(self, id):
         self.id = set()
@@ -291,6 +292,6 @@ class IdentifiableEntity(object):
 #         return self.event
 
 
-
+"""
 
 

@@ -162,6 +162,15 @@ class GenericQueryProcessor(object):
         dfPY = rqp0.getPublicationsPublishedInYear(publicationYear)
         self.addQueryProcessor(dfPY)
         return self.queryProcessor
+    
+    def getPublicationsByAuthorId(self, orcid):
+        rqp0 = RelationalQueryProcessor()
+        dfAuthor = rqp0.getPublicationsByAuthorId(orcid)
+        self.addQueryProcessor(dfAuthor)
+        return self.queryProcessor
+
+
+
 
 dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 
@@ -196,11 +205,32 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py), con)
             ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
             #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py) + " LIMIT 2 ", con)
-       return(concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF]))    
+       return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
    
-         
+    def getPublicationsByAuthorId(self, orcid):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)   
+        with connect(rp0.getDbPath()) as con:   
+            #con.commit()
+            #JournalArticleDF = read_sql("SELECT A.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '" + orcid + "'", con)
+            #BookChapterDF = read_sql("SELECT * FROM BookChapter AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)  
+            #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)
+            publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+            SQL = "SELECT A.* FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '{}'"
+            return concat([
+                read_sql(SQL.format(publications[0], orcid), con),
+                read_sql(SQL.format(publications[1], orcid), con),
+                read_sql(SQL.format(publications[2], orcid), con)
+            ])
+            
+            #return read_sql(SQL.format(publications[0], orcid), con)
+        #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
         
+
+
 #def pathSetter():
+
+
   
 
 
@@ -229,5 +259,5 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(gqp.getPublicationsPublishedInYear(2020))
+print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
