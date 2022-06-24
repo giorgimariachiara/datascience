@@ -235,8 +235,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
-            #return read_sql(SQL.format(publications[0], orcid), con)
-            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi = " + str(publication) , con)
+            JournalArticleDF = read_sql("SELECT given , family FROM Person AS A LEFT JOIN Authors AS B ON A.orcid == B.orc_id LEFT JOIN JournalArticle AS C ON B.doi == C.doi WHERE doi = " + str(publication) , con)
+
         return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
         
