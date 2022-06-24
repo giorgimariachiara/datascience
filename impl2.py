@@ -169,11 +169,16 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
 
+    def getPublicationAuthors(self, publication):
+        rqp0 = RelationalQueryProcessor()
+        dfAP =rqp0.getPublicationAuthors(publication)
+        self.addQueryProcessor(dfAP)
+        return self.queryProcessor
 
 
 
-dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
-
+#dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
+dbPath = "./publications.db"
 
 class RelationalProcessor(object):
     def __init__(self):
@@ -206,7 +211,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
             #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py) + " LIMIT 2 ", con)
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
-   
+
+
     def getPublicationsByAuthorId(self, orcid):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)   
@@ -223,20 +229,27 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
             
+    def getPublicationAuthors(self, publication):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+            #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
             #return read_sql(SQL.format(publications[0], orcid), con)
+            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi = " + str(publication) , con)
+        return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
         
-
+    
 
 #def pathSetter():
-
 
   
 
 
 
 # rqp = RelationalQueryProcessor()
-gqp = GenericQueryProcessor()
+#gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
 
@@ -259,5 +272,5 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
