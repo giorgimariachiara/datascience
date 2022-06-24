@@ -11,8 +11,10 @@ from pprint import pprint
 from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
-#from impl import GenericQueryProcessor
-from impl import RelationalDataProcessor, RelationalQueryProcessor 
+from impl2 import GenericQueryProcessor
+from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+from impl2 import  RelationalQueryProcessor 
+
 
 #----------------------------------------
 """"
@@ -50,7 +52,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                                     "event": "string"
 
                         },encoding="utf-8")
-
+print(publication_df.columns)
 
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
@@ -211,18 +213,30 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 # Journal Article DataFrame
 
-journal_article_df = publication_df.query("type =='journal-article'")
+# journal_article_df = publication_df.query("type =='journal-article'")
 
+# journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+# pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+
+# df_joined = merge(journal_article_df, journal_df, left_on="id", right_on="id")
+
+
+# print(df_joined)
+
+# journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+
+#  Journal Article DataFrame 2
+
+journal_article_df = publication_df.query("type =='journal-article'")
 journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+journal_article_df = journal_article_df.rename(columns={"id":"doi"})
+df_joined = merge(journal_article_df, journal_df, left_on="doi", right_on="id")
 
-df_joined = merge(journal_article_df, journal_df, left_on="id", right_on="id")
 
+#print(df_joined)
 
-print(df_joined)
-
-journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-
+#journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 
 
 # Venue DataFrame
@@ -275,11 +289,3 @@ with connect("publications.db") as con:
 #print(result_q1)
 
 
-with connect("publications.db") as con:
-    query = "SELECT title FROM JournalArticle LEFT JOIN Journal ON JournalArticle.id == Journal.id WHERE doi='10.1016/s1367-5931(02)00332-0'"
-
-
-    df_sql = read_sql(query, con)
-  # show the content of the result of the query
-
-print(df_sql)

@@ -1,14 +1,18 @@
+#<<<<<<< HEAD
 # #defining classes 
 # from typing_extensions import Self
 # import pandas as pd
 # from pandas import DataFrame, Series 
 # import os 
+#=======
 #defining classes 
 import pandas as pd
 from pandas import DataFrame, Series 
 import os 
   
 
+  
+"""
 # #----------------------------------------
 
 
@@ -18,6 +22,7 @@ import os
 class RelationalProcessor(object):
     def __init__(self):
         self.dbPath = '' 
+
        
 #     def getDbPath(self):
 #         return self.dbPath 
@@ -38,6 +43,7 @@ class QueryProcessor(object):
 
 
 #----------------------------------------
+
  
 # class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
 #     def __init__(self):
@@ -99,6 +105,7 @@ class RelationalQueryProcessor(RelationalProcessor):
 #         self.queryProcessor = []
 #----------------------------------------
 """
+"""
 class GenericQueryProcessor(object):
     def __init__(self):
         self.queryProcessor = list()
@@ -128,6 +135,10 @@ class GenericQueryProcessor(object):
 ----------------------------------------
 
 """
+#             self.id.add(identifiers)
+
+#----------------------------------------
+
 class IdentifiableEntity(object):
     def __init__(self, id):
         self.id = set()
