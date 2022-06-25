@@ -175,10 +175,10 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfAP)
         return self.queryProcessor
 
-    def getPublicationsByAuthorName(self, name):
+    def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
-        dfPYBN = rqp0.getPublicationsByAuthorName(name)
-        self.addQueryProcessor(dfPYBN)
+        dfVP = rqp0.getVenuesByPublisherId(publisher)
+        self.addQueryProcessor(dfVP)
         return self.queryProcessor
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
@@ -244,8 +244,17 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
         return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
+    
+    def getVenuesByPublisherId(self, publisher):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            con.commit()
+            VenuesDF = read_sql("SELECT publication_venue FROM Venueid WHERE publisher='crossref:281' " + str(publisher), con)
+        return VenuesDF 
+    
         
-""""   
+"""  
     def getPublicationsByAuthorName(self, name):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
