@@ -1,11 +1,4 @@
 from locale import normalize
-
-# read csv file with pandas
-
-
-
-# read csv file with pandas
-
 from operator import index
 from colorama import Cursor
 from numpy import index_exp
