@@ -188,8 +188,13 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfJAJ)
         return self.queryProcessor
     
+    def getPublicationsByAuthorName(self, name):
+        rqp0 = RelationalQueryProcessor()
+        dfAN = rqp0.getPublicationsByAuthorName(name)
+        return self.queryProcessor
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
+#dbPath = "./publications.db" 
 dbPath = "./publication.db"
 #dbPath = "./publications.db"
 
@@ -274,9 +279,16 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
         return JournalArticles
 
+ 
+    def getPublicationsByAuthorName(self, name):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con:
+            con.commit()
 
+            Authorsname = read_sql("SELECT * FROM BookChapter LEFT JOIN Authors ON BookChapter.doi == Authors.doi LEFT JOIN Person ON Authors.orc_id == Person.orcid WHERE given = " + '%name%' , con )
 
-
+        return Authorsname 
 """  
     def getPublicationsByAuthorName(self, name):
         rp0 = RelationalProcessor()
