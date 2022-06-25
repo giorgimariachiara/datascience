@@ -253,7 +253,7 @@ for key in Venue:
 
 venues = pd.DataFrame({
     "doi": Series(doi_list, dtype="string", name="doi"),
-    "issn/isbn": Series(issn_isbn_l, dtype="string", name="issn/isbn"),
+    "issn/isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
     
 })
 
@@ -289,4 +289,3 @@ with connect("publications.db") as con:
 #print(result_q1)
 
 
-    
