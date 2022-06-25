@@ -134,6 +134,7 @@ from pandas import DataFrame, concat, read_sql
 #         return self.event
 
 
+dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 
 from mimetypes import init
 from tokenize import String
@@ -190,6 +191,7 @@ class GenericQueryProcessor(object):
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 dbPath = "./publication.db"
+#dbPath = "./publications.db"
 
 class RelationalProcessor(object):
     def __init__(self):
@@ -222,6 +224,9 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
             #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py) + " LIMIT 2 ", con)
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
+
+
+
 
 
     def getPublicationsByAuthorId(self, orcid):
@@ -257,7 +262,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             con.commit()
-            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher= " + publisher, con)
+            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher= " + "'publisher'", con)
         return VenuesDF 
     
     def getJournalArticlesInJournal(self, issn):
@@ -315,3 +320,5 @@ print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
+
+
