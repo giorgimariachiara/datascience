@@ -1,6 +1,10 @@
 from locale import normalize
+
 # read csv file with pandas
 
+
+
+# read csv file with pandas
 
 from operator import index
 from colorama import Cursor
@@ -38,6 +42,8 @@ generic.addQueryProcessor(rel_qp)
 
 """
 #----------------------------------------
+
+
 
 
 
