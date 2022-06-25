@@ -252,7 +252,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             con.commit()
             #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
-            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orcid == Authors.orc_id LEFT JOIN JournalArticle ON Authors.doi == C.doi WHERE doi = " + str(publication) , con)
+            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orcid == Authors.orc_id LEFT JOIN JournalArticle ON Authors.doi == C.doi WHERE doi = " + "' publication '", con)
 
         return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
@@ -316,9 +316,9 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
 
