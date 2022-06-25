@@ -181,6 +181,8 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfVP)
         return self.queryProcessor
 
+    
+
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 dbPath = "./publications.db"
 
