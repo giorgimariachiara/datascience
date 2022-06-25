@@ -175,7 +175,11 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfAP)
         return self.queryProcessor
 
-
+    def getPublicationsByAuthorName(self, name):
+        rqp0 = RelationalQueryProcessor()
+        dfPYBN = rqp0.getPublicationsByAuthorName(name)
+        self.addQueryProcessor(dfPYBN)
+        return self.queryProcessor
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 dbPath = "./publications.db"
@@ -233,15 +237,23 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
+            con.commit()
             #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
-            JournalArticleDF = read_sql("SELECT given , family FROM Person AS A LEFT JOIN Authors AS B ON A.orcid == B.orc_id LEFT JOIN JournalArticle AS C ON B.doi == C.doi WHERE doi = " + str(publication) , con)
+            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orcid == Authors.orc_id LEFT JOIN JournalArticle ON Authors.doi == C.doi WHERE doi = " + str(publication) , con)
 
         return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
         
-    
+""""   
+    def getPublicationsByAuthorName(self, name):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con:
+            con.commit() 
 
+        JournalArticleDF = read_sql("SELECT given FROM Person L")
+"""
 #def pathSetter():
 
   
@@ -274,3 +286,4 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 #print(RelationalQueryProcessor.getDbPath())
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
+#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
