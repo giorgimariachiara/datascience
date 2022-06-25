@@ -37,6 +37,10 @@ generic.addQueryProcessor(rel_qp)
 #----------------------------------------
 
 
+
+
+
+
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
                                     "id": "string",
@@ -268,7 +272,7 @@ venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
 
 
 # Populate the SQL database 
-with connect("publications.db") as con:
+with connect("publication.db") as con:
     venue_df.to_sql("Venueid", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
     book_df.to_sql("Book", con, if_exists="replace", index=False)

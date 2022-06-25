@@ -134,6 +134,7 @@ from pandas import DataFrame, concat, read_sql
 #         return self.event
 
 
+dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 
 from mimetypes import init
 from tokenize import String
@@ -193,7 +194,9 @@ class GenericQueryProcessor(object):
         return self.queryProcessor
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
-dbPath = "./publications.db" 
+#dbPath = "./publications.db" 
+dbPath = "./publication.db"
+#dbPath = "./publications.db"
 
 class RelationalProcessor(object):
     def __init__(self):
@@ -228,6 +231,9 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
 
 
+
+
+
     def getPublicationsByAuthorId(self, orcid):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)   
@@ -251,7 +257,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             con.commit()
             #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
-            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orcid == Authors.orc_id LEFT JOIN JournalArticle ON Authors.doi == C.doi WHERE doi = " + str(publication) , con)
+            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orcid == Authors.orc_id LEFT JOIN JournalArticle ON Authors.doi == C.doi WHERE doi = " + "' publication '", con)
 
         return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
@@ -270,7 +276,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             con.commit()
         
-            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + str(issn), con) 
+            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
         return JournalArticles
 
  
@@ -322,6 +328,9 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
+
+
