@@ -267,8 +267,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             con.commit()
-            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher= " + publisher, con)
-        return VenuesDF 
+            VenuesDF = read_sql("SELECT DISTINCT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
+        return VenuesDF
     
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
@@ -330,7 +330,13 @@ gqp = GenericQueryProcessor()
 #print(RelationalQueryProcessor.getDbPath())
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
+<<<<<<< Updated upstream
 print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
+=======
+#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+print(gqp.getVenuesByPublisherId("crossref:297"))
+>>>>>>> Stashed changes
 
