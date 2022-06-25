@@ -189,6 +189,8 @@ class GenericQueryProcessor(object):
         return self.queryProcessor
     
 
+#dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
+dbPath = "./publication.db"
 #dbPath = "./publications.db"
 
 class RelationalProcessor(object):
