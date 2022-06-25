@@ -189,7 +189,7 @@ class GenericQueryProcessor(object):
     
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
-dbPath = "./publications.db"
+dbPath = "./publication.db"
 
 class RelationalProcessor(object):
     def __init__(self):
