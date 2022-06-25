@@ -253,7 +253,7 @@ for key in Venue:
 
 venues = pd.DataFrame({
     "doi": Series(doi_list, dtype="string", name="doi"),
-    "issn/isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
+    "issn_isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
     
 })
 
@@ -261,7 +261,7 @@ venue_df = publication_df[["id", "publication_venue", "publisher"]]
 
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
-venue_df = df_joinVV[["id", "issn/isbn", "publication_venue", "publisher"]]
+venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
 
 
 #----------------------------------------
