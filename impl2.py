@@ -262,7 +262,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             con.commit()
-            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher= " + "'publisher'", con)
+            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher= " + publisher, con)
         return VenuesDF 
     
     def getJournalArticlesInJournal(self, issn):
@@ -271,7 +271,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             con.commit()
         
-            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + str(issn), con) 
+            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
         return JournalArticles
 
 
