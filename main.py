@@ -1,10 +1,4 @@
-<<<<<<< Updated upstream
 from locale import normalize
-=======
-# read csv file with pandas
-
-
->>>>>>> Stashed changes
 from operator import index
 from colorama import Cursor
 from numpy import index_exp
