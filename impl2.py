@@ -252,7 +252,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             con.commit()
             #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
-            JournalArticleDF = read_sql("SELECT given , family FROM Person LEFT JOIN Authors ON Person.orcid == Authors.orc_id LEFT JOIN JournalArticle ON Authors.doi == C.doi WHERE doi = " + "' publication '", con)
+            JournalArticleDF = read_sql("SELECT B.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE A.doi = '" + publication + "'", con)
 
         return JournalArticleDF
         #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
