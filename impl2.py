@@ -212,7 +212,7 @@ class GenericQueryProcessor(object):
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 #dbPath = "./publications.db" 
-dbPath = "./publication.db"
+dbPath = "./p.db"
 #dbPath = "./publications.db"
 
 class RelationalProcessor(object):
@@ -237,14 +237,11 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsPublishedInYear(self, py):
        rp0 = RelationalProcessor()
        rp0.setDbPath(dbPath)
-       print("--->" + rp0.getDbPath())
-       with connect(rp0.getDbPath()) as con:   
-            con.commit()
-           
+       with connect(rp0.getDbPath()) as con:
+            
             JournalArticleDF = read_sql("SELECT * FROM JournalArticle WHERE publication_year = " + str(py), con)
             BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py), con)
             ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
-            #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py) + " LIMIT 2 ", con)
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
 
 
@@ -252,7 +249,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)   
         with connect(rp0.getDbPath()) as con:   
-            #con.commit()
             #JournalArticleDF = read_sql("SELECT A.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '" + orcid + "'", con)
             #BookChapterDF = read_sql("SELECT * FROM BookChapter AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)  
             #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)
@@ -269,7 +265,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            #con.commit()
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             SQL = "SELECT C.* FROM {} AS A JOIN Authors AS B ON A.doi == B.doi JOIN Person AS C ON B.orc_id == C.orcid WHERE A.doi = '{}'"
             return concat([
@@ -321,14 +316,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             for doi in list:
                 publisherDF = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id =" + "'" + doi + "'", con)
                 publisherDFlist.append(publisherDF)
-        return concat(publisherDFlist)        
-             
-
-
-    
-    
-    
-    
+        return concat(publisherDFlist)           
     
 """
     def getPublicationInVenue(self, publication):
@@ -346,14 +334,12 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
             ])
 """
 
-#def pathSetter():
-
   
-testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
+#testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-rqp = RelationalQueryProcessor()
-#gqp = GenericQueryProcessor()
+#rqp = RelationalQueryProcessor()
+gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
 
@@ -372,7 +358,7 @@ rqp = RelationalQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-#print(rqp.getPublicationsPublishedInYear(2020))
+print(gqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
@@ -386,4 +372,4 @@ rqp = RelationalQueryProcessor()
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
-print(rqp.getDistinctPublisherOfPublications(testList))
+#print(rqp.getDistinctPublisherOfPublications(testList))
