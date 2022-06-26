@@ -310,13 +310,20 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         publisherDFlist = []
         with connect(rp0.getDbPath()) as con:
-            con.commit()
             for doi in list:
                 publisherDF = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id =" + "'" + doi + "'", con)
                 publisherDFlist.append(publisherDF)
         return concat(publisherDFlist)           
     
-    #def getProceedingsByEvent(self, name)
+    def getProceedingsByEvent(self, name):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        #name = name.lower()
+        with connect(rp0.getDbPath()) as con: 
+            events = read_sql('SELECT A.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
+        
+        return events
+
 """
     def getPublicationInVenue(self, publication):
         rp0= RelationalProcessor()
@@ -334,7 +341,7 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 """
 
   
-testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
+#testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
 #rqp = RelationalQueryProcessor()
