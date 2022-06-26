@@ -169,6 +169,12 @@ class GenericQueryProcessor(object):
         dfAuthor = rqp0.getPublicationsByAuthorId(orcid)
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
+    
+    def getPublicationInVenue(self, publication):
+        rqp0 = RelationalQueryProcessor()
+        dfPV = rqp0.getPubicationInVenue(publication)
+        self.addQueryProcessor(dfPV)
+        return self.queryProcessor
 
     def getPublicationAuthors(self, publication):
         rqp0 = RelationalQueryProcessor()
@@ -309,7 +315,11 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
         return PublishP
 
-
+    def getPublicationInVenue(self, publication):
+        rp0= RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            
 """
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
@@ -359,5 +369,5 @@ gqp = GenericQueryProcessor()
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
-print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6","doi:10.1162/qss_a_00023"]))
+print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 
