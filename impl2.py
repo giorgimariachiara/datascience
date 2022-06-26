@@ -249,6 +249,16 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], orcid), con),
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
+    
+    def getMostCitedPublication(self):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con:
+            con.commit()
+            
+            
+    
+    
             
     def getPublicationAuthors(self, publication):
         rp0 = RelationalProcessor()
@@ -267,7 +277,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             con.commit()
-            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher= " + publisher, con)
+            VenuesDF = read_sql("SELECT A.* FROM Venueid AS A JOIN Organization AS B ON A.publisher == B.id WHERE A.publisher = '" + publisher + "'", con)
         return VenuesDF 
     
     def getJournalArticlesInJournal(self, issn):
@@ -330,7 +340,7 @@ gqp = GenericQueryProcessor()
 #print(RelationalQueryProcessor.getDbPath())
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-#print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
+#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
 
