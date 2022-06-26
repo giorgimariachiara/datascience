@@ -322,7 +322,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getDistinctPublisherOfPublications(self, list):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
-<<<<<<< Updated upstream
         publisherDFlist = []
         with connect(rp0.getDbPath()) as con:
             con.commit()
@@ -332,20 +331,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         return concat(publisherDFlist)        
              
 
-=======
-        with connect(rp0.getDbPath()) as con:
-            Query = "SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE A.id ='{}'"
-            for el in list: 
-
-                df = read_sql(Query.format((el, list), con))
-                #df = read_sql(Query, con, params=[el])
-                
-                #Pubslis = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id = '" + el + "'", con)
-                #list2 = []
-                #list2 = list2.append(Pubslis)
-            #PublishP = read_sql('SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id IN ({})'.format(list), con) 
-        return df
->>>>>>> Stashed changes
 
     
     
