@@ -215,7 +215,7 @@ venue_df = publication_df[["id", "publication_venue", "publisher"]]
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
 venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
-venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
+#venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
 
 
 
