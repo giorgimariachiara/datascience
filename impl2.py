@@ -137,7 +137,7 @@ import pandas
 #         return self.event
 
 
-dbPath = "./publications.db" 
+dbPath = "./publication.db" 
 
 from mimetypes import init
 from tokenize import String
@@ -276,9 +276,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            con.commit()
-        
-            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
+            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = '" + issn + "'", con) 
         return JournalArticles     
     
     def getProceedingsByEvent(self, name):
@@ -378,8 +376,8 @@ gqp = GenericQueryProcessor()
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
 #print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
-#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
-print(type(gqp.getVenuesByPublisherId("crossref:281")))
+print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
