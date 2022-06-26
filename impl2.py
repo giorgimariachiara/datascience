@@ -310,11 +310,12 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getDistinctPublisherOfPublications(self, list):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
+        list = tuple(list)
         with connect(rp0.getDbPath()) as con:
             PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
 
         return PublishP
-        
+
 """
     def getPublicationInVenue(self, publication):
         rp0= RelationalProcessor()
