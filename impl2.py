@@ -238,10 +238,17 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
        rp0.setDbPath(dbPath)
        with connect(rp0.getDbPath()) as con:
             
-            JournalArticleDF = read_sql("SELECT * FROM JournalArticle WHERE publication_year = " + str(py), con)
-            BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py), con)
-            ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
-       return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
+        publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+        SQL = "SELECT * FROM {} WHERE publication_year = '{}'"
+        return concat([
+                read_sql(SQL.format(publications[0], str(py)), con),
+                read_sql(SQL.format(publications[1], str(py)), con),
+                read_sql(SQL.format(publications[2], str(py)), con)
+            ])
+            #JournalArticleDF = read_sql("SELECT * FROM JournalArticle WHERE publication_year = " + str(py), con)
+            #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py), con)
+            #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
+       #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
 
 
     def getPublicationsByAuthorId(self, orcid):
@@ -260,7 +267,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             ])
             
 
-    def getPublicationAuthors(self, publication): #QUI HO CAMBIATO OUTPUT
+    def getPublicationAuthors(self, publication): 
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
@@ -293,7 +300,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
         return JournalArticles
 
-    def getPublicationsByAuthorName(self, name):
+    def getPublicationsByAuthorName(self, name): #da controllare come si può mettere il formato più ordinato 
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
@@ -317,6 +324,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 publisherDFlist.append(publisherDF)
         return concat(publisherDFlist)           
     
+    def getProceedingsByEvent(self, name)
 """
     def getPublicationInVenue(self, publication):
         rp0= RelationalProcessor()
@@ -357,7 +365,7 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-print(gqp.getPublicationsPublishedInYear(2020))
+#print(gqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
