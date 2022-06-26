@@ -314,13 +314,14 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
 
         return PublishP
-
+        
+"""
     def getPublicationInVenue(self, publication):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            
-"""
+
+
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
             return concat([
