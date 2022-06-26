@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import * 
 from pandas import DataFrame, concat, read_sql
+import pandas
+
 
 
 # from mimetypes import init
@@ -307,15 +309,33 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             Authorsname = read_sql(SQL, con)  
         return(Authorsname) 
 
+    # def getDistinctPublisherOfPublications(self, list):
+    #     rp0= RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     list = tuple(list)
+    #     with connect(rp0.getDbPath()) as con:
+    #         PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
+
+    #     return PublishP
+    
     def getDistinctPublisherOfPublications(self, list):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
-        list = tuple(list)
+        publisherDFlist = []
         with connect(rp0.getDbPath()) as con:
-            PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
+            con.commit()
+            for doi in list:
+                publisherDF = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id =" + "'" + doi + "'", con)
+                publisherDFlist.append(publisherDF)
+        return concat(publisherDFlist)        
+             
 
-        return PublishP
 
+    
+    
+    
+    
+    
 """
     def getPublicationInVenue(self, publication):
         rp0= RelationalProcessor()
@@ -335,11 +355,11 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 #def pathSetter():
 
   
+testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-
-#rqp = RelationalQueryProcessor()
-gqp = GenericQueryProcessor()
+rqp = RelationalQueryProcessor()
+#gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
 
@@ -371,5 +391,5 @@ gqp = GenericQueryProcessor()
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
-print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
-
+#print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
+print(rqp.getDistinctPublisherOfPublications(testList))
