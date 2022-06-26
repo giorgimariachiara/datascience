@@ -21,6 +21,8 @@ from impl2 import  RelationalQueryProcessor
 
 
 
+
+
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
                                     "id": "string",
