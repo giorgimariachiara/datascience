@@ -209,6 +209,7 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfPP)
         return self.queryProcessor
 
+
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
 #dbPath = "./publications.db" 
 dbPath = "./publication.db"
@@ -302,22 +303,14 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
-            #con.commit()
-            #Authorsname = read_sql("SELECT * FROM JournalArticle WHERE doi='doi:10.1080/08989621.2020.1836620'", con)
-            #print(type(Authorsname))
-            SQL = 'SELECT A.* FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"'
-            print(SQL)
-            Authorsname = read_sql(SQL, con)  
-        return(Authorsname) 
+        
+            dfProc = read_sql('SELECT A.* FROM ProceedingsPaper A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con) 
+            dfJournal = read_sql('SELECT A.* FROM JournalArticle A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
+            dfBook = read_sql('SELECT A.* FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
 
-    # def getDistinctPublisherOfPublications(self, list):
-    #     rp0= RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     list = tuple(list)
-    #     with connect(rp0.getDbPath()) as con:
-    #         PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
+        return concat([dfBook, dfJournal, dfProc])  
+              
 
-    #     return PublishP
     
     def getDistinctPublisherOfPublications(self, list):
         rp0= RelationalProcessor()
