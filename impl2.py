@@ -392,10 +392,5 @@ rqp = RelationalQueryProcessor()
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
-<<<<<<< Updated upstream
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 print(rqp.getDistinctPublisherOfPublications(testList))
-=======
-print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6","doi:10.1162/qss_a_00023"]))
-
->>>>>>> Stashed changes
