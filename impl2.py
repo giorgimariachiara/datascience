@@ -209,9 +209,9 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfPP)
         return self.queryProcessor
 
-dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
-#dbPath = "./publications.db" 
-dbPath = "./p.db"
+#dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
+dbPath = "./publications.db" 
+#dbPath = "./p.db"
 #dbPath = "./publications.db"
 
 class RelationalProcessor(object):
@@ -342,10 +342,10 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 """
 
   
-#testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
+testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-#rqp = RelationalQueryProcessor()
+rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
@@ -379,4 +379,4 @@ gqp = GenericQueryProcessor()
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
-#print(rqp.getDistinctPublisherOfPublications(testList))
+print(rqp.getDistinctPublisherOfPublications(testList))
