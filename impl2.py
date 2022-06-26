@@ -160,9 +160,7 @@ class GenericQueryProcessor(object):
         return self.queryProcessor[elementNumber]
 
     def getPublicationsPublishedInYear(self, publicationYear):
-        print("jhjhgjg" + str(publicationYear))
         rqp0 = RelationalQueryProcessor()
-        #xyz = RelationalQueryProcessor.getPublicationsPublishedInYear(publicationYear)
         dfPY = rqp0.getPublicationsPublishedInYear(publicationYear)
         self.addQueryProcessor(dfPY)
         return self.queryProcessor
@@ -173,11 +171,11 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
     
-    def getPublicationInVenue(self, publication):
-        rqp0 = RelationalQueryProcessor()
-        dfPV = rqp0.getPubicationInVenue(publication)
-        self.addQueryProcessor(dfPV)
-        return self.queryProcessor
+    #def getPublicationInVenue(self, publication):
+        #rqp0 = RelationalQueryProcessor()
+        #dfPV = rqp0.getPublicationInVenue(publication)
+        #self.addQueryProcessor(dfPV)
+        #return self.queryProcessor
 
     def getPublicationAuthors(self, publication):
         rqp0 = RelationalQueryProcessor()
@@ -225,7 +223,6 @@ class QueryProcessor(object):
     def __init__(self):
         pass
     
-
 
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
@@ -283,7 +280,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            con.commit()
             VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue'])
     
@@ -320,7 +316,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 publisherDFlist.append(publisherDF)
         return concat(publisherDFlist)           
     
-    def getProceedingsByEvent(self, name)
+    #def getProceedingsByEvent(self, name)
 """
     def getPublicationInVenue(self, publication):
         rp0= RelationalProcessor()
@@ -341,7 +337,7 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-rqp = RelationalQueryProcessor()
+#rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
@@ -365,7 +361,7 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
@@ -375,4 +371,4 @@ gqp = GenericQueryProcessor()
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
-print(rqp.getDistinctPublisherOfPublications(testList))
+#print(rqp.getDistinctPublisherOfPublications(testList))
