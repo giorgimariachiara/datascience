@@ -106,19 +106,6 @@ person_df = pd.DataFrame({
 
 #----------------------------------------
 
-"""
-# Journal Article DataFrame
-
-journal_article_df = publication_df.query("type =='journal-article'")
-
-journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-journal_article_df = journal_article_df.rename(columns={"id":"doi"})
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-df_joined = merge(journal_article_df, journal_df, left_on="doi", right_on="doi")
-
-#----------------------------------------
-"""
 
 # Book chapter DataFrame
 
@@ -189,19 +176,6 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 #----------------------------------------
 
-# Journal Article DataFrame
-
-# journal_article_df = publication_df.query("type =='journal-article'")
-
-# journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-# pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-# df_joined = merge(journal_article_df, journal_df, left_on="id", right_on="id")
-
-
-# print(df_joined)
-
-# journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 
 #  Journal Article DataFrame 2
 

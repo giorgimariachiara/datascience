@@ -170,18 +170,6 @@ class GenericQueryProcessor(object):
         dfAuthor = rqp0.getPublicationsByAuthorId(orcid)
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
-    
-    #def getPublicationInVenue(self, publication):
-        #rqp0 = RelationalQueryProcessor()
-        #dfPV = rqp0.getPublicationInVenue(publication)
-        #self.addQueryProcessor(dfPV)
-        #return self.queryProcessor
-
-    def getPublicationAuthors(self, publication):
-        rqp0 = RelationalQueryProcessor()
-        dfAP =rqp0.getPublicationAuthors(publication)
-        self.addQueryProcessor(dfAP)
-        return self.queryProcessor
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -189,10 +177,28 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfVP)
         return self.queryProcessor
 
+    #def getPublicationInVenue(self, publication):
+        #rqp0 = RelationalQueryProcessor()
+        #dfPV = rqp0.getPublicationInVenue(publication)
+        #self.addQueryProcessor(dfPV)
+        #return self.queryProcessor
+
     def getJournalArticlesInJournal(self, issn):
         rqp0 = RelationalQueryProcessor()
         dfJAJ = rqp0.getJournalArticlesInJournal(issn)
         self.addQueryProcessor(dfJAJ)
+        return self.queryProcessor
+
+    def getProceedingsByEvent(self, name):
+        rqp0 = RelationalQueryProcessor()
+        dfPE = rqp0.getProceedingsByEvent(name)
+        self.addQueryProcessor(dfPE)
+        return self.queryProcessor
+
+    def getPublicationAuthors(self, publication):
+        rqp0 = RelationalQueryProcessor()
+        dfAP =rqp0.getPublicationAuthors(publication)
+        self.addQueryProcessor(dfAP)
         return self.queryProcessor
     
     def getPublicationsByAuthorName(self, name):
@@ -258,7 +264,30 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], orcid), con),
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
-            
+
+    def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
+        return VenuesDF.drop_duplicates(subset=['publication_venue']) 
+
+    def getJournalArticlesInJournal(self, issn):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            con.commit()
+        
+            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
+        return JournalArticles     
+    
+    def getProceedingsByEvent(self, name):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        #name = name.lower()
+        with connect(rp0.getDbPath()) as con: 
+            events = read_sql('SELECT A.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
+        return events
 
     def getPublicationAuthors(self, publication): 
         rp0 = RelationalProcessor()
@@ -276,22 +305,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         #return JournalArticleDF
     
 
-    def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        with connect(rp0.getDbPath()) as con: 
-            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
-        return VenuesDF.drop_duplicates(subset=['publication_venue'])
-    
-    def getJournalArticlesInJournal(self, issn):
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        with connect(rp0.getDbPath()) as con: 
-            con.commit()
-        
-            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
-        return JournalArticles
-
     def getPublicationsByAuthorName(self, name): #da controllare come si può mettere il formato più ordinato 
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -302,9 +315,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             dfBook = read_sql('SELECT A.* FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
 
         return concat([dfBook, dfJournal, dfProc])  
-              
 
-    
+
     def getDistinctPublisherOfPublications(self, list):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -315,14 +327,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 publisherDFlist.append(publisherDF)
         return concat(publisherDFlist)           
     
-    def getProceedingsByEvent(self, name):
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        #name = name.lower()
-        with connect(rp0.getDbPath()) as con: 
-            events = read_sql('SELECT A.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
-        
-        return events
 
 """
     def getPublicationInVenue(self, publication):
@@ -368,7 +372,7 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
@@ -379,3 +383,4 @@ print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
+#print(gqp.getProceedingsByEvent("web"))
