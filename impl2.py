@@ -169,6 +169,12 @@ class GenericQueryProcessor(object):
         dfAuthor = rqp0.getPublicationsByAuthorId(orcid)
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
+    
+    def getPublicationInVenue(self, publication):
+        rqp0 = RelationalQueryProcessor()
+        dfPV = rqp0.getPubicationInVenue(publication)
+        self.addQueryProcessor(dfPV)
+        return self.queryProcessor
 
     def getPublicationAuthors(self, publication):
         rqp0 = RelationalQueryProcessor()
@@ -191,6 +197,13 @@ class GenericQueryProcessor(object):
     def getPublicationsByAuthorName(self, name):
         rqp0 = RelationalQueryProcessor()
         dfAN = rqp0.getPublicationsByAuthorName(name)
+        self.addQueryProcessor(dfAN)
+        return self.queryProcessor
+
+    def getDistinctPublisherOfPublications(self, list):
+        rqp0 = RelationalQueryProcessor()
+        dfPP = rqp0.getDistinctPublisherOfPublications(list)
+        self.addQueryProcessor(dfPP)
         return self.queryProcessor
 
 #dbPath = "/home/ljutach/Desktop/DHDK_magistrale/courses/DataScience/FinalProject/GitRep/datascience/publications.db"
@@ -231,9 +244,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
 
 
-
-
-
     def getPublicationsByAuthorId(self, orcid):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)   
@@ -249,38 +259,32 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], orcid), con),
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
-    
-    def getMostCitedPublication(self):
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        with connect(rp0.getDbPath()) as con:
-            con.commit()
-            MostCitedPublicationDF = read_sql("")
             
-        return MostCitedPublicationDF    
-            
-    
-    
-            
-    def getPublicationAuthors(self, publication):
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        with connect(rp0.getDbPath()) as con: 
-            con.commit()
-            #publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-            #SQL = "SELECT given , family FROM Person LEFT JOIN Authors ON Person.orc_id == Authors.orcid LEFT JOIN JournalArticle ON Authors.doi == JournalArticle.doi WHERE doi='10.1162/qss_a_00023';"
-            JournalArticleDF = read_sql("SELECT B.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE A.doi = '" + publication + "'", con)
 
-        return JournalArticleDF
-        #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])
+    def getPublicationAuthors(self, publication): #QUI HO CAMBIATO OUTPUT
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            #con.commit()
+            publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+            SQL = "SELECT C.* FROM {} AS A JOIN Authors AS B ON A.doi == B.doi JOIN Person AS C ON B.orc_id == C.orcid WHERE A.doi = '{}'"
+            return concat([
+                read_sql(SQL.format(publications[0], publication), con),
+                read_sql(SQL.format(publications[1], publication), con),
+                read_sql(SQL.format(publications[2], publication), con)
+            ])
+            #JournalArticleDF = read_sql("SELECT C.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi JOIN Person AS C ON B.orc_id == C.orcid WHERE A.doi = '" + publication + "'", con)
+
+        #return JournalArticleDF
     
-    def getVenuesByPublisherId(self, publisher):
+
+    def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             con.commit()
-            VenuesDF = read_sql("SELECT A.* FROM Venueid AS A JOIN Organization AS B ON A.publisher == B.id WHERE A.publisher = '" + publisher + "'", con)
-        return VenuesDF 
+            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
+        return VenuesDF.drop_duplicates(subset=['publication_venue'])
     
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
@@ -291,32 +295,50 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
         return JournalArticles
 
- 
     def getPublicationsByAuthorName(self, name):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
-            con.commit()
+            #con.commit()
+            #Authorsname = read_sql("SELECT * FROM JournalArticle WHERE doi='doi:10.1080/08989621.2020.1836620'", con)
+            #print(type(Authorsname))
+            SQL = 'SELECT A.* FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"'
+            print(SQL)
+            Authorsname = read_sql(SQL, con)  
+        return(Authorsname) 
 
-            Authorsname = read_sql("SELECT * FROM BookChapter LEFT JOIN Authors ON BookChapter.doi == Authors.doi LEFT JOIN Person ON Authors.orc_id == Person.orcid WHERE given = " + '%name%' , con )
-
-        return Authorsname 
-"""  
-    def getPublicationsByAuthorName(self, name):
-        rp0 = RelationalProcessor()
+    def getDistinctPublisherOfPublications(self, list):
+        rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
+        list = tuple(list)
         with connect(rp0.getDbPath()) as con:
-            con.commit() 
+            PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
 
-        JournalArticleDF = read_sql("SELECT given FROM Person L")
+        return PublishP
+
 """
+    def getPublicationInVenue(self, publication):
+        rp0= RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+
+
+SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
+            #D.given LIKE "%' + {} + '%
+            return concat([
+                read_sql(SQL.format(publications[0], name), con),
+                read_sql(SQL.format(publications[1], name), con),
+                read_sql(SQL.format(publications[2], name), con)
+            ])
+"""
+
 #def pathSetter():
 
   
 
 
 
-# rqp = RelationalQueryProcessor()
+#rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
 # gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
@@ -343,6 +365,11 @@ gqp = GenericQueryProcessor()
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
+#print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
+#print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
+#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(gqp.getVenuesByPublisherId("crossref:281"))
+#print(gqp.getPublicationsByAuthorName("Pe"))
+print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 
