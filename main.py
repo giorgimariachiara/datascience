@@ -11,7 +11,7 @@ from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
-from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+#from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
 
 
@@ -30,7 +30,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                                     "event": "string"
 
                         },encoding="utf-8")
-print(publication_df.columns)
+#print(publication_df.columns)
 
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
@@ -215,9 +215,9 @@ venue_df = publication_df[["id", "publication_venue", "publisher"]]
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
 venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
-#venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
+venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
 
-
+print(venue_df)
 
 #----------------------------------------
 
