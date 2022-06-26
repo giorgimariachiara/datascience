@@ -238,9 +238,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
 
 
-
-
-
     def getPublicationsByAuthorId(self, orcid):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)   
@@ -257,6 +254,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
             
+
     def getPublicationAuthors(self, publication): #QUI HO CAMBIATO OUTPUT
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -273,6 +271,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
         #return JournalArticleDF
     
+
     def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -290,7 +289,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = " + "'issn'", con) 
         return JournalArticles
 
- 
     def getPublicationsByAuthorName(self, name):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -303,12 +301,11 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             Authorsname = read_sql(SQL, con)  
         return(Authorsname) 
 
-
     def getDistinctPublisherOfPublications(self, list):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
-            PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.doi == B.doi WHERE B.doi = " + "'list'", con) 
+            PublishP = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.id == B.id WHERE A.id= '" + str(list) + "'", con) 
 
         return PublishP
 
