@@ -265,7 +265,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
 
-    def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn
+    def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
@@ -286,7 +286,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         #name = name.lower()
         with connect(rp0.getDbPath()) as con: 
-            events = read_sql('SELECT A.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
+            events = read_sql('SELECT B.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
         return events
 
     def getPublicationAuthors(self, publication): 
@@ -379,7 +379,7 @@ gqp = GenericQueryProcessor()
 
 #print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
-#print(gqp.getVenuesByPublisherId("crossref:281"))
+print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
