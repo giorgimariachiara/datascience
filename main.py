@@ -1,13 +1,6 @@
-<<<<<<< Updated upstream
 from locale import normalize
-=======
 # read csv file with pandas
 
-
->>>>>>> Stashed changes
-from operator import index
-from colorama import Cursor
-from numpy import index_exp
 from pandas import DataFrame, merge 
 from collections import deque
 import json
@@ -18,35 +11,8 @@ from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
-from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+#from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
-
-
-#----------------------------------------
-""""
-#codici che ci ha dato Peroni 
-
-rel_path = "publications.db"
-rel_dp = RelationalDataProcessor()
-rel_dp.setDbPath(rel_path)
-rel_dp.uploadData("./relational_db/relational_publications.csv")
-#rel_dp.uploadData("data/relational_other_data.json")
-
-rel_qp = RelationalQueryProcessor()
-rel_qp.setDbPath(rel_path) 
-
-
-generic = GenericQueryProcessor()
-generic.addQueryProcessor(rel_qp)
-
-"""
-#----------------------------------------
-
-
-
-
-
-
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
@@ -64,7 +30,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                                     "event": "string"
 
                         },encoding="utf-8")
-print(publication_df.columns)
+#print(publication_df.columns)
 
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
@@ -140,19 +106,6 @@ person_df = pd.DataFrame({
 
 #----------------------------------------
 
-"""
-# Journal Article DataFrame
-
-journal_article_df = publication_df.query("type =='journal-article'")
-
-journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-journal_article_df = journal_article_df.rename(columns={"id":"doi"})
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-df_joined = merge(journal_article_df, journal_df, left_on="doi", right_on="doi")
-
-#----------------------------------------
-"""
 
 # Book chapter DataFrame
 
@@ -223,19 +176,6 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 #----------------------------------------
 
-# Journal Article DataFrame
-
-# journal_article_df = publication_df.query("type =='journal-article'")
-
-# journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-# pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-# df_joined = merge(journal_article_df, journal_df, left_on="id", right_on="id")
-
-
-# print(df_joined)
-
-# journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 
 #  Journal Article DataFrame 2
 
@@ -271,10 +211,13 @@ venues = pd.DataFrame({
 
 venue_df = publication_df[["id", "publication_venue", "publisher"]]
 
+
 df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
 
 venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
+venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
 
+print(venue_df)
 
 #----------------------------------------
 
