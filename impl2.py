@@ -9,26 +9,26 @@ import pandas
 # from mimetypes import init
 # from unicodedata import name
 # from impl import IdentifiableEntity
+"""
 
-
-# class Pubblication(IdentifiableEntity):
-#     def __init__(self, id, publication_year, title, publicationVenue, cites, author):
-#         super().__init__(id)
-#         self.publication_year = publication_year
-#         self.title = title
-#         self.PublicationVenue = publicationVenue
-#         self.cites = cites
-#         self.author = author
+class Pubblication(IdentifiableEntity):
+    def __init__(self, id, publication_year, title, publicationVenue, cites, author):
+            super().__init__(id)
+            self.publication_year = publication_year
+            self.title = title
+            self.PublicationVenue = publicationVenue
+            self.cites = cites
+            self.author = author
         
         
-#     def getPublicationYear(self):
-#         if self.publication_year:
-#             return self.publication_year
+    def getPublicationYear(self):
+        if self.publication_year:
+            return self.publication_year
 
-#     def getTitle(self):
-#         return self.title
+    def getTitle(self):
+        return self.title
 
-#     def getCitedPublications(self):
+    def getCitedPublications(self):
 #         resultList = []
 #         for citedPublication in self.cites:
 #             resultList.append(citedPublication)
@@ -43,11 +43,11 @@ import pandas
 #             resultSet.add(person)
 #         return resultSet
 
-# class Person(IdentifiableEntity):
-#     def __init__(self, id, givenName, familyName):
-#             super().__init__(id)
-#             self.givenName = givenName
-#             self.familyName = familyName
+class Person(IdentifiableEntity):
+     def __init__(self, id, givenName, familyName):
+             super().__init__(id)
+             self.givenName = givenName
+             self.familyName = familyName
             
 
 #     def getGivenName(self):
@@ -136,6 +136,7 @@ import pandas
 #     def getEvent(self):
 #         return self.event
 
+"""
 
 dbPath = "./publication.db" 
 
@@ -171,17 +172,23 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
 
+    def getMostCitedPublication(self):
+        rqp0 = RelationalQueryProcessor()
+        dfMCP = rqp0.getMostCitedPublication()
+        self.addQueryProcessor(dfMCP)
+        return self.queryProcessor
+
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
         dfVP = rqp0.getVenuesByPublisherId(publisher)
         self.addQueryProcessor(dfVP)
         return self.queryProcessor
 
-    #def getPublicationInVenue(self, publication):
-        #rqp0 = RelationalQueryProcessor()
-        #dfPV = rqp0.getPublicationInVenue(publication)
-        #self.addQueryProcessor(dfPV)
-        #return self.queryProcessor
+    def getPublicationInVenue(self, publication):
+        rqp0 = RelationalQueryProcessor()
+        dfPV = rqp0.getPublicationInVenue(publication)
+        self.addQueryProcessor(dfPV)
+        return self.queryProcessor
 
     def getJournalArticlesInJournal(self, issn):
         rqp0 = RelationalQueryProcessor()
@@ -264,6 +271,26 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], orcid), con),
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
+    
+    def getMostCitedPublication(self):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            Mostcited = read_sql("SELECT cited, count(*) N  FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC", con)
+        return Mostcited
+
+    def getMostCitedVenue(self):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            lista = RelationalQueryProcessor()
+            list = lista.getMostCitedPublication()
+            list = Dataframe(list)
+            print(type(list))
+
+            #list = cited.tolist()
+            #for el in list: 
+                #MostVenuedf = read_sql("")
 
     def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
         rp0 = RelationalProcessor()
@@ -271,6 +298,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue']) 
+    
+    def getPublicationInVenue(self, issn):
+        rp0= RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            dfPV = read_sql("SELECT * FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE issn_isbn = '" + issn + "'", con)
+        return dfPV
 
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
@@ -321,18 +355,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         publisherDFlist = []
         with connect(rp0.getDbPath()) as con:
             for doi in list:
-                publisherDF = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id =" + "'" + doi + "'", con)
+                publisherDF = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
                 publisherDFlist.append(publisherDF)
         return concat(publisherDFlist)           
     
 
+
 """
-    def getPublicationInVenue(self, publication):
-        rp0= RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        with connect(rp0.getDbPath()) as con: 
-
-
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
             return concat([
@@ -382,3 +411,4 @@ print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 #print(gqp.getProceedingsByEvent("web"))
+#print(gqp.getMostCitedPublication())
