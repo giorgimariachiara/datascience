@@ -371,7 +371,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
 
 
-"""
+    """
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
             return concat([
