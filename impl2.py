@@ -7,12 +7,14 @@ import pandas
 
 
 
-# from mimetypes import init
-# from unicodedata import name
-# from impl import IdentifiableEntity
-"""
+from mimetypes import init
+from unicodedata import name
+from impl import IdentifiableEntity
 
-class Pubblication(IdentifiableEntity):
+dbPath = "./publication.db"
+
+
+class Publication(IdentifiableEntity):
     def __init__(self, id, publication_year, title, publicationVenue, cites, author):
             super().__init__(id)
             self.publication_year = publication_year
@@ -30,115 +32,112 @@ class Pubblication(IdentifiableEntity):
         return self.title
 
     def getCitedPublications(self):
-#         resultList = []
-#         for citedPublication in self.cites:
-#             resultList.append(citedPublication)
-#         return resultList    
+         resultList = []
+         for citedPublication in self.cites:
+             resultList.append(citedPublication)
+         return resultList    
 
-#     def getPublicationVenue(self):
-#         return self.getPublicationVenue
+    def getPublicationVenue(self):
+         return self.getPublicationVenue
 
-#     def getAuthors(self):
-#         resultSet = set()
-#         for person in self.author:
-#             resultSet.add(person)
-#         return resultSet
+    def getAuthors(self):
+         resultSet = set()
+         for person in self.author:
+             resultSet.add(person)
+         return resultSet
 
 class Person(IdentifiableEntity):
-     def __init__(self, id, givenName, familyName):
+    def __init__(self, id, givenName, familyName):
              super().__init__(id)
              self.givenName = givenName
              self.familyName = familyName
             
+    def getGivenName(self):
+        return self.givenName   
 
-#     def getGivenName(self):
-#             return self.givenName   
-
-#     def getFamilyName(self):
-#             return self.familyName   
-
-
-# class IdentifiableEntity(object):
-#     def __init__(self, id):  
-#             self.id = id 
-
-#     def getIds(self):
-#         resultList = []       
-#         for idx in id:
-#                 resultList.append(idx)
-#         return(resultList)   
-
-# class Venue(IdentifiableEntity):
-#     def __init__(self, id, title, publisher):
-#         super().__init__(id) 
-#         self.title = title 
-#         self.publisher = publisher 
-
-#     def getTitle(self):
-#         return self.title
-
-#     def getPublisher(self):
-#         return self.publisher
-
-# class Organization(IdentifiableEntity):
-#     def __init__(self, id, name):
-#          super().__init__(id)
-#          self.name = name
-
-#     def getName(self):
-#         return self.name
+    def getFamilyName(self):
+        return self.familyName   
 
 
-# class JournalArticle(Pubblication):
-#     def __init__(self, id, publication_year, title, publicationVenue, cites, author, issue, volume):
-#         super().__init__(id, publication_year, title, publicationVenue, cites, author)     
-#         self.issue = issue
-#         self.volume = volume
+class IdentifiableEntity(object):
+    def __init__(self, id):  
+            self.id = id 
 
-#     def getIssue(self):
-#         if self.issue:
-#             return self.issue
-#         else:
-#             return None
+    def getIds(self):
+         result = []
+         for identifier in self.id:
+             result.append(identifier)
+         result.sort()
+         return result  
 
-#     def getVolume(self):
-#         if self.volume:
-#             return self.volume
-#         else:
-#             return None 
+class Venue(IdentifiableEntity):
+    def __init__(self, id, title, publisher):
+        super().__init__(id) 
+        self.title = title 
+        self.publisher = publisher 
 
-# class BookChapter(Pubblication):
-#     def __init__(self, id, publication_year, title, publicationVenue, cites, author, chapterNumber):
-#         super().__init__(id, publication_year, title, publicationVenue, cites, author) 
-#         self.chapterNumber = chapterNumber
+    def getTitle(self):
+        return self.title
 
-#     def getChapterNumber(self):
-#         return self.chapterNumber
+    def getPublisher(self):
+        return self.publisher
 
-# class ProceedingsPaper(Pubblication):
-#     def __init__(self, id, publication_year, title, publicationVenue, cites, author):
-#          super().__init__(id, publication_year, title, publicationVenue, cites, author)
+class Organization(IdentifiableEntity):
+    def __init__(self, id, name):
+          super().__init__(id)
+          self.name = name
 
-# class Journal(Venue):
-#     def __init__(self, id, title, publisher):
-#          super().__init__(id, title, publisher)
+    def getName(self):
+        return self.name
 
 
+class JournalArticle(Publication):
+    def __init__(self, id, publication_year, title, publicationVenue, cites, author, issue, volume):
+        super().__init__(id, publication_year, title, publicationVenue, cites, author)     
+        self.issue = issue
+        self.volume = volume
 
-# class Book(Venue):
-#     def __init__(self, id, title, publisher):
-#          super().__init__(id, title, publisher)
+    def getIssue(self):
+         if self.issue:
+             return self.issue
+         else:
+             return None
 
-# class Proceedings(Venue):
-#     def __init__(self, id, title, publisher, event):
-#         super().__init__(id, title, publisher) 
-#         self.event = event  
+    def getVolume(self):
+        if self.volume:
+            return self.volume
+        else:
+            return None 
 
-#     def getEvent(self):
-#         return self.event
+class BookChapter(Publication):
+    def __init__(self, id, publication_year, title, publicationVenue, cites, author, chapterNumber):
+        self.chapterNumber = chapterNumber
+        super().__init__(id, publication_year, title, publicationVenue, cites, author) 
+            
+    def getChapterNumber(self):
+         return self.chapterNumber
 
-"""
-dbPath = "./publication.db" 
+class ProceedingsPaper(Publication):
+     def __init__(self, id, publication_year, title, publicationVenue, cites, author):
+          super().__init__(id, publication_year, title, publicationVenue, cites, author)
+
+class Journal(Venue):
+     def __init__(self, id, title, publisher):
+          super().__init__(id, title, publisher)
+
+
+
+class Book(Venue):
+    def __init__(self, id, title, publisher):
+            super().__init__(id, title, publisher)
+
+class Proceedings(Venue):
+    def __init__(self, id, title, publisher, event):
+        super().__init__(id, title, publisher) 
+        self.event = event  
+
+    def getEvent(self):
+        return self.event 
 
 from mimetypes import init
 from tokenize import String
