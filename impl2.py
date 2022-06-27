@@ -1,4 +1,3 @@
-
 from posixpath import split
 import sqlite3
 from sqlite3 import * 
@@ -9,20 +8,30 @@ import pandas
 
 from mimetypes import init
 from unicodedata import name
-from impl import IdentifiableEntity
 
 dbPath = "./publication.db"
+
+class IdentifiableEntity(object):
+    def __init__(self, id):  
+            self.id = id 
+
+    def getIds(self):
+         result = []
+         for identifier in self.id:
+             result.append(identifier)
+         result.sort()
+         return result  
 
 
 class Publication(IdentifiableEntity):
     def __init__(self, id, publication_year, title, publicationVenue, cites, author):
-            super().__init__(id)
+            
             self.publication_year = publication_year
             self.title = title
             self.PublicationVenue = publicationVenue
             self.cites = cites
             self.author = author
-        
+            super().__init__(id)
         
     def getPublicationYear(self):
         if self.publication_year:
@@ -48,33 +57,22 @@ class Publication(IdentifiableEntity):
 
 class Person(IdentifiableEntity):
     def __init__(self, id, givenName, familyName):
-             super().__init__(id)
-             self.givenName = givenName
-             self.familyName = familyName
-            
+             
+            self.givenName = givenName
+            self.familyName = familyName
+            super().__init__(id)
+
     def getGivenName(self):
         return self.givenName   
 
     def getFamilyName(self):
         return self.familyName   
 
-
-class IdentifiableEntity(object):
-    def __init__(self, id):  
-            self.id = id 
-
-    def getIds(self):
-         result = []
-         for identifier in self.id:
-             result.append(identifier)
-         result.sort()
-         return result  
-
 class Venue(IdentifiableEntity):
-    def __init__(self, id, title, publisher):
-        super().__init__(id) 
+    def __init__(self, id, title, publisher): 
         self.title = title 
-        self.publisher = publisher 
+        self.publisher = publisher
+        super().__init__(id) 
 
     def getTitle(self):
         return self.title
@@ -84,18 +82,18 @@ class Venue(IdentifiableEntity):
 
 class Organization(IdentifiableEntity):
     def __init__(self, id, name):
-          super().__init__(id)
-          self.name = name
+        self.name = name
+        super().__init__(id)
 
     def getName(self):
         return self.name
 
 
 class JournalArticle(Publication):
-    def __init__(self, id, publication_year, title, publicationVenue, cites, author, issue, volume):
-        super().__init__(id, publication_year, title, publicationVenue, cites, author)     
+    def __init__(self, id, publication_year, title, publicationVenue, cites, author, issue, volume):    
         self.issue = issue
         self.volume = volume
+        super().__init__(id, publication_year, title, publicationVenue, cites, author) 
 
     def getIssue(self):
          if self.issue:
@@ -126,15 +124,14 @@ class Journal(Venue):
           super().__init__(id, title, publisher)
 
 
-
 class Book(Venue):
     def __init__(self, id, title, publisher):
             super().__init__(id, title, publisher)
 
 class Proceedings(Venue):
     def __init__(self, id, title, publisher, event):
-        super().__init__(id, title, publisher) 
         self.event = event  
+        super().__init__(id, title, publisher) 
 
     def getEvent(self):
         return self.event 
@@ -338,12 +335,16 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             dfPV = read_sql("SELECT * FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE issn_isbn = '" + issn + "'", con)
         return dfPV
 
+    """
+
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
         return dfJAI 
+
+    
     
     def getJournalArticlesInVolume(self, volume, issn_isbn):
         rp0 = RelationalProcessor()
@@ -351,6 +352,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             dfJAV = 
         return dfJAV
+    """
 
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
@@ -442,7 +444,7 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-#print(gqp.getPublicationsPublishedInYear(2020))
+print(gqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
@@ -460,4 +462,4 @@ gqp = GenericQueryProcessor()
 #print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
-print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
+#print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
