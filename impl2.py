@@ -203,6 +203,12 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfJAI)
         return self.queryProcessor
 
+    def getJournalArticlesInVolume(self, volume, issn_isbn):
+        rqp0 = RelationalQueryProcessor()
+        dfJAV = rqp0.getJournalArticlesInVolume(volume, issn_isbn)
+        self.addQueryProcessor(dfJAV)
+        return self.queryProcessor
+
     def getJournalArticlesInJournal(self, issn):
         rqp0 = RelationalQueryProcessor()
         dfJAJ = rqp0.getJournalArticlesInJournal(issn)
@@ -337,9 +343,15 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume= %s AND issue=%s AND issn_isbn=%s" (volume, issue, issn_isbn), con)
+            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
         return dfJAI 
     
+    def getJournalArticlesInVolume(self, volume, issn_isbn):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            dfJAV = 
+        return dfJAV
 
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
