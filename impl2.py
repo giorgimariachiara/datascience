@@ -242,17 +242,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsPublishedInYear(self, py):
        rp0 = RelationalProcessor()
        rp0.setDbPath(dbPath)
-       print("--->" + rp0.getDbPath())
-       with connect(rp0.getDbPath()) as con:   
-            con.commit()
-           
-            JournalArticleDF = read_sql("SELECT * FROM JournalArticle WHERE publication_year = " + str(py), con)
-            BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py), con)
-            ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
-            #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py) + " LIMIT 2 ", con)
-       return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
- 
-
        with connect(rp0.getDbPath()) as con:
             
         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
@@ -296,7 +285,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             lista = RelationalQueryProcessor()
             list = lista.getMostCitedPublication()
-            list = Dataframe(list)
+            
             print(type(list))
 
             #list = cited.tolist()
