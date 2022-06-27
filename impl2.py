@@ -1,3 +1,4 @@
+
 from posixpath import split
 import sqlite3
 from sqlite3 import * 
@@ -137,12 +138,10 @@ class Person(IdentifiableEntity):
 #         return self.event
 
 """
-
 dbPath = "./publication.db" 
 
 from mimetypes import init
 from tokenize import String
-
 
 class GenericQueryProcessor(object):
     def __init__(self):
@@ -176,6 +175,12 @@ class GenericQueryProcessor(object):
         rqp0 = RelationalQueryProcessor()
         dfMCP = rqp0.getMostCitedPublication()
         self.addQueryProcessor(dfMCP)
+        return self.queryProcessor
+    
+    def getMostCitedVenue(self):
+        rqp0 = RelationalQueryProcessor()
+        dfMCV = rqp0.getMostCitedVenue()
+        self.addQueryProcessor(dfMCV)
         return self.queryProcessor
 
     def getVenuesByPublisherId(self, publisher):
@@ -285,8 +290,11 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             lista = RelationalQueryProcessor()
             list = lista.getMostCitedPublication()
-            list = Dataframe(list)
-            print(type(list))
+            list1 = list["cited"]  
+            for el in list1:
+                citedvenD = read_sql("SELECT * FROM Venueid WHERE id = '" + el + "'", con)
+    
+        return citedvenD
 
             #list = cited.tolist()
             #for el in list: 
@@ -405,10 +413,11 @@ gqp = GenericQueryProcessor()
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
 #print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
-print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 #print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
+print(gqp.getMostCitedVenue())
