@@ -295,6 +295,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 citedvenD = read_sql("SELECT * FROM Venueid WHERE id = '" + el + "'", con)
     
         return citedvenD
+            
+            print(type(list))
 
             #list = cited.tolist()
             #for el in list: 
