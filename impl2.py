@@ -231,7 +231,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py) + " LIMIT 2 ", con)
        return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
 
-
+    SELECT cited, count(*) N  FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC 
 
 
 
