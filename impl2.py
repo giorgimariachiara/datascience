@@ -177,11 +177,13 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfMCP)
         return self.queryProcessor
     
+    """
     def getMostCitedVenue(self):
         rqp0 = RelationalQueryProcessor()
         dfMCV = rqp0.getMostCitedVenue()
         self.addQueryProcessor(dfMCV)
         return self.queryProcessor
+    """
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -193,6 +195,12 @@ class GenericQueryProcessor(object):
         rqp0 = RelationalQueryProcessor()
         dfPV = rqp0.getPublicationInVenue(publication)
         self.addQueryProcessor(dfPV)
+        return self.queryProcessor
+    
+    def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
+        rqp0 = RelationalQueryProcessor()
+        dfJAV = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
+        self.addQueryProcessor(dfJAV)
         return self.queryProcessor
 
     def getJournalArticlesInJournal(self, issn):
@@ -281,22 +289,31 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            Mostcited = read_sql("SELECT cited, count(*) N  FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC", con)
+            Mostcited = read_sql("SELECT cited, count(*) N FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC LIMIT 4", con)
         return Mostcited
 
+    """
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
-        with connect(rp0.getDbPath()) as con: 
-            lista = RelationalQueryProcessor()
-            list = lista.getMostCitedPublication()
-            list1 = list["cited"]  
-            for el in list1:
-                citedvenD = read_sql("SELECT * FROM Venueid WHERE id = '" + el + "'", con)
-    
-        return citedvenD
-            
-            print(type(list))
+        rp0.getDbPath() 
+        #with connect(rp0.getDbPath()) as con: 
+        lista = RelationalQueryProcessor()
+        lis = lista.getMostCitedPublication()
+        lis = lis["cited"]
+        lis = lis.tolist()
+        Venue = []
+        for el in lis: 
+            if el not in Venue: 
+            Venue = Venue.append(el)
+            #Venue ="SELECT publication_venue FROM Venueid WHERE id = '" + el + "'"
+        return Venue
+        #for column_n, column in lis.items():
+            #print("the name is", column_n)
+            #print("the content is")
+            #print(column) 
+    """
+        
 
             #list = cited.tolist()
             #for el in list: 
@@ -315,6 +332,14 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             dfPV = read_sql("SELECT * FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE issn_isbn = '" + issn + "'", con)
         return dfPV
+
+    def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE D = %s AND volume=%s AND issn_isbn=%s" (volume, issue, issn_isbn), con)
+        return dfJAI 
+    
 
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
@@ -371,7 +396,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
 
 
-"""
+    """
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
             return concat([
@@ -379,6 +404,7 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
                 read_sql(SQL.format(publications[1], name), con),
                 read_sql(SQL.format(publications[2], name), con)
             ])
+
 """
 
   
@@ -422,4 +448,5 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDistinctPublisherOfPublications(testList))
 #print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
-print(gqp.getMostCitedVenue())
+#print(rqp.getMostCitedVenue())
+print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
