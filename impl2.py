@@ -199,8 +199,8 @@ class GenericQueryProcessor(object):
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
         rqp0 = RelationalQueryProcessor()
-        dfJAV = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
-        self.addQueryProcessor(dfJAV)
+        dfJAI = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
+        self.addQueryProcessor(dfJAI)
         return self.queryProcessor
 
     def getJournalArticlesInJournal(self, issn):
@@ -337,7 +337,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE D = %s AND volume=%s AND issn_isbn=%s" (volume, issue, issn_isbn), con)
+            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume= %s AND issue=%s AND issn_isbn=%s" (volume, issue, issn_isbn), con)
         return dfJAI 
     
 
