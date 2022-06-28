@@ -263,6 +263,7 @@ class Person(IdentifiableEntity):
 #         self.chapterNumber = chapterNumber
           
 #         super().__init__(id, publicationYear, title, publicationVenue, cite, author)
+
 class BookChapter(Publication):
     def __init__(self, id, publicationYear, title, publicationVenue, cite, author, chapterNumber):
         self.chapterNumber = chapterNumber
