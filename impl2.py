@@ -212,6 +212,8 @@ class GenericQueryProcessor(object):
         dfPP = rqp0.getDistinctPublisherOfPublications(list)
         self.addQueryProcessor(dfPP)
         return self.queryProcessor
+    
+    def getJournalArticlesInIssue()
 
 
 class RelationalProcessor(object):
