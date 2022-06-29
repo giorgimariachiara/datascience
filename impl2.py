@@ -444,7 +444,7 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-print(gqp.getPublicationsPublishedInYear(2020))
+print(len(gqp.getPublicationsPublishedInYear(2020)))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
