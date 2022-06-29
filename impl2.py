@@ -436,7 +436,12 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 
 rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
-#gqp.getPublicationsPublishedInYear(2020)
+listaQP = gqp.getPublicationsPublishedInYear(2020)
+for object in listaQP:
+    
+    print(type(Publication.__str__(object)))
+    break
+
 # print(gqp.queryProcessor)
 
 # gqp.addQueryProcessor("wefwef")
@@ -454,7 +459,7 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-print(rqp.getPublicationsPublishedInYear(2020))
+#print(rqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
