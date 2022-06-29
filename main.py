@@ -44,7 +44,6 @@ id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
 
 
-
 #----------------------------------------
 
 # Author dataframe
@@ -111,7 +110,7 @@ person_df = pd.DataFrame({
 
 
 book_chapter_df = publication_df.query("type == 'book-chapter'")
-book_chapter_df = book_chapter_df[["id", "publication_year", "title", "chapter"]]
+book_chapter_df = book_chapter_df[["id", "publication_year", "title", "publication_venue", "chapter"]]
 
 book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
@@ -243,4 +242,4 @@ with connect("publication.db") as con:
 
 #print(result_q1)
 
-
+print(book_chapter_df)
