@@ -3,9 +3,6 @@ import sqlite3
 from sqlite3 import * 
 from pandas import DataFrame, concat, read_sql
 import pandas
-
-
-
 from mimetypes import init
 from unicodedata import name
 
