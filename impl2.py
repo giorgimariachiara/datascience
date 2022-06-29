@@ -24,14 +24,18 @@ class IdentifiableEntity(object):
 
 
 class Publication(IdentifiableEntity):
-    def __init__(self, id, publication_year, title, publicationVenue, cites, author):
+    def __init__(self, id, publication_year, title, publicationVenue)   :#, cites, author )
             
             self.publication_year = publication_year
             self.title = title
             self.PublicationVenue = publicationVenue
-            self.cites = cites
-            self.author = author
+            #self.cites = cites
+            #self.author = author
             super().__init__(id)
+    
+    def __str__(self):
+        return str([self.id, self.publication_year, self.title, self.PublicationVenue])
+    
         
     def getPublicationYear(self):
         if self.publication_year:
@@ -158,7 +162,14 @@ class GenericQueryProcessor(object):
     def getPublicationsPublishedInYear(self, publicationYear):
         rqp0 = RelationalQueryProcessor()
         dfPY = rqp0.getPublicationsPublishedInYear(publicationYear)
-        self.addQueryProcessor(dfPY)
+        # per ogni riga di dfPY. creare un oggetto Publication e aggiungerlo alla lista queryProcessor
+        #dfPY = dfPY.reset_index()
+        for index, row in dfPY.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
+            
+        
         return self.queryProcessor
     
     def getPublicationsByAuthorId(self, orcid):
@@ -235,7 +246,7 @@ class GenericQueryProcessor(object):
         self.addQueryProcessor(dfPP)
         return self.queryProcessor
     
-    def getJournalArticlesInIssue()
+    #def getJournalArticlesInIssue()
 
 
 class RelationalProcessor(object):
@@ -262,7 +273,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
        with connect(rp0.getDbPath()) as con:
             
         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-        SQL = "SELECT * FROM {} WHERE publication_year = '{}'"
+        SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
         return concat([
                 read_sql(SQL.format(publications[0], str(py)), con),
                 read_sql(SQL.format(publications[1], str(py)), con),
@@ -426,9 +437,9 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 #testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-#rqp = RelationalQueryProcessor()
+rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
-# gqp.getPublicationsPublishedInYear(2020)
+#gqp.getPublicationsPublishedInYear(2020)
 # print(gqp.queryProcessor)
 
 # gqp.addQueryProcessor("wefwef")
@@ -446,7 +457,7 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-print(gqp.getPublicationsPublishedInYear(2020))
+print(rqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
@@ -465,3 +476,8 @@ print(gqp.getPublicationsPublishedInYear(2020))
 #print(gqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
+
+
+# publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
+# print(type(Publication.__str__(publicationObj)))
+
