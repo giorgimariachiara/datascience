@@ -3,9 +3,6 @@ import sqlite3
 from sqlite3 import * 
 from pandas import DataFrame, concat, read_sql
 import pandas
-
-
-
 from mimetypes import init
 from unicodedata import name
 
@@ -234,8 +231,6 @@ class GenericQueryProcessor(object):
         dfPP = rqp0.getDistinctPublisherOfPublications(list)
         self.addQueryProcessor(dfPP)
         return self.queryProcessor
-    
-    def getJournalArticlesInIssue()
 
 
 class RelationalProcessor(object):
