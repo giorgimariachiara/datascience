@@ -203,7 +203,6 @@ class GenericQueryProcessor(object):
             row = list(row)
             venueObj = Publication(*row)
             self.addQueryProcessor(venueObj)
-            self.addQueryProcessor(dfVP)
 
         return self.queryProcessor
 
@@ -240,7 +239,12 @@ class GenericQueryProcessor(object):
     def getPublicationAuthors(self, publication):
         rqp0 = RelationalQueryProcessor()
         dfAP =rqp0.getPublicationAuthors(publication)
-        self.addQueryProcessor(dfAP)
+
+        for index, row in dfAP.iterrows():
+            row = list(row)
+            personObj = Person(*row)
+            self.addQueryProcessor(personObj)
+
         return self.queryProcessor
     
     def getPublicationsByAuthorName(self, name):
@@ -477,12 +481,12 @@ for object in listaQP:
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
-#print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
+print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
