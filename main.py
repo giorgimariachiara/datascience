@@ -1,7 +1,14 @@
 from locale import normalize
 # read csv file with pandas
 
+<<<<<<< Updated upstream
 from pandas import DataFrame, merge 
+=======
+
+from operator import index
+from numpy import index_exp
+from pandas import merge 
+>>>>>>> Stashed changes
 from collections import deque
 import json
 from json import load
@@ -13,6 +20,8 @@ from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
+
+
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
