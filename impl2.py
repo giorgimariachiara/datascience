@@ -371,7 +371,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfPV = read_sql("SELECT doi, publication_year, title, publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE issn_isbn = '" + issn_isbn + "'", con)
+            dfPV = read_sql("SELECT doi, publication_year, title, publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.doi WHERE issn_isbn = '" + issn_isbn + "'", con)
         return dfPV
 
     """
@@ -499,7 +499,7 @@ gqp = GenericQueryProcessor()
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
-print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
+#print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 #print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
@@ -509,3 +509,4 @@ print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"])
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
 
+#print(rqp.getPublicationInVenue("issn:2641-3337"))
