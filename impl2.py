@@ -376,7 +376,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfPV = read_sql("SELECT doi, publication_year, title, publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE issn_isbn = '" + issn_isbn + "'", con)
+            dfPV = read_sql("SELECT doi, publication_year, title, publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.doi WHERE issn_isbn = '" + issn_isbn + "'", con)
         return dfPV
 
     """
@@ -514,3 +514,4 @@ print(gqp.getProceedingsByEvent("web"))
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
 
+#print(rqp.getPublicationInVenue("issn:2641-3337"))
