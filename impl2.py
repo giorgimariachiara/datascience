@@ -77,6 +77,9 @@ class Venue(IdentifiableEntity):
         self.title = title 
         self.publisher = publisher
         super().__init__(id) 
+    
+    def __str__(self):
+        return str([self.id, self.title, self.publisher])
 
     def getTitle(self):
         return self.title
@@ -89,6 +92,9 @@ class Organization(IdentifiableEntity):
         self.name = name
         super().__init__(id)
 
+    def __str__(self):
+        return str([self.id, self.name])
+    
     def getName(self):
         return self.name
 
@@ -178,12 +184,8 @@ class GenericQueryProcessor(object):
         for index, row in dfAuthor.iterrows():
             row = list(row)
             publicationObj = Publication(*row)
-            print(row)
-            break
-            #self.addQueryProcessor(publicationObj)
-        
-        
-        self.addQueryProcessor(dfAuthor)
+            self.addQueryProcessor(publicationObj)
+
         return self.queryProcessor
 
     def getMostCitedPublication(self):
