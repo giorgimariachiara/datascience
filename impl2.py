@@ -72,7 +72,7 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa 
+class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa misa che è un casino 
     def __init__(self, id, publication_venue, publisher, issn_isbn): 
         self.issn_isbn = issn_isbn
         self.publisher = publisher
@@ -82,11 +82,15 @@ class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa
     def __str__(self):
         return str([self.id, self.publication_venue, self.publisher, self.issn_isbn])
 
+
     def getTitle(self):
         return self.title
 
     def getPublisher(self):
         return self.publisher
+    
+    def getpublication_venue(self):
+        return publication_venue 
 
 class Organization(IdentifiableEntity):
     def __init__(self, id, name):
