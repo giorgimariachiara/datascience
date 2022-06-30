@@ -486,7 +486,13 @@ gqp = GenericQueryProcessor()
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
 
-print(gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6"))
+list = gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6")
+for object in list:
+    
+    print(Person.__str__(object))
+    break
+
+
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
