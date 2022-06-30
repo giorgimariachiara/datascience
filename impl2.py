@@ -172,6 +172,14 @@ class GenericQueryProcessor(object):
     def getPublicationsByAuthorId(self, orcid):
         rqp0 = RelationalQueryProcessor()
         dfAuthor = rqp0.getPublicationsByAuthorId(orcid)
+        for index, row in dfAuthor.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            print(row)
+            break
+            #self.addQueryProcessor(publicationObj)
+        
+        
         self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
 
@@ -290,7 +298,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             #BookChapterDF = read_sql("SELECT * FROM BookChapter AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)  
             #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-            SQL = "SELECT A.* FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '{}'"
+            SQL = "SELECT A.doi, publication_year, title, publication_venue FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '{}'"
             return concat([
                 read_sql(SQL.format(publications[0], orcid), con),
                 read_sql(SQL.format(publications[1], orcid), con),
@@ -436,11 +444,11 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 
 rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
-listaQP = gqp.getPublicationsPublishedInYear(2020)
-for object in listaQP:
+# listaQP = gqp.getPublicationsPublishedInYear(2020)
+# for object in listaQP:
     
-    print(type(Publication.__str__(object)))
-    break
+#     print(type(Publication.__str__(object)))
+#     break
 
 # print(gqp.queryProcessor)
 
@@ -463,7 +471,7 @@ for object in listaQP:
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
