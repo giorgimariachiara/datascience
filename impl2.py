@@ -367,11 +367,11 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             VenuesDF = read_sql("SELECT id, title, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue']) 
     
-    def getPublicationInVenue(self, issn):
+    def getPublicationInVenue(self, issn_isbn):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfPV = read_sql("SELECT * FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE issn_isbn = '" + issn + "'", con)
+            dfPV = read_sql("SELECT doi, publication_year, title, publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE issn_isbn = '" + issn_isbn + "'", con)
         return dfPV
 
     """

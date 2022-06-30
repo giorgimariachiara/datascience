@@ -1,17 +1,13 @@
 from locale import normalize
 # read csv file with pandas
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
 from pandas import DataFrame, merge 
-=======
-=======
->>>>>>> Stashed changes
+
 
 from operator import index
 from numpy import index_exp
 from pandas import merge 
->>>>>>> Stashed changes
 from collections import deque
 import json
 from json import load
@@ -23,6 +19,8 @@ from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
+
+
 
 
 
@@ -229,6 +227,8 @@ df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id")
 
 venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
 venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
+venue_df = venue_df[["issn_isbn", "id", "publication_venue", "publisher"]]
+
 
 print(venue_df)
 
@@ -256,4 +256,4 @@ with connect("publication.db") as con:
 
 #print(result_q1)
 
-print(book_chapter_df)
+#print(book_chapter_df)
