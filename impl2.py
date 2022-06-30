@@ -200,7 +200,13 @@ class GenericQueryProcessor(object):
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
         dfVP = rqp0.getVenuesByPublisherId(publisher)
-        self.addQueryProcessor(dfVP)
+
+        for index, row in dfVP.iterrows():
+            row = list(row)
+            venueObj = Publication(*row)
+            self.addQueryProcessor(venueObj)
+            self.addQueryProcessor(dfVP)
+
         return self.queryProcessor
 
     def getPublicationInVenue(self, publication):
@@ -343,7 +349,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            VenuesDF = read_sql("SELECT * FROM Venueid WHERE publisher = '" + publisher + "'", con)
+            VenuesDF = read_sql("SELECT id, title, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue']) 
     
     def getPublicationInVenue(self, issn):
