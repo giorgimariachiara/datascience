@@ -257,13 +257,19 @@ class GenericQueryProcessor(object):
     def getPublicationsByAuthorName(self, name):
         rqp0 = RelationalQueryProcessor()
         dfAN = rqp0.getPublicationsByAuthorName(name)
-        self.addQueryProcessor(dfAN)
+        for index, row in dfAN.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
 
-    def getDistinctPublisherOfPublications(self, list):
+    def getDistinctPublisherOfPublications(self, lista):
         rqp0 = RelationalQueryProcessor()
-        dfPP = rqp0.getDistinctPublisherOfPublications(list)
-        self.addQueryProcessor(dfPP)
+        dfPP = rqp0.getDistinctPublisherOfPublications(lista)
+        for index, row in dfPP.iterrows():
+            row = list(row)
+            OrganizationObj = Organization(*row)
+            self.addQueryProcessor(OrganizationObj)
         return self.queryProcessor
     
     #def getJournalArticlesInIssue()
@@ -423,9 +429,9 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
         
-            dfProc = read_sql('SELECT A.* FROM ProceedingsPaper A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con) 
-            dfJournal = read_sql('SELECT A.* FROM JournalArticle A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
-            dfBook = read_sql('SELECT A.* FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
+            dfProc = read_sql('SELECT A.doi, publication_year, title, publication_venue FROM ProceedingsPaper A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con) 
+            dfJournal = read_sql('SELECT A.doi, publication_year, title, publication_venue FROM JournalArticle A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
+            dfBook = read_sql('SELECT A.doi, publication_year, title, publication_venue FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
 
         return concat([dfBook, dfJournal, dfProc])  
 
@@ -490,24 +496,15 @@ gqp = GenericQueryProcessor()
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
-
-list = gqp.getPublicationAuthors("doi:10.1007/s11192-019-03217-6")
-for object in list:
-    
-    print(Person.__str__(object))
-    break
-
-
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
-#print(gqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
+print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 #print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
-
 
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
