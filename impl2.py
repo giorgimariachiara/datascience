@@ -172,13 +172,15 @@ class GenericQueryProcessor(object):
     def getPublicationsByAuthorId(self, orcid):
         rqp0 = RelationalQueryProcessor()
         dfAuthor = rqp0.getPublicationsByAuthorId(orcid)
-
         for index, row in dfAuthor.iterrows():
             row = list(row)
             publicationObj = Publication(*row)
-            self.addQueryProcessor(publicationObj)
-            self.addQueryProcessor(dfAuthor)
-
+            print(row)
+            break
+            #self.addQueryProcessor(publicationObj)
+        
+        
+        self.addQueryProcessor(dfAuthor)
         return self.queryProcessor
 
     def getMostCitedPublication(self):
@@ -452,13 +454,11 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 
 rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
-"""
-listaQP = gqp.getPublicationsPublishedInYear(2020)
-for object in listaQP:
+# listaQP = gqp.getPublicationsPublishedInYear(2020)
+# for object in listaQP:
     
-    print(type(Publication.__str__(object)))
-    break
-"""
+#     print(type(Publication.__str__(object)))
+#     break
 
 # print(gqp.queryProcessor)
 
