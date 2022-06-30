@@ -63,6 +63,9 @@ class Person(IdentifiableEntity):
             self.familyName = familyName
             super().__init__(id)
 
+    def __str__(self):
+        return str([self.id, self.givenName, self.familyName])
+
     def getGivenName(self):
         return self.givenName   
 
