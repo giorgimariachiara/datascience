@@ -72,7 +72,7 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa misa che è un casino 
+class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa 
     def __init__(self, id, publication_venue, publisher, issn_isbn): 
         self.issn_isbn = issn_isbn
         self.publisher = publisher
@@ -82,16 +82,11 @@ class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa misa c
     def __str__(self):
         return str([self.id, self.publication_venue, self.publisher, self.issn_isbn])
 
-
     def getTitle(self):
         return self.title
 
     def getPublisher(self):
         return self.publisher
-    
-    def getpublication_venue(self):
-        return self.publication_venue 
-    
 
 class Organization(IdentifiableEntity):
     def __init__(self, id, name):
@@ -377,7 +372,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfPV = read_sql("SELECT doi, publication_year, title, publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE issn_isbn = '" + issn_isbn + "'", con)
+            dfPV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn_isbn + "'", con)
         return dfPV
 
     """
