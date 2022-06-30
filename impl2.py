@@ -72,14 +72,15 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity):
-    def __init__(self, id, title, publisher): 
-        self.title = title 
+class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa 
+    def __init__(self, id, publication_venue, publisher, issn_isbn): 
+        self.issn_isbn = issn_isbn
         self.publisher = publisher
+        self.publication_venue = publication_venue
         super().__init__(id) 
     
     def __str__(self):
-        return str([self.id, self.title, self.publisher])
+        return str([self.id, self.publication_venue, self.publisher, self.issn_isbn])
 
     def getTitle(self):
         return self.title
@@ -499,9 +500,9 @@ gqp = GenericQueryProcessor()
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
-print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
+#print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
-#print(gqp.getProceedingsByEvent("web"))
+print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
