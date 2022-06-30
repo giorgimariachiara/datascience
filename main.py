@@ -2,12 +2,9 @@ from locale import normalize
 # read csv file with pandas
 
 
-<<<<<<< Updated upstream
 from pandas import DataFrame, merge 
 
 
-=======
->>>>>>> Stashed changes
 from operator import index
 from numpy import index_exp
 from pandas import merge 
