@@ -314,11 +314,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[0], str(py)), con),
                 read_sql(SQL.format(publications[1], str(py)), con),
                 read_sql(SQL.format(publications[2], str(py)), con)
-            ])
-            #JournalArticleDF = read_sql("SELECT * FROM JournalArticle WHERE publication_year = " + str(py), con)
-            #BookChapterDF = read_sql("SELECT * FROM BookChapter WHERE publication_year = " + str(py), con)
-            #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper WHERE publication_year = " + str(py), con)
-       #return concat([JournalArticleDF, BookChapterDF, ProceedingsPaperDF])   
+            ]) 
 
 
     def getPublicationsByAuthorId(self, orcid):
@@ -375,7 +371,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             VenuesDF = read_sql("SELECT id, publication_venue, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
-        return VenuesDF.drop_duplicates(subset=['publication_venue']) 
+        return VenuesDF.drop_duplicates(subset=['publication_venue'])
+
     
     def getPublicationInVenue(self, issn_isbn):
         rp0= RelationalProcessor()
@@ -407,8 +404,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             dfJAV = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
         return dfJAV
-        
-    """
+
 
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
@@ -437,9 +433,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], publication), con),
                 read_sql(SQL.format(publications[2], publication), con)
             ])
-            #JournalArticleDF = read_sql("SELECT C.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi JOIN Person AS C ON B.orc_id == C.orcid WHERE A.doi = '" + publication + "'", con)
-
-        #return JournalArticleDF
     
 
     def getPublicationsByAuthorName(self, name): #da controllare come si può mettere il formato più ordinato 
