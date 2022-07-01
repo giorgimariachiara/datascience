@@ -281,8 +281,6 @@ class GenericQueryProcessor(object):
             OrganizationObj = Organization(*row)
             self.addQueryProcessor(OrganizationObj) 
         return self.queryProcessor
-    
-    #def getJournalArticlesInIssue()
 
 
 class RelationalProcessor(object):
