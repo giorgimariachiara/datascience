@@ -372,8 +372,10 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfPV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn_isbn + "'", con)
-        return dfPV
+            return concat([
+                read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn_isbn + "'", con)
+                read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM BookChapter AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn_isbn + "'", con)
+            ])
 
     """
 
