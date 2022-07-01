@@ -39,20 +39,8 @@ class Publication(IdentifiableEntity):
     def getTitle(self):
         return self.title
 
-    def getCitedPublications(self):
-         resultList = []
-         for citedPublication in self.cites:
-             resultList.append(citedPublication)
-         return resultList    
-
     def getPublicationVenue(self):
          return self.getPublicationVenue
-
-    def getAuthors(self):
-         resultSet = set()
-         for person in self.author:
-             resultSet.add(person)
-         return resultSet
 
 class Person(IdentifiableEntity):
     def __init__(self, id, givenName, familyName):
