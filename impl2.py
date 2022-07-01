@@ -337,7 +337,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE D = %s AND volume=%s AND issn_isbn=%s" (volume, issue, issn_isbn), con)
+            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE D = %s (AND volume = %s AND issn_isbn = %s)" (volume, issue, issn_isbn,), con)
         return dfJAI 
     
 
@@ -449,4 +449,4 @@ gqp = GenericQueryProcessor()
 #print(gqp.getProceedingsByEvent("web"))
 #print(gqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
-print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
+print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
