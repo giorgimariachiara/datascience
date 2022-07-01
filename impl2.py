@@ -401,12 +401,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     """
     
-    def getJournalArticlesInVolume(self, volume, issn_isbn): #str object is not callableee
+    def getJournalArticlesInVolume(self, volume, issn_isbn): #str object is not callable
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             dfJAV = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
         return dfJAV
+        
     """
 
     def getJournalArticlesInJournal(self, issn):
@@ -423,6 +424,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             events = read_sql('SELECT B.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
         return events
+"""
 
     def getPublicationAuthors(self, publication): 
         rp0 = RelationalProcessor()
@@ -464,7 +466,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
 
 
-    """
+
     """
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
