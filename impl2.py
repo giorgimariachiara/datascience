@@ -21,13 +21,11 @@ class IdentifiableEntity(object):
 
 
 class Publication(IdentifiableEntity):
-    def __init__(self, id, publication_year, title, publicationVenue)   :#, cites, author )
+    def __init__(self, id, publication_year, title, publicationVenue):
             
             self.publication_year = publication_year
             self.title = title
             self.PublicationVenue = publicationVenue
-            #self.cites = cites
-            #self.author = author
             super().__init__(id)
     
     def __str__(self):
@@ -101,10 +99,10 @@ class Organization(IdentifiableEntity):
 
 
 class JournalArticle(Publication):
-    def __init__(self, id, publication_year, title, publicationVenue, cites, author, issue, volume):    
+    def __init__(self, id, publication_year, title, publicationVenue, issue, volume):    
         self.issue = issue
         self.volume = volume
-        super().__init__(id, publication_year, title, publicationVenue, cites, author) 
+        super().__init__(id, publication_year, title, publicationVenue) 
 
     def getIssue(self):
          if self.issue:
@@ -140,9 +138,12 @@ class Book(Venue):
             super().__init__(id, title, publisher)
 
 class Proceedings(Venue):
-    def __init__(self, id, title, publisher, event):
+    def __init__(self, id, publication_venue, publisher, event):
         self.event = event  
-        super().__init__(id, title, publisher) 
+        super().__init__(id, publication_venue, publisher) 
+    
+    def __str__(self):
+        return str([self.id, self.publication_venue, self.publisher, self.event])
 
     def getEvent(self):
         return self.event 
@@ -175,8 +176,6 @@ class GenericQueryProcessor(object):
             row = list(row)
             publicationObj = Publication(*row)
             self.addQueryProcessor(publicationObj)
-            
-        
         return self.queryProcessor
     
     def getPublicationsByAuthorId(self, orcid):
@@ -186,13 +185,15 @@ class GenericQueryProcessor(object):
             row = list(row)
             publicationObj = Publication(*row)
             self.addQueryProcessor(publicationObj)
-
         return self.queryProcessor
 
-    def getMostCitedPublication(self):
+    def getMostCitedPublication(self): #qui mancano gli altri parametri per la classe publication 
         rqp0 = RelationalQueryProcessor()
         dfMCP = rqp0.getMostCitedPublication()
-        self.addQueryProcessor(dfMCP)
+        for index, row in dfMCP.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
     """
@@ -217,7 +218,10 @@ class GenericQueryProcessor(object):
     def getPublicationInVenue(self, publication):
         rqp0 = RelationalQueryProcessor()
         dfPV = rqp0.getPublicationInVenue(publication)
-        self.addQueryProcessor(dfPV)
+        for index, row in dfPV.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
@@ -235,13 +239,19 @@ class GenericQueryProcessor(object):
     def getJournalArticlesInJournal(self, issn):
         rqp0 = RelationalQueryProcessor()
         dfJAJ = rqp0.getJournalArticlesInJournal(issn)
-        self.addQueryProcessor(dfJAJ)
+        for index, row in dfJAJ.iterrows():
+            row = list(row)
+            JournalarticleObj = JournalArticle(*row)
+            self.addQueryProcessor(JournalarticleObj)
         return self.queryProcessor
 
     def getProceedingsByEvent(self, name):
         rqp0 = RelationalQueryProcessor()
         dfPE = rqp0.getProceedingsByEvent(name)
-        self.addQueryProcessor(dfPE)
+        for index, row in dfPE.iterrows():
+            row = list(row)
+            ProceedingObj = Proceedings(*row)
+            self.addQueryProcessor(ProceedingObj)
         return self.queryProcessor
 
     def getPublicationAuthors(self, publication):
@@ -372,8 +382,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfPV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn_isbn + "'", con)
-        return dfPV
+            publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+            SQL ="SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '{}'"
+            return concat([
+                read_sql(SQL.format(publications[0], issn_isbn), con),
+                read_sql(SQL.format(publications[1], issn_isbn), con),
+                read_sql(SQL.format(publications[2], issn_isbn), con)
+            ])
 
     """
 
@@ -399,7 +414,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            JournalArticles = read_sql("SELECT * FROM JournalArticle LEFT JOIN Venueid ON JournalArticle.doi == Venueid.id WHERE issn_isbn = '" + issn + "'", con) 
+            JournalArticles = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE B.issn_isbn = '" + issn + "'", con) 
         return JournalArticles     
     
     def getProceedingsByEvent(self, name):
@@ -498,18 +513,20 @@ gqp = GenericQueryProcessor()
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
-#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
+
 #print(gqp.getProceedingsByEvent("web"))
-#print(gqp.getMostCitedPublication())
+#print(rqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
-print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+#print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
 
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
 
-print(rqp.getPublicationInVenue("issn:2641-3337"))
+
+#print(gqp.getPublicationInVenue("issn:2641-3337"))
