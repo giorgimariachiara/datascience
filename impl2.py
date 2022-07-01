@@ -70,18 +70,17 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity): #abbiamo cambiato parametri ma non si sa 
-    def __init__(self, id, publication_venue, publisher, issn_isbn): 
-        self.issn_isbn = issn_isbn
+class Venue(IdentifiableEntity): #issn_isbn serve o no? 
+    def __init__(self, id, publication_venue, publisher): #issn_isbn self.issn_isbn = issn_isbn
         self.publisher = publisher
         self.publication_venue = publication_venue
         super().__init__(id) 
     
     def __str__(self):
-        return str([self.id, self.publication_venue, self.publisher, self.issn_isbn])
+        return str([self.id, self.publication_venue, self.publisher])
 
-    def getTitle(self):
-        return self.title
+    def getPublicationVenue(self):
+        return self.publication_venue
 
     def getPublisher(self):
         return self.publisher
@@ -210,7 +209,7 @@ class GenericQueryProcessor(object):
 
         for index, row in dfVP.iterrows():
             row = list(row)
-            venueObj = Publication(*row)
+            venueObj = Venue(*row)
             self.addQueryProcessor(venueObj)
 
         return self.queryProcessor
@@ -280,7 +279,7 @@ class GenericQueryProcessor(object):
         for index, row in dfPP.iterrows():
             row = list(row)
             OrganizationObj = Organization(*row)
-            self.addQueryProcessor(OrganizationObj)
+            self.addQueryProcessor(OrganizationObj) 
         return self.queryProcessor
     
     #def getJournalArticlesInIssue()
@@ -375,7 +374,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            VenuesDF = read_sql("SELECT id, title, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
+            VenuesDF = read_sql("SELECT id, publication_venue, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue']) 
     
     def getPublicationInVenue(self, issn_isbn):
@@ -512,8 +511,8 @@ gqp = GenericQueryProcessor()
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-#print(gqp.getVenuesByPublisherId(publisher="crossref:281"))
-print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+print(gqp.getVenuesByPublisherId("crossref:281"))
+#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
