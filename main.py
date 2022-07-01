@@ -1,7 +1,13 @@
 from locale import normalize
 # read csv file with pandas
 
+
 from pandas import DataFrame, merge 
+
+
+from operator import index
+from numpy import index_exp
+from pandas import merge 
 from collections import deque
 import json
 from json import load
@@ -13,6 +19,12 @@ from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
+
+
+
+
+
+
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
@@ -42,7 +54,6 @@ with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") a
 crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
-
 
 
 #----------------------------------------
@@ -111,7 +122,7 @@ person_df = pd.DataFrame({
 
 
 book_chapter_df = publication_df.query("type == 'book-chapter'")
-book_chapter_df = book_chapter_df[["id", "publication_year", "title", "chapter"]]
+book_chapter_df = book_chapter_df[["id", "publication_year", "title", "publication_venue", "chapter"]]
 
 book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
@@ -216,6 +227,8 @@ df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id")
 
 venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
 venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
+#venue_df = venue_df[["issn_isbn", "id", "publication_venue", "publisher"]]
+
 
 print(venue_df)
 
@@ -243,4 +256,4 @@ with connect("publication.db") as con:
 
 #print(result_q1)
 
-
+#print(book_chapter_df)
