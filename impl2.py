@@ -406,7 +406,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             events = read_sql('SELECT B.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
         return events
-"""
+
 
     def getPublicationAuthors(self, publication): 
         rp0 = RelationalProcessor()
@@ -445,8 +445,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
 
 
+"""
 
-    """
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
             return concat([
