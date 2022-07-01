@@ -391,21 +391,21 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     """
 
-    def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
+    def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE D = %s (AND volume = %s AND issn_isbn = %s)" (volume, issue, issn_isbn,), con)
-            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
+            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  issue = '%s' (AND volume = '%s' AND issn_isbn = '%s')" (str(volume), str(issue), str(issn_isbn)), con)
+            #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
         return dfJAI 
 
+    """
     
-    
-    def getJournalArticlesInVolume(self, volume, issn_isbn):
+    def getJournalArticlesInVolume(self, volume, issn_isbn): #str object is not callableee
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAV = 
+            dfJAV = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
         return dfJAV
     """
 
@@ -465,6 +465,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
 
     """
+    """
 SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given = '%{}%'"
             #D.given LIKE "%' + {} + '%
             return concat([
@@ -472,9 +473,7 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
                 read_sql(SQL.format(publications[1], name), con),
                 read_sql(SQL.format(publications[2], name), con)
             ])
-
 """
-
   
 #testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
@@ -511,7 +510,7 @@ gqp = GenericQueryProcessor()
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-print(gqp.getVenuesByPublisherId("crossref:281"))
+#print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
@@ -522,6 +521,8 @@ print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(rqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+
+print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
 
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
