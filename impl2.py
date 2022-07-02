@@ -217,7 +217,7 @@ class GenericQueryProcessor(object):
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
         rqp0 = RelationalQueryProcessor()
-        dfJAI = rqp0.getJournalArticlesInVolume(volume, issue, issn_isbn)
+        dfJAI = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
         for index, row in dfJAI.iterrows():
             row = list(row)
             JournalarticleObj = JournalArticle(*row)
@@ -395,18 +395,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], issn_isbn), con),
                 read_sql(SQL.format(publications[2], issn_isbn), con)
             ])
-
     
-
-    # def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
-    #     rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     with connect(rp0.getDbPath()) as con: 
-    #         dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  issue = '%s' (AND volume = '%s' AND issn_isbn = '%s')" (str(volume), str(issue), str(issn_isbn)), con)
-    #         #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
-    #     return dfJAI 
-    
-    def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
+    def getJournalArticlesInIssue(self, volume, issue, issn_isbn): 
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
@@ -533,7 +523,7 @@ gqp = GenericQueryProcessor()
 
 #print(gqp.getProceedingsByEvent("web"))
 #print(rqp.getMostCitedPublication())
-print(rqp.getMostCitedVenue())
+#print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
 # for object in ListaJournalArticleOBJ:
@@ -554,7 +544,7 @@ print(rqp.getMostCitedVenue())
 #     print(JournalArticle.__str__(object))
 #     break
 
-print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
+print(gqp.getJournalArticlesInIssue(2, 20, "issn:1616-5187"))
     
 
 
@@ -564,11 +554,8 @@ print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
 #print(JADataframe)
 
 
-<<<<<<< Updated upstream
-=======
 #print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
->>>>>>> Stashed changes
 
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
