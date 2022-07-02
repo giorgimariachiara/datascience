@@ -30,7 +30,6 @@ class Publication(IdentifiableEntity):
     
     def __str__(self):
         return str([self.id, self.publication_year, self.title, self.PublicationVenue])
-    
         
     def getPublicationYear(self):
         if self.publication_year:
@@ -83,7 +82,6 @@ class Organization(IdentifiableEntity):
     
     def getName(self):
         return self.name
-
 
 class JournalArticle(Publication):
     def __init__(self, id, publication_year, title, publication_venue, issue, volume):    
@@ -255,12 +253,10 @@ class GenericQueryProcessor(object):
     def getPublicationAuthors(self, publication):
         rqp0 = RelationalQueryProcessor()
         dfAP =rqp0.getPublicationAuthors(publication)
-
         for index, row in dfAP.iterrows():
             row = list(row)
             personObj = Person(*row)
             self.addQueryProcessor(personObj)
-
         return self.queryProcessor
     
     def getPublicationsByAuthorName(self, name):
@@ -507,15 +503,16 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
+
 #print(rqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-#print(gqp.getVenuesByPublisherId("crossref:281"))
-#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+#print(rqp.getVenuesByPublisherId("crossref:281"))
+#print(rqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("Pe"))
 #print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
@@ -524,14 +521,14 @@ gqp = GenericQueryProcessor()
 #print(gqp.getProceedingsByEvent("web"))
 #print(rqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
-#print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
-ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
-for object in ListaJournalArticleOBJ:
+#print(gqp.getJournalArticlesInIssue(1, 1, "issn:2164-5515"))
+#ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+#for object in ListaJournalArticleOBJ:
     
-    print(JournalArticle.__str__(object))
-    break
+    #print(JournalArticle.__str__(object))
+    #break
 
-print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
+#print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
 
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInJournal("issn:1616-5187")
 # for object in ListaJournalArticleOBJ:
@@ -546,12 +543,11 @@ print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
     #break
 
 #print(gqp.getJournalArticlesInIssue(2, 20, "issn:1616-5187"))
-print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
+#print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
     
 
 
 #JADataframe = rqp.getJournalArticlesInVolume(21,"issn:1616-5187")
-
 #print(gqp.getJournalArticlesInIssue(JADataframe))
 #print(JADataframe)
 
@@ -559,8 +555,9 @@ print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
 #print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
 
-# publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
-# print(type(Publication.__str__(publicationObj)))
+publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
+print(type(publicationObj))
+print(type(Publication.__str__(publicationObj)))
 
 
 #print(gqp.getPublicationInVenue("issn:2641-3337"))
