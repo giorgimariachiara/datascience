@@ -539,14 +539,14 @@ print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
 #     print(JournalArticle.__str__(object))
 #     break
 
-# ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
-# for object in ListaJournalArticleOBJ1:
+#ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
+#for object in ListaJournalArticleOBJ1:
     
-#     print(JournalArticle.__str__(object))
-#     break
+    #print(JournalArticle.__str__(object))
+    #break
 
-print(gqp.getJournalArticlesInIssue(2, 20, "issn:1616-5187"))
-#print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
+#print(gqp.getJournalArticlesInIssue(2, 20, "issn:1616-5187"))
+print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
     
 
 
