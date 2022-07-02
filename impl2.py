@@ -86,10 +86,14 @@ class Organization(IdentifiableEntity):
 
 
 class JournalArticle(Publication):
-    def __init__(self, id, publication_year, title, publicationVenue, issue, volume):    
+    def __init__(self, id, publication_year, title, publication_venue, issue, volume):    
+        self.publication_venue = publication_venue
         self.issue = issue
         self.volume = volume
-        super().__init__(id, publication_year, title, publicationVenue) 
+        super().__init__(id, publication_year, title, publication_venue) 
+        
+    def __str__(self):
+        return str([self.id, self.publication_year, self.title, self.publication_venue, self.issue, self.volume])    
 
     def getIssue(self):
          if self.issue:
@@ -213,14 +217,21 @@ class GenericQueryProcessor(object):
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
         rqp0 = RelationalQueryProcessor()
-        dfJAI = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
-        self.addQueryProcessor(dfJAI)
+        dfJAI = rqp0.getJournalArticlesInVolume(volume, issue, issn_isbn)
+        for index, row in dfJAI.iterrows():
+            row = list(row)
+            JournalarticleObj = JournalArticle(*row)
+            self.addQueryProcessor(JournalarticleObj)
         return self.queryProcessor
-
+    
+    
     def getJournalArticlesInVolume(self, volume, issn_isbn):
         rqp0 = RelationalQueryProcessor()
         dfJAV = rqp0.getJournalArticlesInVolume(volume, issn_isbn)
-        self.addQueryProcessor(dfJAV)
+        for index, row in dfJAV.iterrows():
+            row = list(row)
+            JournalarticleObj = JournalArticle(*row)
+            self.addQueryProcessor(JournalarticleObj)
         return self.queryProcessor
 
     def getJournalArticlesInJournal(self, issn):
@@ -372,23 +383,32 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[2], issn_isbn), con)
             ])
 
-    """
+    
 
+    # def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
+    #     rp0 = RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     with connect(rp0.getDbPath()) as con: 
+    #         dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  issue = '%s' (AND volume = '%s' AND issn_isbn = '%s')" (str(volume), str(issue), str(issn_isbn)), con)
+    #         #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
+    #     return dfJAI 
+    
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  issue = '%s' (AND volume = '%s' AND issn_isbn = '%s')" (str(volume), str(issue), str(issn_isbn)), con)
+            dfJAI = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  A.volume = '"+ str(volume) + "' AND A.issue = '" + str(issue) + "' AND B.issn_isbn = '"+ issn_isbn + "'",  con)
             #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
         return dfJAI 
 
-    """
+    
     
     def getJournalArticlesInVolume(self, volume, issn_isbn): #str object is not callable
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAV = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
+            #dfJAV = read_sql("SELECT title FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
+            dfJAV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE A.volume = '" + str(volume) + "' AND B.issn_isbn = '"+ issn_isbn + "'", con)
         return dfJAV
 
 
@@ -396,8 +416,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            JournalArticles = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE B.issn_isbn = '" + issn + "'", con) 
-        return JournalArticles     
+            dfJAJ = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn + "'", con) 
+        return dfJAJ     
     
     def getProceedingsByEvent(self, name):
         rp0 = RelationalProcessor()
@@ -502,9 +522,35 @@ gqp = GenericQueryProcessor()
 #print(rqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+# ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+# for object in ListaJournalArticleOBJ:
+    
+#     print(JournalArticle.__str__(object))
+#     break
 
-print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
-#print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
+#print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
+# ListaJournalArticleOBJ = gqp.getJournalArticlesInJournal("issn:1616-5187")
+# for object in ListaJournalArticleOBJ:
+    
+#     print(JournalArticle.__str__(object))
+#     break
+
+# ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
+# for object in ListaJournalArticleOBJ1:
+    
+#     print(JournalArticle.__str__(object))
+#     break
+
+print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
+    
+
+
+#JADataframe = rqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+
+#print(gqp.getJournalArticlesInIssue(JADataframe))
+#print(JADataframe)
+
+
 
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
