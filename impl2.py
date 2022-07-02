@@ -187,13 +187,13 @@ class GenericQueryProcessor(object):
             self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
-    """
+   
     def getMostCitedVenue(self):
         rqp0 = RelationalQueryProcessor()
         dfMCV = rqp0.getMostCitedVenue()
         self.addQueryProcessor(dfMCV)
         return self.queryProcessor
-    """
+    
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -335,6 +335,19 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             Mostcited = read_sql("SELECT cited, count(*) N FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC LIMIT 4", con)
         return Mostcited
+
+    def getMostCitedVenue(self):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        rp0.getDbPath()
+        lista = RelationalQueryProcessor()
+        lis = lista.getMostCitedPublication()
+        liss = []
+        for index, row in lis.iterrows():
+                liss.append(row)
+        return liss[1]
+            #publicationObj = Publication(*row)
+            #self.addQueryProcessor(publicationObj)
 
     """
     def getMostCitedVenue(self):
@@ -520,7 +533,7 @@ gqp = GenericQueryProcessor()
 
 #print(gqp.getProceedingsByEvent("web"))
 #print(rqp.getMostCitedPublication())
-#print(rqp.getMostCitedVenue())
+print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
 # for object in ListaJournalArticleOBJ:
@@ -551,6 +564,11 @@ print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
 #print(JADataframe)
 
 
+<<<<<<< Updated upstream
+=======
+#print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
+#print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
+>>>>>>> Stashed changes
 
 # publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
 # print(type(Publication.__str__(publicationObj)))
