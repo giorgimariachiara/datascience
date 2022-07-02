@@ -29,9 +29,9 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 
 # This is the string defining the base URL used to defined
 # the URLs of all the resources created from the data
-base_url = "https://comp-data.github.io/res/"
+base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
-venues = read_csv("./graph.db/graph_publications.csv", 
+publications = read_csv("./graph.db/graph_publications.csv", 
                   keep_default_na=False,
                   dtype={
                       "id": "string",
@@ -41,5 +41,23 @@ venues = read_csv("./graph.db/graph_publications.csv",
                       "issue":"string",
                       "volume":"string",
                       "chapter":"string",
-                      "publication_venue":"string"
+                      "publication_venue":"string",
+                      "venue_type": "string",
+                      "publisher": "string",
+                      "event":"string"
                   })
+
+publications_internal_id = {}
+for idx, row in publications.iterrows():
+    internal_id = "local-" + str(idx)
+
+# The shape of the new resources that are venues is
+    # 'https://comp-data.github.io/res/venue-<integer>'
+    subj = URIRef(base_url + internal_id)
+
+    # We put the new venue resources created here, to use them
+    # when creating publications
+    publications_internal_id[row["id"]] = subj
+
+    if row["type"] == "journal":
+       my_graph 
