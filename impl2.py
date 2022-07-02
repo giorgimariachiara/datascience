@@ -57,8 +57,8 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity): #issn_isbn serve o no? 
-    def __init__(self, id, publication_venue, publisher): #issn_isbn self.issn_isbn = issn_isbn
+class Venue(IdentifiableEntity):  
+    def __init__(self, id, publication_venue, publisher):
         self.publisher = publisher
         self.publication_venue = publication_venue
         super().__init__(id) 
@@ -514,7 +514,7 @@ gqp = GenericQueryProcessor()
 #print(rqp.getVenuesByPublisherId("crossref:281"))
 #print(rqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
-#print(gqp.getPublicationsByAuthorName("Pe"))
+#print(gqp.getPublicationsByAuthorName("P"))
 #print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
@@ -555,9 +555,9 @@ gqp = GenericQueryProcessor()
 #print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
 #print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
 
-publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
-print(type(publicationObj))
-print(type(Publication.__str__(publicationObj)))
+#publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
+#print(type(publicationObj))
+#print(type(Publication.__str__(publicationObj)))
 
 
 #print(gqp.getPublicationInVenue("issn:2641-3337"))
