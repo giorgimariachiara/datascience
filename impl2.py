@@ -525,13 +525,14 @@ gqp = GenericQueryProcessor()
 #print(rqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
-# ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
-# for object in ListaJournalArticleOBJ:
+ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+for object in ListaJournalArticleOBJ:
     
-#     print(JournalArticle.__str__(object))
-#     break
+    print(JournalArticle.__str__(object))
+    break
 
-#print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
+print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
+
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInJournal("issn:1616-5187")
 # for object in ListaJournalArticleOBJ:
     
@@ -545,6 +546,7 @@ gqp = GenericQueryProcessor()
 #     break
 
 print(gqp.getJournalArticlesInIssue(2, 20, "issn:1616-5187"))
+#print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
     
 
 
