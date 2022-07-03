@@ -107,5 +107,9 @@ for triple in my_graph.triples((None, None, None)):
     
 # Once finished, remeber to close the connection
 store.close()
+<<<<<<< Updated upstream
 
 print(len(my_graph))
+=======
+print(my_graph)
+>>>>>>> Stashed changes
