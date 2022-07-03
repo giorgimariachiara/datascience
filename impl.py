@@ -1,325 +1,162 @@
-#<<<<<<< HEAD
-# #defining classes 
-# from typing_extensions import Self
-# import pandas as pd
-# from pandas import DataFrame, Series 
-# import os 
-#=======
-#defining classes 
-import pandas as pd
-from pandas import DataFrame, Series 
-import os 
-  
-
-  
-"""
-# #----------------------------------------
-
-
-# class RelationalProcessor(object):
-#     def __init__(self, dbPath):
-#         self.dbPath = '' 
-class RelationalProcessor(object):
-    def __init__(self):
-        self.dbPath = '' 
-
-       
-#     def getDbPath(self):
-#         return self.dbPath 
-
-#     def setDbPath(self, Path):
-#         self.dbPath = Path 
-
-# #triplestoreprocessor class da fare
-
-
-# #----------------------------------------
-
-# class QueryProcessor(object):
-#     pass
-class QueryProcessor(object):
-    def __init__(self):
-        pass
-
-
-#----------------------------------------
-
- 
-# class RelationalDataProcessor(RelationalProcessor, QueryProcessor):
-#     def __init__(self):
-#         super().__init__()
-
-#     def uploadData(self,path):
-
-#         if path.split(".")[1] == 'json':
-#             #checking if database exists or not
-#             if os.path.exists(self.getDbPath()):
-#                 pass
-#               #if existed do things....
-            
-#             #else: 
-#             #start create dataframes and so on...
-# #----------------------------------------
-        if path.split(".")[1] == 'csv':
-            #checking if database exists or not
-            if os.path.exists(self.getDbPath()):
-                pd.read_csv(self.dbPath)
-
-            elif path.split(".")[1] == 'json':
-                pd.read_json(self.dbPath)
-
-            else: 
-                self.setDbPath(path)
-
-#----------------------------------------
-
-# #----------------------------------------
-
-# class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
-#     def __init__(self):
-#         super().__init__()
-class RelationalQueryProcessor(RelationalProcessor):
-    def __init__(self):
-        super().__init__()
-    
-#     def getPublicationsPublishedInYear(publicationYear):
-#         result = list()
-#         for year in Publication.publicationYear:
-#             if year == publicationYear:
-#                 result.append(Publication.title)
-
-#             return pd.Dataframe({
-#                 "Publication": Series(result, dtype="string", name="Publication")
-#                 })     
-            return result 
-    
-#     def getPublicationsbyAuthorID():
-#         pass 
-    
-
-
-
-
-# class GenericQueryProcessor(object):
-#     def __init__(self, queryProcessor):
-#         self.queryProcessor = []
-#----------------------------------------
-"""
-"""
-class GenericQueryProcessor(object):
-    def __init__(self):
-        self.queryProcessor = list()
-    
-#     def cleanQueryProcessors(self, queryProcessor):
-#         queryProcessor.clear() 
-
-#     def addQueryProcessor(self, QueryProcessor, queryProcessor):
-#         result = queryProcessor.append(QueryProcessor)
-#         return result 
-    def addQueryProcessor(self, queryProcessor):
-        pass
-
-#  #   def getPublicationsPublishedInYear(year):
-#    #     result= []
-#     #   for date in publicationYear: 
-#        #     if date == year:
-#          #       result = Publication.getPublicationYear()
-
-# #----------------------------------------
-
-# class IdentifiableEntity(object):
-#     def __init__(self, id):
-#         self.id = set()
-#         for identifiers in id:
-             self.id.add(identifiers)
-----------------------------------------
-
-"""
-#             self.id.add(identifiers)
-
-#----------------------------------------
+from posixpath import split
+import sqlite3
+from sqlite3 import * 
+from pandas import DataFrame, concat, read_sql
+import pandas
+from mimetypes import init
+from unicodedata import name
 
 class IdentifiableEntity(object):
-    def __init__(self, id):
-        self.id = set()
-        for identifiers in id:
-            self.id.add(identifiers)
+    def __init__(self, id):  
+            self.id = id 
 
-#     def getIds(self):
-#         result = []
-#         for identifier in self.id:
-#             result.append(identifier)
-#         result.sort()
-#         return result
-
-# #----------------------------------------
+    def getIds(self):
+         result = []
+         for identifier in self.id:
+             result.append(identifier)
+         result.sort()
+         return result  
 
 
-
-
-
-
-
-# class Publication(IdentifiableEntity):
-#     def __init__(self, id, publicationYear, title, publicationVenue, cite, author):
-#         self.publicationYear = publicationYear
-#         self.title = title
-#         self.publicationVenue = publicationVenue
-#         self.cite = cite
-#         self.author = author 
-#         super().__init__(id)
-
-#     def getPublicationYear(self):
-#         if self.publicationYear:
-#             return self.publicationYear
-#         else:
-#             return None
+class Publication(IdentifiableEntity):
+    def __init__(self, id, publication_year, title, publicationVenue):
+            
+            self.publication_year = publication_year
+            self.title = title
+            self.PublicationVenue = publicationVenue
+            super().__init__(id)
     
-#     def getTitle(self):
-#         return self.title
+    def __str__(self):
+        return str([self.id, self.publication_year, self.title, self.PublicationVenue])
     
-#     def getCitedPublications(self):
-#         result= []
-#         for citations in self.cite:
-#             result.append(citations)
-#         return result 
-
-#     def getPublicationVenue(self):
-#         return self.publicationVenue
-
-#     def getAuthors(self):
-#         result = set()
-#         for p in self.author:
-#             result.add(p)
-#         return result
-
-# #----------------------------------------
-
-# class Venue(IdentifiableEntity):
-#     def __init__(self, id, title, publisher):
-#         self.title = title
-#         self.publisher = publisher 
-#         super().__init__(id)
         
-#     def getTitle(self):
-#         return self.title
+    def getPublicationYear(self):
+        if self.publication_year:
+            return self.publication_year
 
-#     def getPublisher(self):
-#         return self.publisher
+    def getTitle(self):
+        return self.title
 
-# #----------------------------------------
+    def getPublicationVenue(self):
+         return self.getPublicationVenue
 
-# class Organization(IdentifiableEntity):
-#     def __init__(self, id, name):
-#         self.name = name
-#         super().__init__(id)
-
-#     def getName(self):
-#         return self.name
-
-# #----------------------------------------        
-
-# class Person(IdentifiableEntity):
-#     def __init__(self, id, givenName, familyName):
-#         self.givenName = givenName 
-#         self.familyName = familyName
-#         super().__init__(id)
 class Person(IdentifiableEntity):
-    def __init__(self, id, givenName, familyName, orc_id):
-        self.orc_id = orc_id
-        self.givenName = givenName 
-        self.familyName = familyName
+    def __init__(self, id, givenName, familyName):
+             
+            self.givenName = givenName
+            self.familyName = familyName
+            super().__init__(id)
+
+    def __str__(self):
+        return str([self.id, self.givenName, self.familyName])
+
+    def getGivenName(self):
+        return self.givenName   
+
+    def getFamilyName(self):
+        return self.familyName   
+
+class Venue(IdentifiableEntity): #issn_isbn serve o no? 
+    def __init__(self, id, publication_venue, publisher): #issn_isbn self.issn_isbn = issn_isbn
+        self.publisher = publisher
+        self.publication_venue = publication_venue
+        super().__init__(id) 
+    
+    def __str__(self):
+        return str([self.id, self.publication_venue, self.publisher])
+
+    def getPublicationVenue(self):
+        return self.publication_venue
+
+    def getPublisher(self):
+        return self.publisher
+
+class Organization(IdentifiableEntity):
+    def __init__(self, id, name):
+        self.name = name
         super().__init__(id)
 
-#     def getGivenName(self):
-#         return self.givenName
+    def __str__(self):
+        return str([self.id, self.name])
     
-#     def getFamilyName(self):
-#         return self.familyName
+    def getName(self):
+        return self.name
 
 
-# class JournalArticle(Publication):
-#     def __init__(self, id, publicationYear, title, publicationVenue, cite, author, issue, volume):
-#         self.issue = issue
-#         self.volume = volume
-#         super().__init__(id, publicationYear, title, publicationVenue, cite, author)
-
-#     def getIssue(self):
-#         if self.issue:
-#             return self.issue
-#         else:
-#             return None
-
-#     def getVolume(self):
-#         if self.volume:
-#             return self.volume
-#         else:
-#             return None
-
-    
-
-# class BookChapter(Publication):
-#     def __init__(self, id, publicationYear, title, publicationVenue, cite, author, chapterNumber):
-#         self.chapterNumber = chapterNumber
-          
-#         super().__init__(id, publicationYear, title, publicationVenue, cite, author)
-
-class BookChapter(Publication):
-    def __init__(self, id, publicationYear, title, publicationVenue, cite, author, chapterNumber):
-        self.chapterNumber = chapterNumber
-        super().__init__(id, publicationYear, title, publicationVenue, cite, author)
-    
-#     def getChapterNumber(self):
-#         return self.chapterNumber
-
-# class ProceedingsPaper(Publication):
-#     pass
-
-# class Journal(Venue):
-#     pass
-
-
-# class Book(Venue):
-#     pass
-
-# class Proceedings(Venue):
-#     def __init__(self, id, title, publisher, event):
-#         self.event = event
-#         super().__init__(id, title, publisher)
-class ProceedingsPaper(Publication):
-    def __init__(self, id, publicationYear, title, publicationVenue, cite, author, issue, volume):
+class JournalArticle(Publication):
+    def __init__(self, id, publication_year, title, publication_venue, issue, volume):    
+        self.publication_venue = publication_venue
         self.issue = issue
         self.volume = volume
-        super().__init__(id, publicationYear, title, publicationVenue, cite, author)
+        super().__init__(id, publication_year, title, publication_venue) 
+        
+    def __str__(self):
+        return str([self.id, self.publication_year, self.title, self.publication_venue, self.issue, self.volume])    
+
+    def getIssue(self):
+         if self.issue:
+             return self.issue
+         else:
+             return None
+
+    def getVolume(self):
+        if self.volume:
+            return self.volume
+        else:
+            return None 
+
+class BookChapter(Publication):
+    def __init__(self, id, publication_year, title, publicationVenue, cites, author, chapterNumber):
+        self.chapterNumber = chapterNumber
+        super().__init__(id, publication_year, title, publicationVenue, cites, author) 
+            
+    def getChapterNumber(self):
+         return self.chapterNumber
+
+class ProceedingsPaper(Publication):
+     def __init__(self, id, publication_year, title, publicationVenue, cites, author):
+          super().__init__(id, publication_year, title, publicationVenue, cites, author)
 
 class Journal(Venue):
-    def __init__(self, id, title, publisher, publication_venue):
-        self.publication_venue = publication_venue
-        super().__init__(id, title, publisher)
+     def __init__(self, id, title, publisher):
+          super().__init__(id, title, publisher)
 
 
 class Book(Venue):
-    def __init__(self, id, title, publisher, publication_venue):
-        self.publication_venue = publication_venue
-        super().__init__(id, title, publisher)
+    def __init__(self, id, title, publisher):
+            super().__init__(id, title, publisher)
 
 class Proceedings(Venue):
-    def __init__(self, id, title, publisher, event, publication_venue):
-        self.event = event
-        self.publication_venue = publication_venue
-        super().__init__(id, title, publisher)
-   
-#     def getEvent(self): 
-#         return self.event
+    def __init__(self, id, publication_venue, publisher, event):
+        self.event = event  
+        super().__init__(id, publication_venue, publisher) 
+    
+    def __str__(self):
+        return str([self.id, self.publication_venue, self.publisher, self.event])
 
-class Venueid(Venue):
-    def __init__(self, id, title, publisher, issn_isbn, publication_venue):
-        self.publication_venue = publication_venue
-        self.issn_isbn = issn_isbn
-        super().__init__(id, title, publisher)
+    def getEvent(self):
+        return self.event 
 
+from mimetypes import init
+from tokenize import String
 
-class Author(Person):
-    def __init__(self, id, givenName, familyName, orc_id):
-     super().__init__(id, givenName, familyName, orc_id)
+class GraphProcessor(object):
+    def __init__(self):
+        self.endpointUrl = ""
 
+    def setEndpointUrl(self, url):
+        self.endpointUrl = url
+        return True
+
+    def getEndpointUrl(self):
+        return self.endpointUrl
+
+class QueryProcessor(object):
+    def __init__(self):
+        pass
+    
+
+class GraphQueryProcessor(GraphProcessor, QueryProcessor):
+
+     def getPublicationsPublishedInYear(self, py):
+        

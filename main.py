@@ -1,10 +1,6 @@
 from locale import normalize
 # read csv file with pandas
-
-
 from pandas import DataFrame, merge 
-
-
 from operator import index
 from numpy import index_exp
 from pandas import merge 

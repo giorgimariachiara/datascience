@@ -228,7 +228,7 @@ class GenericQueryProcessor(object):
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
         rqp0 = RelationalQueryProcessor()
-        dfJAI = rqp0.getJournalArticlesInVolume(volume, issue, issn_isbn)
+        dfJAI = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
         for index, row in dfJAI.iterrows():
             row = list(row)
             JournalarticleObj = JournalArticle(*row)

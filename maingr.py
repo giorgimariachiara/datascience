@@ -1,3 +1,4 @@
+from platform import mac_ver
 from rdflib import Graph 
 from rdflib import URIRef
 from rdflib import Literal 
@@ -29,8 +30,6 @@ chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
 
-
-
 # relations among classes
 publicationVenue = URIRef("https://schema.org/isPartOf")
 
@@ -39,8 +38,8 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
 publications = read_csv("graph_db/graph_publications.csv", 
-                  keep_default_na=False,
-                  dtype={
+                keep_default_na= False,
+                dtype={
                       "id": "string",
                       "title": "string",
                       "type": "string",
@@ -66,31 +65,45 @@ for idx, row in publications.iterrows():
     # when creating publications
     publications_internal_id[row["id"]] = subj
 
-    if row["type"] == "journal-article":
-       my_graph.add((subj, RDF.type, JournalArticle)) 
+    #print(len(publications_internal_id))
+ 
 
-       #questi sono solo per i journalarticles
-       my_graph.add((subj, issue, Literal(row["issue"])))
-       my_graph.add((subj, volume, Literal(row["volume"])))
-    elif row["type"] == 'book-chapter':
-        my_graph.add((subj, RDF.type, BookChapter))
-        my_graph.add((subj, chapter, Literal(row["chapter"])))
+    if row["type"] == "journal-article":
+        if row["type"] != "":
+            my_graph.add((subj, RDF.type, JournalArticle)) 
+        if row["issue"] != "":
+            my_graph.add((subj, issue, Literal(row["issue"])))
+        if row["volume"] != "":
+            my_graph.add((subj, volume, Literal(row["volume"])))
+
+    elif row["type"] == "book-chapter":
+        if row["type"] != "":
+            my_graph.add((subj, RDF.type, BookChapter))
+            my_graph.add((subj, chapter, Literal(row["chapter"])))
     else: 
-        my_graph.add((subj, RDF.type, Proceedingspaper))
+        if row["type"] != "":
+            my_graph.add((subj, RDF.type, Proceedingspaper))
 
     if row["venue_type"] == "book":
-        my_graph.add((subj, RDF.type, Book))
+        if row["venue_type"] != "":
+            my_graph.add((subj, RDF.type, Book))
     elif row["venue_type"] == "journal":
-        my_graph.add((subj, RDF.type, Journal))
+        if row["venue_type"] != "":
+            my_graph.add((subj, RDF.type, Journal))
     else:
-        my_graph.add((subj, RDF.type, Proceeding))
-        
-my_graph.add((subj, title, Literal(row["title"])))
-my_graph.add((subj, identifier, Literal(row["id"])))
-my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-my_graph.add((subj, event, Literal(row["event"])))
-my_graph.add((subj, organization, Literal(row["publisher"])))
-my_graph.add((subj, publicationVenue, publications_internal_id[row["publication_venue"]]))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+        if row["venue_type"] != "":
+            my_graph.add((subj, RDF.type, Proceeding))
+    
+    if row["event"] != "":  
+        my_graph.add((subj, event, Literal(row["event"])))
+
+    if row["publisher"] != "":
+        my_graph.add((subj, organization, Literal(row["publisher"]))) 
+
+    if row["publication_venue"] != "":
+        my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+
+#venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
 store = SPARQLUpdateStore()
@@ -108,5 +121,6 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
-print(publications_internal_id)
 print(len(my_graph))
+
+
