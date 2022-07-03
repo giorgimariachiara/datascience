@@ -38,7 +38,7 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
-publications = read_csv("./graph.db/graph_publications.csv", 
+publications = read_csv("graph_db/graph_publications.csv", 
                   keep_default_na=False,
                   dtype={
                       "id": "string",
@@ -83,16 +83,16 @@ for idx, row in publications.iterrows():
     elif row["venue_type"] == "journal":
         my_graph.add((subj, RDF.type, Journal))
     else:
-        my_graph.add(subj, RDF.type, Proceeding)
+        my_graph.add((subj, RDF.type, Proceeding))
         
 my_graph.add((subj, title, Literal(row["title"])))
-my_graph.add((subj, identifier, Literal(row["doi"])))
+my_graph.add((subj, identifier, Literal(row["id"])))
 
     
     #qui non so se dobbiamo mettere un elif per proceedings
 my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 my_graph.add((subj, event, Literal(row["event"])))
-my_graph.add(subj, publicationVenue, Literal(row("publication_venue")))      #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
 store = SPARQLUpdateStore()
