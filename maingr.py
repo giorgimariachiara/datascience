@@ -1,3 +1,4 @@
+from platform import mac_ver
 from rdflib import Graph 
 from rdflib import URIRef
 from rdflib import Literal 
@@ -39,8 +40,8 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
 publications = read_csv("graph_db/graph_publications.csv", 
-                  keep_default_na=False,
-                  dtype={
+                keep_default_na= False,
+                dtype={
                       "id": "string",
                       "title": "string",
                       "type": "string",
@@ -54,7 +55,7 @@ publications = read_csv("graph_db/graph_publications.csv",
                       "event":"string"
                   })
 
-#publications_internal_id = {}
+publications_internal_id = {}
 for idx, row in publications.iterrows():
     internal_id = "local-" + str(idx)
 
@@ -64,33 +65,51 @@ for idx, row in publications.iterrows():
 
     # We put the new venue resources created here, to use them
     # when creating publications
-    #publications_internal_id[row["id"]] = subj
+    publications_internal_id[row["id"]] = subj
+
+    #print(len(publications_internal_id))
+ 
 
     if row["type"] == "journal-article":
-       my_graph.add((subj, RDF.type, JournalArticle)) 
+        if row["type"] != "":
+            my_graph.add((subj, RDF.type, JournalArticle)) 
+        if row["issue"] != "":
+            my_graph.add((subj, issue, Literal(row["issue"])))
+        if row["volume"] != "":
+            my_graph.add((subj, volume, Literal(row["volume"])))
 
-       #questi sono solo per i journalarticles
-       my_graph.add((subj, issue, Literal(row["issue"])))
-       my_graph.add((subj, volume, Literal(row["volume"])))
-    elif row["type"] == 'book-chapter':
-        my_graph.add((subj, RDF.type, BookChapter))
-        my_graph.add((subj, chapter, Literal(row["chapter"])))
+    elif row["type"] == "book-chapter":
+        if row["type"] != "":
+            my_graph.add((subj, RDF.type, BookChapter))
+            my_graph.add((subj, chapter, Literal(row["chapter"])))
     else: 
-        my_graph.add((subj, RDF.type, Proceedingspaper))
+        if row["type"] != "":
+            my_graph.add((subj, RDF.type, Proceedingspaper))
 
     if row["venue_type"] == "book":
-        my_graph.add((subj, RDF.type, Book))
+        if row["venue_type"] != "":
+            my_graph.add((subj, RDF.type, Book))
     elif row["venue_type"] == "journal":
-        my_graph.add((subj, RDF.type, Journal))
+        if row["venue_type"] != "":
+            my_graph.add((subj, RDF.type, Journal))
     else:
-        my_graph.add((subj, RDF.type, Proceeding))
+        if row["venue_type"] != "":
+            my_graph.add((subj, RDF.type, Proceeding))
+    
+    if row["event"] != "":  
+        my_graph.add((subj, event, Literal(row["event"])))
+
+    if row["publisher"] != "":
+        my_graph.add((subj, organization, Literal(row["publisher"]))) 
+
+    if row["publication_venue"] != "":
+        my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+    
+
+    my_graph.add((subj, title, Literal(row["title"])))
+    my_graph.add((subj, identifier, Literal(row["id"])))
+    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
         
-my_graph.add((subj, title, Literal(row["title"])))
-my_graph.add((subj, identifier, Literal(row["id"])))
-my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-my_graph.add((subj, event, Literal(row["event"])))
-my_graph.add((subj, organization, Literal(row["publisher"])))
-my_graph.add((subj, publicationVenue, publications_internal_id[row["publication_venue"]]))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
 store = SPARQLUpdateStore()
@@ -108,4 +127,6 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
-print(len(my_graph))
+print(my_graph)
+
+
