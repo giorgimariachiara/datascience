@@ -102,23 +102,8 @@ for idx, row in publications.iterrows():
 
     if row["publication_venue"] != "":
         my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
-    
-
-    my_graph.add((subj, title, Literal(row["title"])))
-    my_graph.add((subj, identifier, Literal(row["id"])))
-    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-        
-<<<<<<< Updated upstream
-=======
-    my_graph.add((subj, title, Literal(row["title"])))
-    my_graph.add((subj, identifier, Literal(row["id"])))
-    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-    my_graph.add((subj, event, Literal(row["event"])))
-    my_graph.add((subj, organization, Literal(row["publisher"])))
-    my_graph.add((subj, publicationVenue, publications_internal_id[row["publication_venue"]]))   
 
 #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
->>>>>>> Stashed changes
 
 #add data to the database
 store = SPARQLUpdateStore()
