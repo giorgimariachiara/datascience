@@ -102,14 +102,11 @@ endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
 # It opens the connection with the SPARQL endpoint instance
 store.open((endpoint, endpoint))
 
-for triple in my_graph.triples((None, None, None)):
+for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
    store.add(triple)
     
 # Once finished, remeber to close the connection
 store.close()
-<<<<<<< Updated upstream
 
 print(len(my_graph))
-=======
 print(my_graph)
->>>>>>> Stashed changes
