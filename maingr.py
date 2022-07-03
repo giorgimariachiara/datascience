@@ -3,7 +3,7 @@ from rdflib import URIRef
 from rdflib import Literal 
 from pandas import read_csv, Series
 from rdflib import RDF
-
+from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from impl2 import Organization
 
 my_graph = Graph() #empty rdf graph 
@@ -94,4 +94,19 @@ my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 my_graph.add((subj, event, Literal(row["event"])))
 my_graph.add(subj, publicationVenue, Literal(row("publication_venue")))      #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
-print(len(my_graph))
+#add data to the database
+store = SPARQLUpdateStore()
+
+# The URL of the SPARQL endpoint is the same URL of the Blazegraph
+# instance + '/sparql'
+endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
+
+
+# It opens the connection with the SPARQL endpoint instance
+store.open((endpoint, endpoint))
+
+for triple in my_graph.triples((None, None, None)):
+   store.add(triple)
+    
+# Once finished, remeber to close the connection
+store.close()
