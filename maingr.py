@@ -54,9 +54,9 @@ publications = read_csv("graph_db/graph_publications.csv",
                       "event":"string"
                   })
 
-#publications_internal_id = {}
+publications_internal_id = {}
 for idx, row in publications.iterrows():
-    internal_id = "local-" + str(idx)
+    internal_id = "publication-" + str(idx)
 
 # The shape of the new resources that are venues is
     # 'https://comp-data.github.io/res/venue-<integer>'
@@ -64,7 +64,7 @@ for idx, row in publications.iterrows():
 
     # We put the new venue resources created here, to use them
     # when creating publications
-    #publications_internal_id[row["id"]] = subj
+    publications_internal_id[row["id"]] = subj
 
     if row["type"] == "journal-article":
        my_graph.add((subj, RDF.type, JournalArticle)) 
@@ -110,5 +110,4 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
-print(len(my_graph))
-print(my_graph)
+print(publications_internal_id)
