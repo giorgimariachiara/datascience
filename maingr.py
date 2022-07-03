@@ -4,6 +4,8 @@ from rdflib import Literal
 from pandas import read_csv, Series
 from rdflib import RDF
 
+from impl2 import Organization
+
 my_graph = Graph() #empty rdf graph 
 
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
@@ -22,7 +24,12 @@ title = URIRef("https://schema.org/name")
 issue = URIRef("https://schema.org/issueNumber")
 volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
-name = URIRef("https://schema.org/name")
+name = URIRef("https://schema.org/name") #non so se serve 
+chapter = URIRef("https://schema.org/Chapter")
+Organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
+event = URIRef("https://schema.org/Event")
+publicationVenue = URIRef("https://schema.org/isPartOf")
+
 
 # relations among classes
 publicationVenue = URIRef("https://schema.org/isPartOf")
@@ -65,13 +72,26 @@ for idx, row in publications.iterrows():
        #questi sono solo per i journalarticles
        my_graph.add((subj, issue, Literal(row["issue"])))
        my_graph.add((subj, volume, Literal(row["volume"])))
-    else:
+    elif row["type"] == 'book-chapter':
         my_graph.add((subj, RDF.type, BookChapter))
+        my_graph.add((subj, chapter, Literal(row["chapter"])))
+    else: 
+        my_graph.add((subj, RDF.type, Proceedingspaper))
 
-        #questi solo per i book chapters
-my_graph.add((subj, name, Literal(row["title"])))
+    if row["venue_type"] == "book":
+        my_graph.add((subj, RDF.type, Book))
+    elif row["venue_type"] == "journal":
+        my_graph.add((subj, RDF.type, Journal))
+    else:
+        my_graph.add(subj, RDF.type, Proceeding)
+        
+my_graph.add((subj, title, Literal(row["title"])))
 my_graph.add((subj, identifier, Literal(row["doi"])))
 
     
     #qui non so se dobbiamo mettere un elif per proceedings
-my_graph.add((subj, ))
+my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+my_graph.add((subj, event, Literal(row["event"])))
+my_graph.add(subj, publicationVenue, Literal(row("publication_venue")))      #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+
+print(len(my_graph))
