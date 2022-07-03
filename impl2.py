@@ -511,7 +511,8 @@ gqp = GenericQueryProcessor()
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-#print(rqp.getVenuesByPublisherId("crossref:281"))
+print(type(gqp.getVenuesByPublisherId("crossref:281")))
+
 #print(rqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #print(gqp.getPublicationsByAuthorName("P"))
