@@ -6,6 +6,7 @@ import pandas
 from mimetypes import init
 from unicodedata import name
 
+
 dbPath = "./publication.db"
 
 class IdentifiableEntity(object):
@@ -58,7 +59,7 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity): #issn_isbn serve o no? 
+class Venue(IdentifiableEntity): # issn_isbn is id
     def __init__(self, id, publication_venue, publisher): #issn_isbn self.issn_isbn = issn_isbn
         self.publisher = publisher
         self.publication_venue = publication_venue
@@ -178,14 +179,24 @@ class GenericQueryProcessor(object):
             self.addQueryProcessor(publicationObj)
         return self.queryProcessor
 
+
     def getMostCitedPublication(self): #qui mancano gli altri parametri per la classe publication 
         rqp0 = RelationalQueryProcessor()
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        for index, row in dfMCP.iterrows():
-            row = list(row)
-            publicationObj = Publication(*row)
-            self.addQueryProcessor(publicationObj)
+        doi = dfMCP["cited"]
+            
+        # for index, row in dataFrame.iterrows():
+        #     row = list(row)
+        #     publicationObj = Publication(*row)
+        #     self.addQueryProcessor(publicationObj)
         return self.queryProcessor
+    
+    # rp0 = RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     with connect(rp0.getDbPath()) as con: 
+    
     
     """
     def getMostCitedVenue(self):
@@ -333,8 +344,18 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            Mostcited = read_sql("SELECT cited, count(*) N FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC LIMIT 4", con)
-        return Mostcited
+            publicationList = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+            sql = "SELECT doi, publication_year, title, publication_venue " \
+                    "FROM {} JOIN maxCited ON doi = cited"
+            return concat([
+                read_sql(sql.format(publicationList[0]), con),
+                read_sql(sql.format(publicationList[1]), con),
+                read_sql(sql.format(publicationList[2]), con)
+            ])
+            
+            #MostcitedPP
+
+         
 
     """
     def getMostCitedVenue(self):
@@ -357,11 +378,17 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             #print("the content is")
             #print(column) 
     """
-        
+    def getMostCitedVenue(self):
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        with connect(rp0.getDbPath()) as con: 
+            venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid "
+                               "JOIN maxCited ON id == cited", con)
+            print(venueDF)
+            
+            
 
-            #list = cited.tolist()
-            #for el in list: 
-                #MostVenuedf = read_sql("")
+    
 
     def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
         rp0 = RelationalProcessor()
@@ -504,11 +531,11 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-#print(rqp.getPublicationsPublishedInYear(2020))
+#print(gqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
 #print(gqp.getVenuesByPublisherId("crossref:281"))
@@ -518,9 +545,12 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
-#print(gqp.getProceedingsByEvent("web"))
+# print(gqp.getProceedingsByEvent("web"))
 #print(rqp.getMostCitedPublication())
-#print(rqp.getMostCitedVenue())
+
+
+
+print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
@@ -537,11 +567,11 @@ gqp = GenericQueryProcessor()
 #     print(JournalArticle.__str__(object))
 #     break
 
-ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
-for object in ListaJournalArticleOBJ1:
+# ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
+# for object in ListaJournalArticleOBJ1:
     
-    print(JournalArticle.__str__(object))
-    break
+#     print(JournalArticle.__str__(object))
+#     break
 
 #print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
     
@@ -559,3 +589,10 @@ for object in ListaJournalArticleOBJ1:
 
 
 #print(gqp.getPublicationInVenue("issn:2641-3337"))
+
+#dfMCP = rqp.getMostCitedPublication()
+#print(dfMCP["cited"].iloc[0])
+#print(type(dfMCP["cited"]))
+
+
+

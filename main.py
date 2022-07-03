@@ -1,21 +1,10 @@
 from locale import normalize
 # read csv file with pandas
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
+
+
 from pandas import DataFrame, merge 
-=======
 
 
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> Stashed changes
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -30,7 +19,6 @@ from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
-
 
 
 
@@ -206,7 +194,7 @@ journal_article_df = publication_df.query("type =='journal-article'")
 journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 journal_article_df = journal_article_df.rename(columns={"id":"doi"})
-df_joined = merge(journal_article_df, journal_df, left_on="doi", right_on="id")
+jaDF = merge(journal_article_df, journal_df, left_on="doi", right_on="id")
 
 
 #print(df_joined)
@@ -242,7 +230,7 @@ venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
 #venue_df = venue_df[["issn_isbn", "id", "publication_venue", "publisher"]]
 
 
-print(venue_df)
+#print(venue_df)
 
 #----------------------------------------
 
@@ -259,7 +247,15 @@ with connect("publication.db") as con:
     person_df.to_sql("Person", con, if_exists="replace", index=False)
     author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
-    Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)   
+    Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
+    con.execute("DROP VIEW  IF EXISTS countCited") 
+    con.execute("CREATE VIEW countCited AS "
+                "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
+    con.execute("DROP VIEW  IF EXISTS maxCited") 
+    con.execute("CREATE VIEW maxCited AS "
+                "SELECT * FROM countCited WHERE N = (SELECT MAX(N) FROM countCited);")
+
+  
 
     con.commit()
 
