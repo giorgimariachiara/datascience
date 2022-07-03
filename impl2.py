@@ -6,7 +6,6 @@ import pandas
 from mimetypes import init
 from unicodedata import name
 
-
 dbPath = "./publication.db"
 
 class IdentifiableEntity(object):
@@ -31,6 +30,7 @@ class Publication(IdentifiableEntity):
     
     def __str__(self):
         return str([self.id, self.publication_year, self.title, self.PublicationVenue])
+    
         
     def getPublicationYear(self):
         if self.publication_year:
@@ -58,8 +58,8 @@ class Person(IdentifiableEntity):
     def getFamilyName(self):
         return self.familyName   
 
-class Venue(IdentifiableEntity):  
-    def __init__(self, id, publication_venue, publisher):
+class Venue(IdentifiableEntity): #issn_isbn serve o no? 
+    def __init__(self, id, publication_venue, publisher): #issn_isbn self.issn_isbn = issn_isbn
         self.publisher = publisher
         self.publication_venue = publication_venue
         super().__init__(id) 
@@ -83,6 +83,7 @@ class Organization(IdentifiableEntity):
     
     def getName(self):
         return self.name
+
 
 class JournalArticle(Publication):
     def __init__(self, id, publication_year, title, publication_venue, issue, volume):    
@@ -186,13 +187,13 @@ class GenericQueryProcessor(object):
             self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
-   
+    """
     def getMostCitedVenue(self):
         rqp0 = RelationalQueryProcessor()
         dfMCV = rqp0.getMostCitedVenue()
         self.addQueryProcessor(dfMCV)
         return self.queryProcessor
-    
+    """
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -216,7 +217,7 @@ class GenericQueryProcessor(object):
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn):
         rqp0 = RelationalQueryProcessor()
-        dfJAI = rqp0.getJournalArticlesInIssue(volume, issue, issn_isbn)
+        dfJAI = rqp0.getJournalArticlesInVolume(volume, issue, issn_isbn)
         for index, row in dfJAI.iterrows():
             row = list(row)
             JournalarticleObj = JournalArticle(*row)
@@ -254,10 +255,12 @@ class GenericQueryProcessor(object):
     def getPublicationAuthors(self, publication):
         rqp0 = RelationalQueryProcessor()
         dfAP =rqp0.getPublicationAuthors(publication)
+
         for index, row in dfAP.iterrows():
             row = list(row)
             personObj = Person(*row)
             self.addQueryProcessor(personObj)
+
         return self.queryProcessor
     
     def getPublicationsByAuthorName(self, name):
@@ -333,19 +336,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             Mostcited = read_sql("SELECT cited, count(*) N FROM Cites GROUP BY cited HAVING cited IS NOT NULL ORDER BY N DESC LIMIT 4", con)
         return Mostcited
 
-    def getMostCitedVenue(self):
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        rp0.getDbPath()
-        lista = RelationalQueryProcessor()
-        lis = lista.getMostCitedPublication()
-        liss = []
-        for index, row in lis.iterrows():
-                liss.append(row)
-        return liss[1]
-            #publicationObj = Publication(*row)
-            #self.addQueryProcessor(publicationObj)
-
     """
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
@@ -367,6 +357,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             #print("the content is")
             #print(column) 
     """
+        
 
             #list = cited.tolist()
             #for el in list: 
@@ -391,8 +382,18 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[1], issn_isbn), con),
                 read_sql(SQL.format(publications[2], issn_isbn), con)
             ])
+
     
-    def getJournalArticlesInIssue(self, volume, issue, issn_isbn): 
+
+    # def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
+    #     rp0 = RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     with connect(rp0.getDbPath()) as con: 
+    #         dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  issue = '%s' (AND volume = '%s' AND issn_isbn = '%s')" (str(volume), str(issue), str(issn_isbn)), con)
+    #         #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
+    #     return dfJAI 
+    
+    def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
@@ -503,31 +504,30 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-
 #print(rqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-#print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
-print(type(gqp.getVenuesByPublisherId("crossref:281")))
-
-#print(rqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+#print(gqp.getVenuesByPublisherId("crossref:281"))
+#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(type(gqp.getVenuesByPublisherId("crossref:281")))
-#print(gqp.getPublicationsByAuthorName("P"))
+#print(gqp.getPublicationsByAuthorName("Pe"))
 #print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 #print(gqp.getProceedingsByEvent("web"))
 #print(rqp.getMostCitedPublication())
 #print(rqp.getMostCitedVenue())
-#print(gqp.getJournalArticlesInIssue(1, 1, "issn:2164-5515"))
-#ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
-#for object in ListaJournalArticleOBJ:
+#print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+
+# ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+# for object in ListaJournalArticleOBJ:
     
-    #print(JournalArticle.__str__(object))
-    #break
+#     print(JournalArticle.__str__(object))
+#     break
 
 #print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
 
@@ -537,28 +537,25 @@ print(type(gqp.getVenuesByPublisherId("crossref:281")))
 #     print(JournalArticle.__str__(object))
 #     break
 
-#ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
-#for object in ListaJournalArticleOBJ1:
+ListaJournalArticleOBJ1 = gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187")
+for object in ListaJournalArticleOBJ1:
     
-    #print(JournalArticle.__str__(object))
-    #break
+    print(JournalArticle.__str__(object))
+    break
 
-#print(gqp.getJournalArticlesInIssue(2, 20, "issn:1616-5187"))
 #print(gqp.getJournalArticlesInIssue(21, 20, "issn:1616-5187"))
     
 
 
 #JADataframe = rqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+
 #print(gqp.getJournalArticlesInIssue(JADataframe))
 #print(JADataframe)
 
 
-#print(gqp.getJournalArticlesInVolume("17","issn:2164-5515"))
-#print(gqp.getJournalArticlesInIssue("9", "17","issn:2164-5515"))
 
-#publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
-#print(type(publicationObj))
-#print(type(Publication.__str__(publicationObj)))
+# publicationObj = Publication("doi:10.1162/qss_a_00023	", 2020, "Opencitations, An Infrastructure Organization For Open Scholarship", "Quantitative Science Studies")
+# print(type(Publication.__str__(publicationObj)))
 
 
 #print(gqp.getPublicationInVenue("issn:2641-3337"))
