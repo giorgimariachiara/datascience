@@ -357,27 +357,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
          
 
-    """
-    def getMostCitedVenue(self):
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        rp0.getDbPath() 
-        #with connect(rp0.getDbPath()) as con: 
-        lista = RelationalQueryProcessor()
-        lis = lista.getMostCitedPublication()
-        lis = lis["cited"]
-        lis = lis.tolist()
-        Venue = []
-        for el in lis: 
-            if el not in Venue: 
-            Venue = Venue.append(el)
-            #Venue ="SELECT publication_venue FROM Venueid WHERE id = '" + el + "'"
-        return Venue
-        #for column_n, column in lis.items():
-            #print("the name is", column_n)
-            #print("the content is")
-            #print(column) 
-    """
+    
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
