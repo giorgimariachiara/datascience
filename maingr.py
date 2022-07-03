@@ -59,5 +59,19 @@ for idx, row in publications.iterrows():
     # when creating publications
     publications_internal_id[row["id"]] = subj
 
-    if row["type"] == "journal":
-       my_graph 
+    if row["type"] == "journal-article":
+       my_graph.add((subj, RDF.type, JournalArticle)) 
+
+       #questi sono solo per i journalarticles
+       my_graph.add((subj, issue, Literal(row["issue"])))
+       my_graph.add((subj, volume, Literal(row["volume"])))
+    else:
+        my_graph.add((subj, RDF.type, BookChapter))
+
+        #questi solo per i book chapters
+my_graph.add((subj, name, Literal(row["title"])))
+my_graph.add((subj, identifier, Literal(row["doi"])))
+
+    
+    #qui non so se dobbiamo mettere un elif per proceedings
+my_graph.add((subj, ))
