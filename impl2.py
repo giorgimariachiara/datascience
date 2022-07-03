@@ -6,6 +6,7 @@ import pandas
 from mimetypes import init
 from unicodedata import name
 
+
 dbPath = "./publication.db"
 
 class IdentifiableEntity(object):
@@ -366,7 +367,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             #print("the content is")
             #print(column) 
     """
-        
 
             #list = cited.tolist()
             #for el in list: 

@@ -28,7 +28,7 @@ name = URIRef("https://schema.org/name") #non so se serve
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
-publicationVenue = URIRef("https://schema.org/isPartOf")
+
 
 
 # relations among classes
@@ -54,7 +54,7 @@ publications = read_csv("graph_db/graph_publications.csv",
                       "event":"string"
                   })
 
-publications_internal_id = {}
+#publications_internal_id = {}
 for idx, row in publications.iterrows():
     internal_id = "local-" + str(idx)
 
@@ -64,7 +64,7 @@ for idx, row in publications.iterrows():
 
     # We put the new venue resources created here, to use them
     # when creating publications
-    publications_internal_id[row["id"]] = subj
+    #publications_internal_id[row["id"]] = subj
 
     if row["type"] == "journal-article":
        my_graph.add((subj, RDF.type, JournalArticle)) 
@@ -90,7 +90,9 @@ my_graph.add((subj, identifier, Literal(row["id"])))
 my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 my_graph.add((subj, event, Literal(row["event"])))
 my_graph.add((subj, organization, Literal(row["publisher"])))
-my_graph.add((subj, publicationVenue, publications_internal_id(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   
+
+#venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
 store = SPARQLUpdateStore()
