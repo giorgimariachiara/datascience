@@ -90,9 +90,7 @@ my_graph.add((subj, identifier, Literal(row["id"])))
 my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 my_graph.add((subj, event, Literal(row["event"])))
 my_graph.add((subj, organization, Literal(row["publisher"])))
-my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   
-
-#venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+my_graph.add((subj, publicationVenue, publications_internal_id[row["publication_venue"]]))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
 store = SPARQLUpdateStore()
@@ -111,3 +109,4 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 store.close()
 
 print(publications_internal_id)
+print(len(my_graph))
