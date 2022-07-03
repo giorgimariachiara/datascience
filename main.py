@@ -1,21 +1,6 @@
 from locale import normalize
 # read csv file with pandas
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 from pandas import DataFrame, merge 
-=======
-
-
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> Stashed changes
 from operator import index
 from numpy import index_exp
 from pandas import merge 
