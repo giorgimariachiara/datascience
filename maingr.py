@@ -26,7 +26,7 @@ volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
 name = URIRef("https://schema.org/name") #non so se serve 
 chapter = URIRef("https://schema.org/Chapter")
-Organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
+organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
 publicationVenue = URIRef("https://schema.org/isPartOf")
 
@@ -87,12 +87,10 @@ for idx, row in publications.iterrows():
         
 my_graph.add((subj, title, Literal(row["title"])))
 my_graph.add((subj, identifier, Literal(row["id"])))
-
-    
-    #qui non so se dobbiamo mettere un elif per proceedings
 my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 my_graph.add((subj, event, Literal(row["event"])))
-my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
+my_graph.add((subj, organization, Literal(row["publisher"])))
+my_graph.add((subj, publicationVenue, publications_internal_id(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
 store = SPARQLUpdateStore()
@@ -100,7 +98,6 @@ store = SPARQLUpdateStore()
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
 endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
-
 
 # It opens the connection with the SPARQL endpoint instance
 store.open((endpoint, endpoint))
