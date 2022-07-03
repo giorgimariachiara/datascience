@@ -107,3 +107,5 @@ for triple in my_graph.triples((None, None, None)):
     
 # Once finished, remeber to close the connection
 store.close()
+
+print(len(my_graph))
