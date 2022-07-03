@@ -57,7 +57,7 @@ publications = read_csv("graph_db/graph_publications.csv",
 
 publications_internal_id = {}
 for idx, row in publications.iterrows():
-    internal_id = "local-" + str(idx)
+    internal_id = "publication-" + str(idx)
 
 # The shape of the new resources that are venues is
     # 'https://comp-data.github.io/res/venue-<integer>'
