@@ -121,6 +121,6 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
-print(my_graph)
+print(len(my_graph))
 
 
