@@ -355,8 +355,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             
             #MostcitedPP
 
-         
-
     
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
@@ -526,11 +524,11 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 # print(gqp.getProceedingsByEvent("web"))
-#print(rqp.getMostCitedPublication())
+print(gqp.getMostCitedPublication())
 
 
 
-print(rqp.getMostCitedVenue())
+#print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
