@@ -159,4 +159,4 @@ class QueryProcessor(object):
 class GraphQueryProcessor(GraphProcessor, QueryProcessor):
 
      def getPublicationsPublishedInYear(self, py):
-        
+        pass 
