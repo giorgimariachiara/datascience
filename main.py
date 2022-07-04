@@ -2,7 +2,12 @@ from locale import normalize
 # read csv file with pandas
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 from pandas import DataFrame, merge 
+=======
+
+
+>>>>>>> Stashed changes
 =======
 
 
@@ -25,6 +30,8 @@ from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
+
+
 
 
 
