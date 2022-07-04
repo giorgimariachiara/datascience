@@ -103,6 +103,13 @@ for idx, row in publications.iterrows():
     if row["publication_venue"] != "":
         my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
+    
+
+    my_graph.add((subj, title, Literal(row["title"])))
+    my_graph.add((subj, identifier, Literal(row["id"])))
+    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+        
+  
 #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
