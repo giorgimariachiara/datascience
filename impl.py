@@ -159,4 +159,6 @@ class QueryProcessor(object):
 class GraphQueryProcessor(GraphProcessor, QueryProcessor):
 
      def getPublicationsPublishedInYear(self, py):
-        pass 
+         gp0 = GraphProcessor()
+         gp0.getEndpointUrl()
+         pass 

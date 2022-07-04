@@ -53,6 +53,8 @@ publications = read_csv("graph_db/graph_publications.csv",
                       "event":"string"
                   })
 
+
+
 publications_internal_id = {}
 for idx, row in publications.iterrows():
     internal_id = "publication-" + str(idx)
