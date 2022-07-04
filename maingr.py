@@ -6,8 +6,12 @@ from pandas import read_csv, Series
 from rdflib import RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from impl2 import Organization
+from json import load
+import pandas as pd 
+from pandas import DataFrame
 
 my_graph = Graph() #empty rdf graph 
+
 
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
 #CLASSES OF RESOURCES
@@ -25,6 +29,7 @@ title = URIRef("https://schema.org/name")
 issue = URIRef("https://schema.org/issueNumber")
 volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
+familyname = URIRef("https://schema.org/familyName")
 name = URIRef("https://schema.org/name") #non so se serve 
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
@@ -54,7 +59,6 @@ publications = read_csv("graph_db/graph_publications.csv",
                   })
 
 
-
 publications_internal_id = {}
 for idx, row in publications.iterrows():
     internal_id = "publication-" + str(idx)
@@ -68,8 +72,24 @@ for idx, row in publications.iterrows():
     publications_internal_id[row["id"]] = subj
 
     #print(len(publications_internal_id))
- 
 
+with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+
+"""
+author = json_doc.get("authors")
+authordict = author.values()
+
+for key in dict:
+    if authordict[key] == "family":
+        my_graph.add((subj, familyname, authordict[key]))
+
+print(len(my_graph))
+
+
+#print(len(my_graph))
+
+"""
     if row["type"] == "journal-article":
         if row["type"] != "":
             my_graph.add((subj, RDF.type, JournalArticle)) 
@@ -130,6 +150,6 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
-print(len(my_graph))
+
 
 

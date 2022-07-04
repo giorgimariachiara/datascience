@@ -185,7 +185,7 @@ class GenericQueryProcessor(object):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        doi = dfMCP["cited"]
+        #doi = dfMCP["cited"]
             
         # for index, row in dataFrame.iterrows():
         #     row = list(row)
