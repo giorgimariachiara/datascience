@@ -182,29 +182,25 @@ class GenericQueryProcessor(object):
 
     def getMostCitedPublication(self): #qui mancano gli altri parametri per la classe publication 
         rqp0 = RelationalQueryProcessor()
-        rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        doi = dfMCP["cited"]
-            
-        # for index, row in dataFrame.iterrows():
-        #     row = list(row)
-        #     publicationObj = Publication(*row)
-        #     self.addQueryProcessor(publicationObj)
+        for index, row in dfMCP.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
-    # rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     with connect(rp0.getDbPath()) as con: 
     
     
-    """
+    
     def getMostCitedVenue(self):
         rqp0 = RelationalQueryProcessor()
         dfMCV = rqp0.getMostCitedVenue()
-        self.addQueryProcessor(dfMCV)
+        for index, row in dfMCV.iterrows():
+            row = list(row)
+            venueObj = Venue(*row)
+            self.addQueryProcessor(venueObj)
         return self.queryProcessor
-    """
+    
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -353,16 +349,14 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(sql.format(publicationList[2]), con)
             ])
             
-            #MostcitedPP
 
-    
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid "
                                "JOIN maxCited ON id == cited", con)
-            print(venueDF)
+            return venueDF
             
             
 
@@ -524,11 +518,13 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 # print(gqp.getProceedingsByEvent("web"))
-print(gqp.getMostCitedPublication())
+#print(gqp.getMostCitedPublication())
 
 
 
-#print(rqp.getMostCitedVenue())
+print(gqp.getMostCitedVenue())
+
+
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
