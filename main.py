@@ -16,7 +16,6 @@ from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
 
-
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
                                     "id": "string",
@@ -45,6 +44,10 @@ crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
 
+organization_internal_id = []
+for idx, row in organization_df.iterrows():
+    organization_internal_id.append("organization-" + str(idx))
+organization_df.insert(0, "OrganizationId", Series(organization_internal_id, dtype="string"))
 
 #----------------------------------------
 
@@ -118,6 +121,7 @@ book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
 
+
 #----------------------------------------
 
 
@@ -178,22 +182,7 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 #----------------------------------------
 
 
-#  Journal Article DataFrame 2
-
-journal_article_df = publication_df.query("type =='journal-article'")
-journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-journal_article_df = journal_article_df.rename(columns={"id":"doi"})
-jaDF = merge(journal_article_df, journal_df, left_on="doi", right_on="id")
-
-
-#print(df_joined)
-
-#journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
-
-
 # Venue DataFrame
-
 Venue=json_doc["venues_id"]
 
 doi_list = []
@@ -217,13 +206,33 @@ df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id")
 
 venue_df = df_joinVV[["id", "issn_isbn", "publication_venue", "publisher"]]
 venue_df = venue_df.rename(columns={"issn/isbn":"issn_isbn"})
+venue_df = merge(venue_df, organization_df, left_on="publisher", right_on="id")
+venue_df = venue_df[["publication_venue", "OrganizationId"]]
+venue_df.drop_duplicates(subset= ["publication_venue", "OrganizationId"], inplace = True, keep= False)
+venue_df = venue_df.reset_index()
 #venue_df = venue_df[["issn_isbn", "id", "publication_venue", "publisher"]]
+venue_internal_id = []
+for idx, row in venue_df.iterrows():
+    venue_internal_id.append("venue-" + str(idx))
+venue_df.insert(0, "VenueId", Series(venue_internal_id, dtype="string"))
+venue_df.drop("index", axis=1, inplace = True)
 
-
-#print(venue_df)
+print(venue_df)
 
 #----------------------------------------
 
+
+#  Journal Article DataFrame 2
+
+journal_article_df = publication_df.query("type =='journal-article'")
+journal_article_df = journal_article_df[["id", "publication_year", "title", "publication_venue", "issue", "volume"]]
+pd.set_option("display.max_colwidth", None, "display.max_rows", None)
+journal_article_df = journal_article_df.rename(columns={"id":"doi"})
+journal_article_df= merge(journal_article_df, venue_df, left_on="publication_venue", right_on="publication_venue")
+
+
+
+"""
 
 # Populate the SQL database 
 with connect("publication.db") as con:
@@ -248,7 +257,7 @@ with connect("publication.db") as con:
   
 
     con.commit()
-
+"""
  
 #result_q1 = generic.getPublicationsPublishedInYear(2020)
 

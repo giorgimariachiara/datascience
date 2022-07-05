@@ -138,7 +138,7 @@ for idx, row in publications.iterrows():
 
 #add data to the database
 store = SPARQLUpdateStore()
-
+"""
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
 endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -147,10 +147,12 @@ endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
 store.open((endpoint, endpoint))
 
 for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
-   store.add(triple)   
+    store.add(triple)   
 # Once finished, remeber to close the connection
 store.close()
+"""
 
+print(publications.info())
 print(len(my_graph))
 
 
