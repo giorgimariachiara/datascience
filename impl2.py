@@ -185,7 +185,8 @@ class GenericQueryProcessor(object):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        doi = dfMCP["cited"]
+        #doi = dfMCP["cited"]
+        print(dfMCP)
             
         # for index, row in dataFrame.iterrows():
         #     row = list(row)
@@ -193,6 +194,7 @@ class GenericQueryProcessor(object):
         #     self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
+
     # rp0 = RelationalProcessor()
     #     rp0.setDbPath(dbPath)
     #     with connect(rp0.getDbPath()) as con: 
@@ -524,7 +526,7 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 # print(gqp.getProceedingsByEvent("web"))
-print(gqp.getMostCitedPublication())
+#print(gqp.getMostCitedPublication())
 
 
 
