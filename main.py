@@ -1,36 +1,6 @@
 from locale import normalize
 # read csv file with pandas
 
-<<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# from pandas import DataFrame, merge 
-# =======
-
-
-# >>>>>>> Stashed changes
-# =======
-
-
-# >>>>>>> Stashed changes
-# =======
-
-
-# >>>>>>> Stashed changes
-# =======
-
-
-
-
-
-
-from pandas import DataFrame, concat, merge 
-=======
-
->>>>>>> Stashed changes
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -42,6 +12,7 @@ from pprint import pprint
 from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
+from pandas import DataFrame, concat
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 
 
@@ -281,8 +252,8 @@ venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn
 
 
 
-venueDF = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
-print(venueDF)
+venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
+print(venue_ext_df)
 
 
 
@@ -296,9 +267,9 @@ print(venueDF)
 
 #Venues_ext_df = 
 
-"""
 
-# Populate the SQL database 
+
+#Populate the SQL database 
 with connect("publication.db") as con:
     venue_df.to_sql("Venueid", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
@@ -321,7 +292,7 @@ with connect("publication.db") as con:
   
 
     con.commit()
-"""
+
  
 #result_q1 = generic.getPublicationsPublishedInYear(2020)
 
