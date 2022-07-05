@@ -1,3 +1,4 @@
+import pandas as pd
 from posixpath import split
 import sqlite3
 from sqlite3 import * 
@@ -303,6 +304,32 @@ class RelationalProcessor(object):
 class QueryProcessor(object):
     def __init__(self):
         pass
+    
+
+class RelationalDataProcessor(RelationalProcessor):
+    
+    def uploadData(csv_path):
+        
+
+
+
+
+publication_df = pd.read_csv("./relational_db/relational_publication.csv",
+                        dtype={
+                                    "id": "string",
+                                    "title": "string",
+                                    "type": "string",
+                                    "publication_year": "string",
+                                    "issue": "string",
+                                    "volume": "string",
+                                    "chapter": "string",
+                                    "publication_venue": "string",
+                                    "venue_type": "string",
+                                    "publisher": "string",
+                                    "event": "string"
+
+                        },encoding="utf-8")
+
     
 
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
