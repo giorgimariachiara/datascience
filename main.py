@@ -1,6 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
+<<<<<<< Updated upstream
 # <<<<<<< Updated upstream
 # <<<<<<< Updated upstream
 # <<<<<<< Updated upstream
@@ -27,6 +28,9 @@ from locale import normalize
 
 
 from pandas import DataFrame, concat, merge 
+=======
+
+>>>>>>> Stashed changes
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -39,6 +43,8 @@ from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+
+
 
 
 
