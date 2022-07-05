@@ -1,8 +1,6 @@
 from locale import normalize
 # read csv file with pandas
-
 from pandas import DataFrame, merge 
-
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -17,10 +15,6 @@ from pandas import read_csv, Series, read_json
 from impl2 import GenericQueryProcessor
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 from impl2 import  RelationalQueryProcessor 
-
-
-
-
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
