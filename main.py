@@ -4,7 +4,7 @@ from locale import normalize
 # from pandas import DataFrame, merge 
 
 
-from pandas import DataFrame, concat, merge 
+
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -16,6 +16,7 @@ from pprint import pprint
 from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
+from pandas import DataFrame, concat
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 
 
@@ -255,8 +256,8 @@ venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn
 
 
 
-venueDF = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
-print(venueDF)
+venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
+#print(venue_ext_df)
 
 
 
@@ -270,9 +271,9 @@ print(venueDF)
 
 #Venues_ext_df = 
 
-"""
 
-# Populate the SQL database 
+
+#Populate the SQL database 
 with connect("publication.db") as con:
     venue_df.to_sql("Venueid", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
@@ -285,6 +286,8 @@ with connect("publication.db") as con:
     author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
+    venue_ext_df.to_sql("VenueExt", con, if_exists="replace", index=False)  
+
     con.execute("DROP VIEW  IF EXISTS countCited") 
     con.execute("CREATE VIEW countCited AS "
                 "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
@@ -295,7 +298,7 @@ with connect("publication.db") as con:
   
 
     con.commit()
-"""
+
  
 #result_q1 = generic.getPublicationsPublishedInYear(2020)
 
