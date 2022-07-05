@@ -92,7 +92,7 @@ for idx, row in venue_df.iterrows():
 venue_df.insert(0, "VenueId", Series(venue_internal_id, dtype="string"))
 venue_df.drop("index", axis=1, inplace = True)
 
-print(venue_df)
+#print(venue_df)
 
 #----------------------------------------
 
@@ -110,6 +110,7 @@ author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
+#print(author_df)
 
 #----------------------------------------
 
@@ -245,7 +246,7 @@ Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", 
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 Proceedings_paper_df= merge(venue_df, Proceedings_paper_df, left_on="publication_venue", right_on="publication_venue")
-
+#print(proceedings_df)
 #----------------------------------------
 #Venues ext Dataframe
 Venue=json_doc["venues_id"]
@@ -264,12 +265,22 @@ venues = pd.DataFrame({
     
 })
 
-venue_ext_dfjournalart = merge(journal_article_df, venues, left_on="id", right_on="doi")
-venue_ext_dfjournalart = venue_ext_dfjournalart[["publication_venue", "issn_isbn"]]
-venue_ext_dfbookchapter = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
-venue_ext_dfbookchapter = venue_ext_dfbookchapter[["publication_venue", "issn_isbn"]]
+venue_ext_dfjournal = merge(journal_article_df, venues, left_on="id", right_on="doi")
+venue_ext_dfjournal = venue_ext_dfjournal[["publication_venue", "issn_isbn"]]
+venue_ext_dfbook = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
+venue_ext_dfbook = venue_ext_dfbook[["publication_venue", "issn_isbn"]]
+venue_ext_dfproceeding = merge(proceedings_df, venues, left_on="doi", right_on="doi")
+venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn"]]
 
-print(venue_ext_dfbookchapter)
+
+
+
+venueDF = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
+print(venueDF)
+
+
+
+#print(venue_ext_dfbookchapter)
 
 
 #df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
