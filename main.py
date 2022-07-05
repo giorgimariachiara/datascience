@@ -1,7 +1,6 @@
 from locale import normalize
 # read csv file with pandas
-<<<<<<< HEAD
-<<<<<<< Updated upstream
+
 # <<<<<<< Updated upstream
 # <<<<<<< Updated upstream
 # <<<<<<< Updated upstream
@@ -23,18 +22,11 @@ from locale import normalize
 # =======
 
 
-# >>>>>>> Stashed changes
-# =======
 
 
-# >>>>>>> Stashed changes
-=======
 
 
->>>>>>> Stashed changes
-=======
 from pandas import DataFrame, concat, merge 
->>>>>>> parent of f50355e (Update main.py)
 from operator import index
 from numpy import index_exp
 from pandas import merge 
