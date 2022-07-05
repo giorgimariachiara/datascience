@@ -189,7 +189,7 @@ book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
 book_df = book_df[["doi", "VenueId", "publisher"]]
 book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-print(organization_df)
+
 
 #----------------------------------------
 
@@ -199,8 +199,11 @@ print(organization_df)
 journal_df = publication_df.query("venue_type =='journal'")
 journal_df= journal_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-
-#journal_df= merge(venue_df, journal_article_df, left_on="publication_venue", right_on="publication_venue")
+journal_df = journal_df.rename(columns={"id":"doi"})
+journal_df= merge(venue_df, journal_df, left_on="publication_venue", right_on="publication_venue")
+journal_df = journal_df[["doi", "VenueId", "publisher"]]
+journal_df = journal_df.rename(columns={"VenueId":"publication_venue"})
+print(journal_df)
 
 
 
