@@ -183,25 +183,31 @@ class GenericQueryProcessor(object):
 
     def getMostCitedPublication(self): #qui mancano gli altri parametri per la classe publication 
         rqp0 = RelationalQueryProcessor()
+        rp0 = RelationalProcessor()
+        rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        for index, row in dfMCP.iterrows():
-            row = list(row)
-            publicationObj = Publication(*row)
-            self.addQueryProcessor(publicationObj)
+        doi = dfMCP["cited"]
+        print(dfMCP)
+            
+        # for index, row in dataFrame.iterrows():
+        #     row = list(row)
+        #     publicationObj = Publication(*row)
+        #     self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
+
+    # rp0 = RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     with connect(rp0.getDbPath()) as con: 
     
     
-    
+    """
     def getMostCitedVenue(self):
         rqp0 = RelationalQueryProcessor()
         dfMCV = rqp0.getMostCitedVenue()
-        for index, row in dfMCV.iterrows():
-            row = list(row)
-            venueObj = Venue(*row)
-            self.addQueryProcessor(venueObj)
+        self.addQueryProcessor(dfMCV)
         return self.queryProcessor
-    
+    """
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -376,14 +382,16 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(sql.format(publicationList[2]), con)
             ])
             
+            #MostcitedPP
 
+    
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid "
+            venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid " \
                                "JOIN maxCited ON id == cited", con)
-            return venueDF
+            print(venueDF)
             
             
 
@@ -549,9 +557,7 @@ gqp = GenericQueryProcessor()
 
 
 
-print(gqp.getMostCitedVenue())
-
-
+#print(rqp.getMostCitedVenue())
 #print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")

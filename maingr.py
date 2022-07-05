@@ -1,13 +1,20 @@
 from platform import mac_ver
 from rdflib import Graph 
-from rdflib import URIRef
+from rdflib import URIRef, Namespace
 from rdflib import Literal 
-from pandas import read_csv, Series
+import json
+import pandas as pd
+from pandas import read_csv, Series, read_json
 from rdflib import RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from impl2 import Organization
+from json import load
 
 my_graph = Graph() #empty rdf graph 
+
+#Namespaces used
+SCHEMA = Namespace("https://schema.org/")
+
 
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
 #CLASSES OF RESOURCES
@@ -19,6 +26,8 @@ Book = URIRef("https://schema.org/Book")
 Proceeding = URIRef("https://schema.org/Event")
 
 # attributes related to classes
+citation = URIRef("https://schema.org/citation")
+author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
 publicationYear = URIRef("https://schema.org/datePublished")
 title = URIRef("https://schema.org/name")
@@ -53,7 +62,20 @@ publications = read_csv("graph_db/graph_publications.csv",
                       "event":"string"
                   })
 
+"""
+with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+    
 
+authors = json_doc["authors"]
+author_df=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
+
+author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
+author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+
+author_df=pd.DataFrame(author_df)
+
+"""
 
 publications_internal_id = {}
 for idx, row in publications.iterrows():
@@ -65,7 +87,7 @@ for idx, row in publications.iterrows():
 
     # We put the new venue resources created here, to use them
     # when creating publications
-    publications_internal_id[row["id"]] = subj
+    #publications_internal_id[row["id"]] = subj
 
     #print(len(publications_internal_id))
  
@@ -116,7 +138,7 @@ for idx, row in publications.iterrows():
 
 #add data to the database
 store = SPARQLUpdateStore()
-
+"""
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
 endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -125,11 +147,12 @@ endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
 store.open((endpoint, endpoint))
 
 for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
-   store.add(triple)
-    
+    store.add(triple)   
 # Once finished, remeber to close the connection
 store.close()
+"""
 
+print(publications.info())
 print(len(my_graph))
 
 
