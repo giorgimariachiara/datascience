@@ -1,29 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
-# <<<<<<< Updated upstream
 # from pandas import DataFrame, merge 
-# =======
-
-
-# >>>>>>> Stashed changes
-# =======
-
-
-# >>>>>>> Stashed changes
-# =======
-
-
-# >>>>>>> Stashed changes
-# =======
-
-
-
-
 
 
 from pandas import DataFrame, concat, merge 
@@ -233,7 +211,7 @@ book_chapter_df = book_chapter_df[["id", "publication_year", "title", "publicati
 
 book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-book_chapter_df= merge( venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
+book_chapter_df= merge(venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
 book_chapter_df = book_chapter_df[["VenueId", "doi", "title", "publication_year", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"VenueId":"publication_venue"})
 
