@@ -257,7 +257,7 @@ venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn
 
 
 venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
-print(venue_ext_df)
+#print(venue_ext_df)
 
 
 
@@ -286,6 +286,8 @@ with connect("publication.db") as con:
     author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
+    venue_ext_df.to_sql("VenueExt", con, if_exists="replace", index=False)  
+
     con.execute("DROP VIEW  IF EXISTS countCited") 
     con.execute("CREATE VIEW countCited AS "
                 "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
