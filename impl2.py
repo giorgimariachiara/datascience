@@ -371,7 +371,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             SQL = "SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE B.orc_id = '{}'"
             return concat([
-                #read_sql(SQL.format(publications[0], orcid), con),
+                read_sql(SQL.format(publications[0], orcid), con),
                 read_sql(SQL.format(publications[1], orcid), con),
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
@@ -400,6 +400,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                                "JOIN maxCited ON id == cited", con)
             print(venueDF)
             
+#SELECT B.issn_isbn, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN VenueExt AS B ON B.publication_venue==A.Venueid JOIN maxCited ON id ==cited 
             
 
     
@@ -410,7 +411,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             VenuesDF = read_sql("SELECT id, publication_venue, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue'])
-
+#SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN Organization AS B WHERE B.id == "crossref:6228"
     
     def getPublicationInVenue(self, issn_isbn):
         rp0= RelationalProcessor()
