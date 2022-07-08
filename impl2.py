@@ -371,7 +371,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             SQL = "SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE B.orc_id = '{}'"
             return concat([
-                read_sql(SQL.format(publications[0], orcid), con),
+                #read_sql(SQL.format(publications[0], orcid), con),
                 read_sql(SQL.format(publications[1], orcid), con),
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
