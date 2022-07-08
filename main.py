@@ -253,6 +253,7 @@ venue_ext_dfbook = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfbook = venue_ext_dfbook[["publication_venue", "issn_isbn"]]
 venue_ext_dfproceeding = merge(proceedings_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn"]]
+
 venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
 venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace = True)
 print(venue_ext_df)

@@ -409,23 +409,21 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            VenuesDF = read_sql("SELECT id, publication_venue, publisher FROM Venueid WHERE publisher = '" + publisher + "'", con)
+            VenuesDF = read_sql("SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN Organization AS B ON A.OrganizationId == B.OrganizationId WHERE B.id = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue'])
-#SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN Organization AS B WHERE B.id == "crossref:6228"
+
     
     def getPublicationInVenue(self, issn_isbn):
         rp0= RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-            SQL ="SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '{}'"
+            SQL ="SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A LEFT JOIN VenueExt AS B ON A.publication_venue == B.publication_venue WHERE B.issn_isbn = '{}'"
             return concat([
                 read_sql(SQL.format(publications[0], issn_isbn), con),
                 read_sql(SQL.format(publications[1], issn_isbn), con),
                 read_sql(SQL.format(publications[2], issn_isbn), con)
             ])
-
-    
 
     # def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
     #     rp0 = RelationalProcessor()
@@ -439,7 +437,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAI = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  A.volume = '"+ str(volume) + "' AND A.issue = '" + str(issue) + "' AND B.issn_isbn = '"+ issn_isbn + "'",  con)
+            dfJAI = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN VenueExt B ON A.publication_venue == B.publication_venue WHERE  A.volume = '"+ str(volume) + "' AND A.issue = '" + str(issue) + "' AND B.issn_isbn = '"+ issn_isbn + "'",  con)
             #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
         return dfJAI 
 
@@ -450,7 +448,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             #dfJAV = read_sql("SELECT title FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
-            dfJAV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE A.volume = '" + str(volume) + "' AND B.issn_isbn = '"+ issn_isbn + "'", con)
+            dfJAV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN VenueExt AS B ON A.publication_venue == B.publication_venue WHERE A.volume = '" + str(volume) + "' AND B.issn_isbn = '"+ issn_isbn + "'", con)
         return dfJAV
 
 
@@ -458,7 +456,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            dfJAJ = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE B.issn_isbn = '" + issn + "'", con) 
+            dfJAJ = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN VenueExt AS B ON A.publication_venue == B.publication_venue WHERE B.issn_isbn = '" + issn + "'", con) 
         return dfJAJ     
     
     def getProceedingsByEvent(self, name):
@@ -466,7 +464,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         #name = name.lower()
         with connect(rp0.getDbPath()) as con: 
-            events = read_sql('SELECT B.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.id WHERE B.Event LIKE "%' + name.lower() + '%"', con)
+            events = read_sql('SELECT B.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.doi WHERE B.Event LIKE "%' + name.lower() + '%"', con)
         return events
 
 
@@ -488,9 +486,9 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
         
-            dfProc = read_sql('SELECT A.doi, publication_year, title, publication_venue FROM ProceedingsPaper A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con) 
-            dfJournal = read_sql('SELECT A.doi, publication_year, title, publication_venue FROM JournalArticle A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
-            dfBook = read_sql('SELECT A.doi, publication_year, title, publication_venue FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
+            dfProc = read_sql('SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM ProceedingsPaper A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con) 
+            dfJournal = read_sql('SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM JournalArticle A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
+            dfBook = read_sql('SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
 
         return concat([dfBook, dfJournal, dfProc])  
 
@@ -501,9 +499,17 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         publisherDFlist = []
         with connect(rp0.getDbPath()) as con:
             for doi in list:
-                publisherDF = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
-                publisherDFlist.append(publisherDF)
-        return concat(publisherDFlist)           
+                JournalAsrticledf = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.OrganizationId== B.OrganizationId JOIN JournalArticle C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
+                Proceedingspaperdf = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.OrganizationId== B.OrganizationId JOIN ProceedingsPaper C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con) 
+                BookChapterdf = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.OrganizationId== B.OrganizationId JOIN BookChapter C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)  
+                #publisherDFlist.append(JournalAsrticledf)
+                #publisherDFlist.append(Proceedingspaperdf)
+                #publisherDFlist.append(BookChapterdf)
+               
+                
+                return concat([JournalAsrticledf, Proceedingspaperdf, BookChapterdf])
+                
+       #l'output non è giusto perchè non appende i risultati di tutti ma solo del primo doi            
     
 
 
@@ -550,14 +556,14 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00023"))
+print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00109"))
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
-#print(type(gqp.getVenuesByPublisherId("crossref:281")))
-#print(gqp.getPublicationsByAuthorName("Pe"))
-#print(rqp.getDistinctPublisherOfPublications(["doi:10.1007/s11192-019-03217-6"]))
+#print(rqp.getVenuesByPublisherId("crossref:281"))
+#print(rqp.getPublicationsByAuthorName("Pe"))
+#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1162/qss_a_00109", "doi:10.1007/s11192-021-04097-5", "doi:10.3390/su13116225"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 # print(gqp.getProceedingsByEvent("web"))
@@ -574,7 +580,7 @@ print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 #     print(JournalArticle.__str__(object))
 #     break
 
-#print(rqp.getJournalArticlesInJournal("issn:1616-5187"))
+#print(gqp.getJournalArticlesInJournal("issn:1616-5187"))
 
 # ListaJournalArticleOBJ = gqp.getJournalArticlesInJournal("issn:1616-5187")
 # for object in ListaJournalArticleOBJ:
@@ -603,7 +609,7 @@ print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 # print(type(Publication.__str__(publicationObj)))
 
 
-#print(gqp.getPublicationInVenue("issn:2641-3337"))
+#print(rqp.getPublicationInVenue("issn:2641-3337"))
 
 #dfMCP = rqp.getMostCitedPublication()
 #print(dfMCP["cited"].iloc[0])
