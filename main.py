@@ -204,6 +204,7 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 journal_article_df= merge(venue_df, journal_article_df, left_on="publication_venue", right_on="publication_venue")
 journal_article_df = journal_article_df[["VenueId", "id", "publication_year", "title", "issue", "volume"]]
 journal_article_df = journal_article_df.rename(columns={"VenueId":"publication_venue"})
+journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 
 #----------------------------------------
 
