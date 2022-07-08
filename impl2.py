@@ -186,6 +186,7 @@ class GenericQueryProcessor(object):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
+        #doi = dfMCP["cited"]
         doi = dfMCP["cited"]
         print(dfMCP)
             
@@ -193,6 +194,10 @@ class GenericQueryProcessor(object):
         #     row = list(row)
         #     publicationObj = Publication(*row)
         #     self.addQueryProcessor(publicationObj)
+        for index, row in dfMCP.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
 
@@ -315,29 +320,31 @@ class QueryProcessor(object):
 class RelationalDataProcessor(RelationalProcessor):
     
     def uploadData(csv_path):
+        pass
         
 
 
 
 
-publication_df = pd.read_csv("./relational_db/relational_publication.csv",
-                        dtype={
-                                    "id": "string",
-                                    "title": "string",
-                                    "type": "string",
-                                    "publication_year": "string",
-                                    "issue": "string",
-                                    "volume": "string",
-                                    "chapter": "string",
-                                    "publication_venue": "string",
-                                    "venue_type": "string",
-                                    "publisher": "string",
-                                    "event": "string"
+# publication_df = pd.read_csv("./relational_db/relational_publication.csv",
+#                         dtype={
+#                                     "id": "string",
+#                                     "title": "string",
+#                                     "type": "string",
+#                                     "publication_year": "string",
+#                                     "issue": "string",
+#                                     "volume": "string",
+#                                     "chapter": "string",
+#                                     "publication_venue": "string",
+#                                     "venue_type": "string",
+#                                     "publisher": "string",
+#                                     "event": "string"
 
-                        },encoding="utf-8")
+#                         },encoding="utf-8")
 
     
-
+    
+    
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationsPublishedInYear(self, py):

@@ -9,6 +9,11 @@ from rdflib import RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from impl2 import Organization
 from json import load
+import pandas as pd 
+from pandas import DataFrame
+
+my_graph = Graph() #empty rdf graph 
+
 
 my_graph = Graph() #empty rdf graph 
 
@@ -34,6 +39,7 @@ title = URIRef("https://schema.org/name")
 issue = URIRef("https://schema.org/issueNumber")
 volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
+familyname = URIRef("https://schema.org/familyName")
 name = URIRef("https://schema.org/name") #non so se serve 
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
@@ -90,7 +96,23 @@ for idx, row in publications.iterrows():
     #publications_internal_id[row["id"]] = subj
 
     #print(len(publications_internal_id))
- 
+
+with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+
+"""
+author = json_doc.get("authors")
+authordict = author.values()
+
+for key in dict:
+    if authordict[key] == "family":
+        my_graph.add((subj, familyname, authordict[key]))
+
+print(len(my_graph))
+
+
+#print(len(my_graph))
+
 
     if row["type"] == "journal-article":
         if row["type"] != "":
@@ -137,8 +159,8 @@ for idx, row in publications.iterrows():
 #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
-store = SPARQLUpdateStore()
-"""
+#store = SPARQLUpdateStore()
+
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
 endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -150,9 +172,11 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
     store.add(triple)   
 # Once finished, remeber to close the connection
 store.close()
-"""
+
+
 
 print(publications.info())
 print(len(my_graph))
 
 
+"""

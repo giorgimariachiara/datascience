@@ -1,6 +1,10 @@
 from locale import normalize
 # read csv file with pandas
-from pandas import DataFrame, concat, merge 
+
+# from pandas import DataFrame, merge 
+
+
+
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -12,7 +16,12 @@ from pprint import pprint
 from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
+from pandas import DataFrame, concat
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+
+
+
+
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
@@ -64,7 +73,7 @@ for idx, row in venue_df.iterrows():
 venue_df.insert(0, "VenueId", Series(venue_internal_id, dtype="string"))
 venue_df.drop("index", axis=1, inplace = True)
 
-print(venue_df)
+#print(venue_df)
 
 #----------------------------------------
 
@@ -82,6 +91,7 @@ author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
+#print(author_df)
 
 #----------------------------------------
 
@@ -205,7 +215,7 @@ book_chapter_df = book_chapter_df[["id", "publication_year", "title", "publicati
 
 book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-book_chapter_df= merge( venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
+book_chapter_df= merge(venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
 book_chapter_df = book_chapter_df[["VenueId", "doi", "title", "publication_year", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"VenueId":"publication_venue"})
 
@@ -217,7 +227,7 @@ Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", 
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 Proceedings_paper_df= merge(venue_df, Proceedings_paper_df, left_on="publication_venue", right_on="publication_venue")
-
+#print(proceedings_df)
 #----------------------------------------
 #Venues ext Dataframe
 Venue=json_doc["venues_id"]
@@ -236,12 +246,22 @@ venues = pd.DataFrame({
     
 })
 
-venue_ext_dfjournalart = merge(journal_article_df, venues, left_on="id", right_on="doi")
-venue_ext_dfjournalart = venue_ext_dfjournalart[["publication_venue", "issn_isbn"]]
-venue_ext_dfbookchapter = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
-venue_ext_dfbookchapter = venue_ext_dfbookchapter[["publication_venue", "issn_isbn"]]
+venue_ext_dfjournal = merge(journal_article_df, venues, left_on="id", right_on="doi")
+venue_ext_dfjournal = venue_ext_dfjournal[["publication_venue", "issn_isbn"]]
+venue_ext_dfbook = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
+venue_ext_dfbook = venue_ext_dfbook[["publication_venue", "issn_isbn"]]
+venue_ext_dfproceeding = merge(proceedings_df, venues, left_on="doi", right_on="doi")
+venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn"]]
 
-print(venue_ext_dfbookchapter)
+
+
+
+venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
+#print(venue_ext_df)
+
+
+
+#print(venue_ext_dfbookchapter)
 
 
 #df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
@@ -251,9 +271,9 @@ print(venue_ext_dfbookchapter)
 
 #Venues_ext_df = 
 
-"""
 
-# Populate the SQL database 
+
+#Populate the SQL database 
 with connect("publication.db") as con:
     venue_df.to_sql("Venueid", con, if_exists="replace", index=False)
     journal_df.to_sql("Journal", con, if_exists="replace", index=False)
@@ -266,6 +286,8 @@ with connect("publication.db") as con:
     author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
+    venue_ext_df.to_sql("VenueExt", con, if_exists="replace", index=False)  
+
     con.execute("DROP VIEW  IF EXISTS countCited") 
     con.execute("CREATE VIEW countCited AS "
                 "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
@@ -276,7 +298,7 @@ with connect("publication.db") as con:
   
 
     con.commit()
-"""
+
  
 #result_q1 = generic.getPublicationsPublishedInYear(2020)
 
