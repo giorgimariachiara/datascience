@@ -1,4 +1,5 @@
 from platform import mac_ver
+from platformdirs import user_data_dir
 from rdflib import Graph 
 from rdflib import URIRef, Namespace
 from rdflib import Literal 
@@ -44,6 +45,7 @@ name = URIRef("https://schema.org/name") #non so se serve
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
+publisher = URIRef("https://schema.org/publisher")
 
 # relations among classes
 publicationVenue = URIRef("https://schema.org/isPartOf")
@@ -68,10 +70,41 @@ publications = read_csv("graph_db/graph_publications.csv",
                       "event":"string"
                   })
 
-"""
 with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
     
+#organization dataframe 
+
+crossref = json_doc.get("publishers")
+id_and_name = crossref.values()
+organization_df = pd.DataFrame(id_and_name)
+
+organization_df.insert(0, 'InternalId', range(0, organization_df.shape[0]))
+organization_df['id']= organization_df['id'].apply(lambda x: 'organization-'+ str(int(x)))
+
+for idx, row in organization_df.iterrows():
+    subj = URIRef(base_url + row["id"])
+    
+    my_graph.add((subj, RDF.type, organization))
+    my_graph.add((subj, name, Literal(row["name"])))
+    my_graph.add((subj, identifier, Literal(row["InternalId"])))
+
+pvdataframe = publications[["publication_venue", "venue_type", "publisher"]].drop_duplicates()
+pvdataframe.insert(0, 'id', range(0, pvdataframe.shape[0]))
+pvdataframe['id']= pvdataframe['id'].apply(lambda x: 'venue-'+ str(int(x)))
+print(pvdataframe.head(5))
+
+for idx, row in pvdataframe.iterrows():
+    subj = URIRef(base_url + row["id"])
+    
+    my_graph.add((subj, title, Literal(row["publication_venue"])))
+    my_graph.add((subj, RDF.type, Literal(row["venue_type"])))
+    my_graph.add((subj, publisher, Literal(row["InternalId"]))) #qui bisogna mettere l'id del dataframe di organization 
+    
+
+
+   
+""" 
 
 authors = json_doc["authors"]
 author_df=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
@@ -81,15 +114,15 @@ author_df.rename(columns={"author.family":"family_name","author.given":"given_na
 
 author_df=pd.DataFrame(author_df)
 
-"""
 
-publications_internal_id = {}
-for idx, row in publications.iterrows():
-    internal_id = "publication-" + str(idx)
+with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
+    """
+
 
 # The shape of the new resources that are venues is
     # 'https://comp-data.github.io/res/venue-<integer>'
-    subj = URIRef(base_url + internal_id)
+    
 
     # We put the new venue resources created here, to use them
     # when creating publications
@@ -97,8 +130,7 @@ for idx, row in publications.iterrows():
 
     #print(len(publications_internal_id))
 
-with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
+
 
 """
 author = json_doc.get("authors")
@@ -114,21 +146,26 @@ print(len(my_graph))
 #print(len(my_graph))
 
 
+publications_internal_id = {}
+for idx, row in publications.iterrows():
+    internal_id = "publication-" + str(idx)
+    subj = URIRef(base_url + internal_id)
+
     if row["type"] == "journal-article":
         if row["type"] != "":
-            my_graph.add((subj, RDF.type, JournalArticle)) 
+                my_graph.add((subj, RDF.type, JournalArticle)) 
         if row["issue"] != "":
-            my_graph.add((subj, issue, Literal(row["issue"])))
+                my_graph.add((subj, issue, Literal(row["issue"])))
         if row["volume"] != "":
-            my_graph.add((subj, volume, Literal(row["volume"])))
+                my_graph.add((subj, volume, Literal(row["volume"])))
 
     elif row["type"] == "book-chapter":
         if row["type"] != "":
-            my_graph.add((subj, RDF.type, BookChapter))
-            my_graph.add((subj, chapter, Literal(row["chapter"])))
+                my_graph.add((subj, RDF.type, BookChapter))
+                my_graph.add((subj, chapter, Literal(row["chapter"])))
     else: 
-        if row["type"] != "":
-            my_graph.add((subj, RDF.type, Proceedingspaper))
+        if row["type"] == "proceeding-paper":
+                my_graph.add((subj, RDF.type, Proceedingspaper))
 
     if row["venue_type"] == "book":
         if row["venue_type"] != "":
@@ -137,7 +174,7 @@ print(len(my_graph))
         if row["venue_type"] != "":
             my_graph.add((subj, RDF.type, Journal))
     else:
-        if row["venue_type"] != "":
+        if row["venue_type"] == "proceeding":
             my_graph.add((subj, RDF.type, Proceeding))
     
     if row["event"] != "":  
@@ -155,7 +192,8 @@ print(len(my_graph))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
         
-  
+    
+    
 #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
 #add data to the database
@@ -173,10 +211,9 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
+ """
 
 
-print(publications.info())
 print(len(my_graph))
 
 
-"""

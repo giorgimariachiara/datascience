@@ -1,12 +1,6 @@
 from locale import normalize
 # read csv file with pandas
 
-<<<<<<< Updated upstream
-# from pandas import DataFrame, merge 
-
-
-=======
->>>>>>> Stashed changes
 
 from operator import index
 from numpy import index_exp
@@ -61,7 +55,7 @@ organization_internal_id = []
 for idx, row in organization_df.iterrows():
     organization_internal_id.append("organization-" + str(idx))
 organization_df.insert(0, "OrganizationId", Series(organization_internal_id, dtype="string"))
-
+print(organization_df)
 #----------------------------------------
 
 # Venue DataFrame
@@ -152,6 +146,7 @@ proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", rig
 proceedings_df = proceedings_df[["id", "VenueId", "publisher", "event"]]
 proceedings_df = proceedings_df.rename(columns={"VenueId":"publication_venue"})
 proceedings_df = proceedings_df.rename(columns={"id":"doi"})
+#print(proceedings_df)
 
 #----------------------------------------
 
@@ -179,7 +174,7 @@ book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
 book_df = book_df[["doi", "VenueId", "publisher"]]
 book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-
+print(book_df)
 
 #----------------------------------------
 
