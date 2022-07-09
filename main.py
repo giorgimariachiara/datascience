@@ -1,9 +1,12 @@
 from locale import normalize
 # read csv file with pandas
 
+<<<<<<< Updated upstream
 # from pandas import DataFrame, merge 
 
 
+=======
+>>>>>>> Stashed changes
 
 from operator import index
 from numpy import index_exp
@@ -18,6 +21,8 @@ import pandas as pd
 from pandas import read_csv, Series, read_json
 from pandas import DataFrame, concat
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+
+
 
 
 
