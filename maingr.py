@@ -251,7 +251,7 @@ for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPub
 
 
         
-print(my_graph)
+print(len(my_graph))
     
     
 

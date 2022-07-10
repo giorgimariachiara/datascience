@@ -32,6 +32,7 @@ Book = URIRef("https://schema.org/Book")
 Proceeding = URIRef("https://schema.org/Event")
 
 # attributes related to classes
+person = URIRef("https://schema.org/Person")
 citation = URIRef("https://schema.org/citation")
 author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
@@ -82,6 +83,7 @@ for idx, row in publications.iterrows(): #qui l'iterrows va fatto su dfPublicati
    # if row["publication_venue"] != "":
     #my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
     
+<<<<<<< Updated upstream
 
     #my_graph.add((subj, title, Literal(row["title"])))
     #my_graph.add((subj, identifier, Literal(row["id"])))
@@ -135,18 +137,21 @@ dfPublicationVenue.insert(0, 'PublicationId', range(0, dfPublicationVenue.shape[
 dfPublicationVenue['PublicationId']= dfPublicationVenue['PublicationId'].apply(lambda x: 'publication-'+ str(int(x)))
 for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["PublicationId"])
+=======
+for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
+    subj = URIRef(base_url + row["id"])
+>>>>>>> Stashed changes
 
     if row["type"] == "journal-article":
         if row["type"] != "":
                 my_graph.add((subj, RDF.type, JournalArticle)) 
-        if row["issue"] != "":
                 my_graph.add((subj, issue, Literal(row["issue"])))
-        if row["volume"] != "":
                 my_graph.add((subj, volume, Literal(row["volume"])))
-
-    elif row["type"] == "book-chapter":
-        if row["type"] != "":
+"""
+    if row["type"] == "book-chapter":
                 my_graph.add((subj, RDF.type, BookChapter))
+
+    
                 my_graph.add((subj, chapter, Literal(row["chapter"])))
     else: 
         if row["type"] == "proceeding-paper":
@@ -169,12 +174,13 @@ for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPu
         my_graph.add((subj, organization, Literal(row["publisher"]))) #ma questo serve ancora qui? 
 
     if row["publication_venue"] != "":
-        my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
+        my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
     
 
     my_graph.add((subj, title, Literal(row["title"])))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+<<<<<<< Updated upstream
         
 print(my_graph)
     
@@ -184,3 +190,7 @@ print(my_graph)
 
 #print(my_graph.print())
 #print(len(my_graph))
+=======
+    """    
+print(len(my_graph))
+>>>>>>> Stashed changes

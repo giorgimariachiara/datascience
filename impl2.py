@@ -36,6 +36,13 @@ class Publication(IdentifiableEntity):
         return str([self.id, self.publication_year, self.title, self.PublicationVenue])
     
         
+
+
+
+
+
+
+        
     def getPublicationYear(self):
         if self.publication_year:
             return self.publication_year
