@@ -12,6 +12,7 @@ from impl2 import Organization
 from json import load
 import pandas as pd 
 from pandas import DataFrame
+from impl2 import  TriplestoreProcessor
 
 my_graph = Graph() #empty rdf graph 
 
@@ -56,24 +57,59 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
-publications = read_csv("graph_db/graph_publications.csv", 
-                keep_default_na= False,
-                dtype={
-                      "id": "string",
-                      "title": "string",
-                      "type": "string",
-                      "publication_year":"string",
-                      "issue":"string",
-                      "volume":"string",
-                      "chapter":"string",
-                      "publication_venue":"string",
-                      "venue_type": "string",
-                      "publisher": "string",
-                      "event":"string"
-                  })
+csv_path = "./relational_db/relational_publication.csv"
+json_path = "./relational_db/relational_other_data.json"
 
-with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
+
+class TriplestoreDataProcessor(TriplestoreProcessor):
+    
+    def uploadData(data_path):
+        data_path_string = str(data_path)
+        if data_path_string.endswith(".csv"):
+            csv_data = pd.read_csv(data_path,
+                        dtype={
+                                    "id": "string",
+                                    "title": "string",
+                                    "type": "string",
+                                    "publication_year": "string",
+                                    "issue": "string",
+                                    "volume": "string",
+                                    "chapter": "string",
+                                    "publication_venue": "string",
+                                    "venue_type": "string",
+                                    "publisher": "string",
+                                    "event": "string"
+
+                        },encoding="utf-8")
+            return csv_data
+        elif  data_path_string.endswith(".json"):
+            with open(data_path, "r", encoding="utf-8") as f:
+                json_data = load(f)
+            return json_data
+        else:
+            print("The file format in input is not correct!")
+            
+publications = TriplestoreDataProcessor.uploadData(csv_path)      
+json_doc = TriplestoreDataProcessor.uploadData(json_path)      
+
+# publications = read_csv("graph_db/graph_publications.csv", 
+#                 keep_default_na= False,
+#                 dtype={
+#                       "id": "string",
+#                       "title": "string",
+#                       "type": "string",
+#                       "publication_year":"string",
+#                       "issue":"string",
+#                       "volume":"string",
+#                       "chapter":"string",
+#                       "publication_venue":"string",
+#                       "venue_type": "string",
+#                       "publisher": "string",
+#                       "event":"string"
+#                   })
+
+# with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+#     json_doc = load(f)
     
 #organization dataframe 
 

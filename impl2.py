@@ -6,6 +6,8 @@ from pandas import DataFrame, concat, read_sql
 import pandas
 from mimetypes import init
 from unicodedata import name
+import json
+from json import load
 
 
 dbPath = "./publication.db"
@@ -307,36 +309,26 @@ class RelationalProcessor(object):
     def getDbPath(self):
         return self.dbPath
 
+class TriplestoreProcessor(object):
+    def __init__(self):
+        self.endpointUrl = ""
+        
+    def setEndpointUrl(self, url):
+        self.endpointUrl = 
+        
+           
+    
+
+
+
+
 class QueryProcessor(object):
     def __init__(self):
         pass
     
 
-# class RelationalDataProcessor(RelationalProcessor):
-    
-#     def uploadData(csv_path):
-        
-
-
-
-
-# publication_df = pd.read_csv("./relational_db/relational_publication.csv",
-#                         dtype={
-#                                     "id": "string",
-#                                     "title": "string",
-#                                     "type": "string",
-#                                     "publication_year": "string",
-#                                     "issue": "string",
-#                                     "volume": "string",
-#                                     "chapter": "string",
-#                                     "publication_venue": "string",
-#                                     "venue_type": "string",
-#                                     "publisher": "string",
-#                                     "event": "string"
-
-#                         },encoding="utf-8")
-
-    
+               
+            
 
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
