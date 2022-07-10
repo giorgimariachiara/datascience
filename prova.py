@@ -73,7 +73,33 @@ publications = read_csv("graph_db/graph_publications.csv",
 
 with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
+
+
+
+for idx, row in publications.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
+    subj = URIRef(base_url + row["id"])
+
+   # if row["publication_venue"] != "":
+    #my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
     
+
+    #my_graph.add((subj, title, Literal(row["title"])))
+    #my_graph.add((subj, identifier, Literal(row["id"])))
+    #my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+    #my_graph.add((subj, event, Literal(row["event"])))
+
+   # if row["type"] == "book-chapter":
+  #      my_graph.add((subj, RDF.type, BookChapter))
+   #     my_graph.add((subj, chapter, Literal(row["chapter"])))
+    if row["type"] == "journal-article":
+        if row["venue_type"] != "":
+     #       my_graph.add((subj, RDF.type, JournalArticle)) 
+            my_graph.add((subj, issue, Literal(row["issue"])))
+        #my_graph.add((subj, volume, Literal(row["volume"])))
+#print(publications.describe(include="all"))
+print(my_graph.print())
+print(len(my_graph))
+"""
 #organization dataframe 
 
 crossref = json_doc.get("publishers")
@@ -154,4 +180,7 @@ print(my_graph)
     
     
 
-print(my_graph.print())
+"""
+
+#print(my_graph.print())
+#print(len(my_graph))

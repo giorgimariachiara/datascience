@@ -12,6 +12,7 @@ from impl2 import Organization
 from json import load
 import pandas as pd 
 from pandas import DataFrame
+from impl2 import  TriplestoreProcessor
 
 my_graph = Graph() #empty rdf graph 
 
@@ -29,11 +30,12 @@ BookChapter = URIRef("https://schema.org/Chapter")
 Proceedingspaper = URIRef("https://schema.org/ScholarlyArticle")
 Journal = URIRef("https://schema.org/Periodical")
 Book = URIRef("https://schema.org/Book")
-Proceeding = URIRef("https://schema.org/Event")
+Proceeding = URIRef("https://schema.org/Event") #sbagliato
+Person = URIRef("https://schema.org/Person")
+organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 
 # attributes related to classes
 citation = URIRef("https://schema.org/citation")
-person = URIRef("https://schema.org/Person")
 author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
 publicationYear = URIRef("https://schema.org/datePublished")
@@ -45,7 +47,6 @@ familyName = URIRef("https://schema.org/familyName")
 givenName = URIRef("https://schema.org/givenName") 
 name = URIRef("https://schema.org/name")
 chapter = URIRef("https://schema.org/Chapter")
-organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
 publisher = URIRef("https://schema.org/publisher")
 
@@ -56,24 +57,59 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
-publications = read_csv("graph_db/graph_publications.csv", 
-                keep_default_na= False,
-                dtype={
-                      "id": "string",
-                      "title": "string",
-                      "type": "string",
-                      "publication_year":"string",
-                      "issue":"string",
-                      "volume":"string",
-                      "chapter":"string",
-                      "publication_venue":"string",
-                      "venue_type": "string",
-                      "publisher": "string",
-                      "event":"string"
-                  })
+csv_path = "./relational_db/relational_publication.csv"
+json_path = "./relational_db/relational_other_data.json"
 
-with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
+
+class TriplestoreDataProcessor(TriplestoreProcessor):
+    
+    def uploadData(data_path):
+        data_path_string = str(data_path)
+        if data_path_string.endswith(".csv"):
+            csv_data = pd.read_csv(data_path,
+                        dtype={
+                                    "id": "string",
+                                    "title": "string",
+                                    "type": "string",
+                                    "publication_year": "string",
+                                    "issue": "string",
+                                    "volume": "string",
+                                    "chapter": "string",
+                                    "publication_venue": "string",
+                                    "venue_type": "string",
+                                    "publisher": "string",
+                                    "event": "string"
+
+                        },encoding="utf-8")
+            return csv_data
+        elif  data_path_string.endswith(".json"):
+            with open(data_path, "r", encoding="utf-8") as f:
+                json_data = load(f)
+            return json_data
+        else:
+            print("The file format in input is not correct!")
+            
+publications = TriplestoreDataProcessor.uploadData(csv_path)      
+json_doc = TriplestoreDataProcessor.uploadData(json_path)      
+
+# publications = read_csv("graph_db/graph_publications.csv", 
+#                 keep_default_na= False,
+#                 dtype={
+#                       "id": "string",
+#                       "title": "string",
+#                       "type": "string",
+#                       "publication_year":"string",
+#                       "issue":"string",
+#                       "volume":"string",
+#                       "chapter":"string",
+#                       "publication_venue":"string",
+#                       "venue_type": "string",
+#                       "publisher": "string",
+#                       "event":"string"
+#                   })
+
+# with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+#     json_doc = load(f)
     
 #organization dataframe 
 
@@ -143,10 +179,11 @@ person_df = pd.DataFrame({
 for idx, row in person_df.iterrows():
     subj = URIRef(base_url + row["orcid"])
 
-    my_graph.add((subj, RDF.type, person))
+    my_graph.add((subj, RDF.type, Person))
     my_graph.add((subj, givenName, Literal(row["given"])))
     my_graph.add((subj, familyName, Literal(row["family"])))
-    #qui quindi non serve la colonna orcid perchè sta nel subj? 
+    my_graph.add((subj, identifier, Literal(row["orcid"])))
+    
 
 
 #creiamo il dataframe author con doi e orcid
@@ -158,23 +195,30 @@ author_df.rename(columns={"author.family":"family_name","author.given":"given_na
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 
-author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
-author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x)))
+#author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
+#author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x))) 
 
 
 for idx, row in author_df.iterrows(): 
-    subj = URIRef(base_url + row["AuthorId"])
+    subj = URIRef(base_url + row["orc_id"])
 
-    my_graph.add((subj, RDF.type, author))
-    my_graph.add((subj, identifier, Literal(row["orc_id"])))
-    my_graph.add((subj, doi, Literal(row["doi"])))
+   # my_graph.add((subj, RDF.type, author))
+   # my_graph.add((subj, identifier, Literal(row["orc_id"])))
+    my_graph.add((subj, author, URIRef(base_url + row["doi"])))
 
 
 dfPublicationVenue = pd.merge(venuesdataframe, publications, left_on="publication_venue", right_on="publication_venue")
-dfPublicationVenue.insert(0, 'PublicationId', range(0, dfPublicationVenue.shape[0]))
-dfPublicationVenue['PublicationId']= dfPublicationVenue['PublicationId'].apply(lambda x: 'publication-'+ str(int(x)))
-for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
-    subj = URIRef(base_url + row["PublicationId"])
+
+for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
+    subj = URIRef(base_url + row["id"])
+
+   # if row["publication_venue"] != "":
+    my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
+    
+
+    my_graph.add((subj, title, Literal(row["title"])))
+    my_graph.add((subj, identifier, Literal(row["id"])))
+    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 
     if row["type"] == "journal-article":
         if row["type"] != "":
@@ -202,19 +246,10 @@ for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPu
         if row["venue_type"] == "proceeding":
             my_graph.add((subj, RDF.type, Proceeding))
     
-    if row["event"] != "":  
-        my_graph.add((subj, event, Literal(row["event"])))
+            if row["event"] != "":  
+                my_graph.add((subj, event, Literal(row["event"])))
 
-    if row["publisher"] != "":
-        my_graph.add((subj, organization, Literal(row["publisher"]))) #ma questo serve ancora qui? 
 
-    if row["publication_venue"] != "":
-        my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
-    
-
-    my_graph.add((subj, title, Literal(row["title"])))
-    my_graph.add((subj, identifier, Literal(row["id"])))
-    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
         
 print(my_graph)
     
@@ -236,7 +271,6 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
- 
 """
 
 

@@ -1,7 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
-
+from impl2 import RelationalProcessor
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -14,9 +14,14 @@ from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
 from pandas import DataFrame, concat
-#from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
+csv_path = "./relational_db/relational_publication.csv"
+json_path = "./relational_db/relational_other_data.json"
 
-publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
+class RelationalDataProcessor(RelationalProcessor):    
+    def uploadData(data_path):
+        data_path_string = str(data_path)
+        if data_path_string.endswith(".csv"):
+            csv_data = pd.read_csv(data_path,
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -31,11 +36,40 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                                     "event": "string"
 
                         },encoding="utf-8")
-#print(publication_df.columns)
+            return csv_data
+        elif  data_path_string.endswith(".json"):
+            with open(data_path, "r", encoding="utf-8") as f:
+                json_data = load(f)
+            return json_data
+        else:
+            print("The file format in imput is not correct!")
 
-print(publication_df.info())
-with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
+
+publication_df = RelationalDataProcessor.uploadData(csv_path)
+json_doc = RelationalDataProcessor.uploadData(json_path)
+
+
+
+# publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
+#                         dtype={
+#                                     "id": "string",
+#                                     "title": "string",
+#                                     "type": "string",
+#                                     "publication_year": "string",
+#                                     "issue": "string",
+#                                     "volume": "string",
+#                                     "chapter": "string",
+#                                     "publication_venue": "string",
+#                                     "venue_type": "string",
+#                                     "publisher": "string",
+#                                     "event": "string"
+
+#                         },encoding="utf-8")
+
+
+# print(publication_df.info())
+# with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
+#     json_doc = load(f)
 
 
 #----------------------------------------
@@ -82,7 +116,7 @@ author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-print(author_df)
+#print(author_df)
 
 #----------------------------------------
 
@@ -125,7 +159,7 @@ person_df = pd.DataFrame({
     "family": Series(family_names_l, dtype="string", name="family_name"),
 })
 
-print(person_df)
+#print(person_df)
  #qui bisogna fare il merge o no? 
 
 
