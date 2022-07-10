@@ -30,11 +30,12 @@ BookChapter = URIRef("https://schema.org/Chapter")
 Proceedingspaper = URIRef("https://schema.org/ScholarlyArticle")
 Journal = URIRef("https://schema.org/Periodical")
 Book = URIRef("https://schema.org/Book")
-Proceeding = URIRef("https://schema.org/Event")
+Proceeding = URIRef("https://schema.org/Event") #sbagliato
+Person = URIRef("https://schema.org/Person")
+organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 
 # attributes related to classes
 citation = URIRef("https://schema.org/citation")
-person = URIRef("https://schema.org/Person")
 author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
 publicationYear = URIRef("https://schema.org/datePublished")
@@ -46,7 +47,6 @@ familyName = URIRef("https://schema.org/familyName")
 givenName = URIRef("https://schema.org/givenName") 
 name = URIRef("https://schema.org/name")
 chapter = URIRef("https://schema.org/Chapter")
-organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
 publisher = URIRef("https://schema.org/publisher")
 
@@ -140,13 +140,13 @@ for idx, row in venuesdataframe.iterrows():
     my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"])))  
 
 
-person=json_doc["authors"]
+persons=json_doc["authors"]
 
 doi_l = []
 name_orcid_l = []
 
-for key in person:
-    for item in person[key]:
+for key in persons:
+    for item in persons[key]:
         doi_l.append(key)
         name_orcid_l.append(item)
 
@@ -179,38 +179,46 @@ person_df = pd.DataFrame({
 for idx, row in person_df.iterrows():
     subj = URIRef(base_url + row["orcid"])
 
-    my_graph.add((subj, RDF.type, person))
-    my_graph.add((subj, givenName, Literal(row["given_name"])))
-    my_graph.add((subj, familyName, Literal(row["family_name"])))
-    #qui quindi non serve la colonna orcid perchè sta nel subj? 
+    my_graph.add((subj, RDF.type, Person))
+    my_graph.add((subj, givenName, Literal(row["given"])))
+    my_graph.add((subj, familyName, Literal(row["family"])))
+    my_graph.add((subj, identifier, Literal(row["orcid"])))
+    
 
 
 #creiamo il dataframe author con doi e orcid
 #author dovrebbe avere un internal id? nel relational non ce l'ha ma qual è quindi la sua primary key? 
-author = json_doc["authors"]
-author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
+authors = json_doc["authors"]
+author_df=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
 author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
 author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 
-author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
-author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x)))
+#author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
+#author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x))) 
 
 
 for idx, row in author_df.iterrows(): 
-    subj = URIRef(base_url + row["AuthorId"])
+    subj = URIRef(base_url + row["orc_id"])
 
-    my_graph.add((subj, RDF.type, author))
-    my_graph.add((subj, identifier, Literal(row["orc_id"])))
-    my_graph.add((subj, doi, Literal(row["doi"])))
+   # my_graph.add((subj, RDF.type, author))
+   # my_graph.add((subj, identifier, Literal(row["orc_id"])))
+    my_graph.add((subj, author, URIRef(base_url + row["doi"])))
 
 
 dfPublicationVenue = pd.merge(venuesdataframe, publications, left_on="publication_venue", right_on="publication_venue")
-dfPublicationVenue.insert(0, 'PublicationId', range(0, dfPublicationVenue.shape[0]))
-dfPublicationVenue['PublicationId']= dfPublicationVenue['PublicationId'].apply(lambda x: 'publication-'+ str(int(x)))
-for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
-    subj = URIRef(base_url + row["PublicationId"])
+
+for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
+    subj = URIRef(base_url + row["id"])
+
+   # if row["publication_venue"] != "":
+    my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
+    
+
+    my_graph.add((subj, title, Literal(row["title"])))
+    my_graph.add((subj, identifier, Literal(row["id"])))
+    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 
     if row["type"] == "journal-article":
         if row["type"] != "":
@@ -238,19 +246,10 @@ for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPu
         if row["venue_type"] == "proceeding":
             my_graph.add((subj, RDF.type, Proceeding))
     
-    if row["event"] != "":  
-        my_graph.add((subj, event, Literal(row["event"])))
+            if row["event"] != "":  
+                my_graph.add((subj, event, Literal(row["event"])))
 
-    if row["publisher"] != "":
-        my_graph.add((subj, organization, Literal(row["publisher"]))) #ma questo serve ancora qui? 
 
-    if row["publication_venue"] != "":
-        my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
-    
-
-    my_graph.add((subj, title, Literal(row["title"])))
-    my_graph.add((subj, identifier, Literal(row["id"])))
-    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
         
 print(my_graph)
     
@@ -272,7 +271,6 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
- 
 """
 
 
