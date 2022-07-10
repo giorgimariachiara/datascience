@@ -104,13 +104,13 @@ for idx, row in venuesdataframe.iterrows():
     my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"])))  
 
 
-person=json_doc["authors"]
+persons=json_doc["authors"]
 
 doi_l = []
 name_orcid_l = []
 
-for key in person:
-    for item in person[key]:
+for key in persons:
+    for item in persons[key]:
         doi_l.append(key)
         name_orcid_l.append(item)
 
@@ -144,15 +144,15 @@ for idx, row in person_df.iterrows():
     subj = URIRef(base_url + row["orcid"])
 
     my_graph.add((subj, RDF.type, person))
-    my_graph.add((subj, givenName, Literal(row["given_name"])))
-    my_graph.add((subj, familyName, Literal(row["family_name"])))
+    my_graph.add((subj, givenName, Literal(row["given"])))
+    my_graph.add((subj, familyName, Literal(row["family"])))
     #qui quindi non serve la colonna orcid perchè sta nel subj? 
 
 
 #creiamo il dataframe author con doi e orcid
 #author dovrebbe avere un internal id? nel relational non ce l'ha ma qual è quindi la sua primary key? 
-author = json_doc["authors"]
-author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
+authors = json_doc["authors"]
+author_df=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
 author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
 author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
 author_df.drop("family_name", axis=1, inplace = True)
