@@ -40,7 +40,8 @@ title = URIRef("https://schema.org/name")
 issue = URIRef("https://schema.org/issueNumber")
 volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
-familyname = URIRef("https://schema.org/familyName")
+familyName = URIRef("https://schema.org/familyName")
+givenName = URIRef("https://schema.org/givenName") 
 name = URIRef("https://schema.org/name") #non so se serve 
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
@@ -101,5 +102,24 @@ for idx, row in venuesdataframe.iterrows():
     my_graph.add((subj, title, Literal(row["publication_venue"])))
     my_graph.add((subj, RDF.type, Literal(row["venue_type"])))
     my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"]))) 
+
+
+author = json_doc["authors"]
+author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
+author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
+author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+author_df.drop("family_name", axis=1, inplace = True)
+author_df.drop("given_name", axis =1, inplace = True)
+
+author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
+author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x)))
+
+
+for idx, row in author_df.iterrows(): 
+    subj = URIRef(base_url + row["AuthorId"])
+
+    my_graph.add((subj, RDF.type, author))
+    my_graph.add((subj, identifier, Literal(row["orc_id"])))
+    my_graph.add((subj, doi, Literal(row["doi"])))
 
 print(my_graph.print())

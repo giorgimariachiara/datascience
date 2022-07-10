@@ -16,18 +16,7 @@ from pandas import read_csv, Series, read_json
 from pandas import DataFrame, concat
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 
-
-
-
-
-
-<<<<<<< Updated upstream
-
-
-publication_df = pd.read_csv("./relational_db/relational_publication.csv",
-=======
 publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
->>>>>>> Stashed changes
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -82,20 +71,18 @@ venue_df.drop("index", axis=1, inplace = True)
 #----------------------------------------
 
 # Author dataframe
+
 author = json_doc["authors"]
 
 author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
 
 author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
 author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
-
-author_df=pd.DataFrame(author_df)
-
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-#print(author_df)
+print(author_df)
 
 #----------------------------------------
 
@@ -138,6 +125,9 @@ person_df = pd.DataFrame({
     "family": Series(family_names_l, dtype="string", name="family_name"),
 })
 
+print(person_df)
+ #qui bisogna fare il merge o no? 
+
 
 #----------------------------------------
 
@@ -179,7 +169,7 @@ book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
 book_df = book_df[["doi", "VenueId", "publisher"]]
 book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-print(book_df)
+#print(book_df)
 
 #----------------------------------------
 
@@ -275,7 +265,7 @@ venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace
 
 #Venues_ext_df = 
 
-print(publication_df.describe(include= "all"))
+#print(publication_df.describe(include= "all"))
 
 #Populate the SQL database 
 with connect("publication.db") as con:
@@ -287,7 +277,7 @@ with connect("publication.db") as con:
     proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
-    author_df.to_sql("Authors", con, if_exists="replace", index=False)
+    #author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
     venue_ext_df.to_sql("VenueExt", con, if_exists="replace", index=False)  
@@ -300,7 +290,6 @@ with connect("publication.db") as con:
                 "SELECT * FROM countCited WHERE N = (SELECT MAX(N) FROM countCited);")
 
   
-
 
     con.commit()
 

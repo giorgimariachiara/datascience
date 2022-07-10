@@ -33,6 +33,7 @@ Proceeding = URIRef("https://schema.org/Event")
 
 # attributes related to classes
 citation = URIRef("https://schema.org/citation")
+person = URIRef("https://schema.org/Person")
 author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
 publicationYear = URIRef("https://schema.org/datePublished")
@@ -40,8 +41,9 @@ title = URIRef("https://schema.org/name")
 issue = URIRef("https://schema.org/issueNumber")
 volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
-familyname = URIRef("https://schema.org/familyName")
-name = URIRef("https://schema.org/name") #non so se serve 
+familyName = URIRef("https://schema.org/familyName")
+givenName = URIRef("https://schema.org/givenName") 
+name = URIRef("https://schema.org/name")
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
@@ -97,60 +99,82 @@ venuesdataframe = pd.merge(pvdataframe, organization_df, left_on="publisher", ri
 for idx, row in venuesdataframe.iterrows():
     subj = URIRef(base_url + row["VenueId"])
     
-    
     my_graph.add((subj, title, Literal(row["publication_venue"])))
     my_graph.add((subj, RDF.type, Literal(row["venue_type"])))
-    my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"])))  #qui bisogna mettere l'id del dataframe di organization 
-    
+    my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"])))  
 
 
-   
-""" 
+person=json_doc["authors"]
 
-authors = json_doc["authors"]
-author_df=pd.DataFrame(authors.items(),columns=['doi','author']).explode('author')
+doi_l = []
+name_orcid_l = []
 
+for key in person:
+    for item in person[key]:
+        doi_l.append(key)
+        name_orcid_l.append(item)
+
+person_l = []
+
+for item in name_orcid_l:
+    if item not in person_l:
+        person_l.append(item)
+
+family_names_l = []
+for item in person_l:
+   family_names_l.append(item.get("family"))
+
+
+given_names_l = []
+for item in person_l:
+    given_names_l.append(item.get("given"))
+
+
+orcid_l = []
+for item in person_l:
+    orcid_l.append(item.get("orcid"))
+
+person_df = pd.DataFrame({
+    "orcid": Series(orcid_l, dtype="string", name="orc_id"),
+    "given": Series(given_names_l, dtype="string", name="given_name"),
+    "family": Series(family_names_l, dtype="string", name="family_name"),
+})
+
+for idx, row in person_df.iterrows():
+    subj = URIRef(base_url + row["orcid"])
+
+    my_graph.add((subj, RDF.type, person))
+    my_graph.add((subj, givenName, Literal(row["given_name"])))
+    my_graph.add((subj, familyName, Literal(row["family_name"])))
+    #qui quindi non serve la colonna orcid perchè sta nel subj? 
+
+
+#creiamo il dataframe author con doi e orcid
+#author dovrebbe avere un internal id? nel relational non ce l'ha ma qual è quindi la sua primary key? 
+author = json_doc["authors"]
+author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
 author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
 author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+author_df.drop("family_name", axis=1, inplace = True)
+author_df.drop("given_name", axis =1, inplace = True)
 
-author_df=pd.DataFrame(author_df)
-
-
-with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
-    json_doc = load(f)
-    """
+author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
+author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x)))
 
 
-# The shape of the new resources that are venues is
-    # 'https://comp-data.github.io/res/venue-<integer>'
-    
+for idx, row in author_df.iterrows(): 
+    subj = URIRef(base_url + row["AuthorId"])
 
-    # We put the new venue resources created here, to use them
-    # when creating publications
-    #publications_internal_id[row["id"]] = subj
-
-    #print(len(publications_internal_id))
+    my_graph.add((subj, RDF.type, author))
+    my_graph.add((subj, identifier, Literal(row["orc_id"])))
+    my_graph.add((subj, doi, Literal(row["doi"])))
 
 
-
-"""
-author = json_doc.get("authors")
-authordict = author.values()
-
-for key in dict:
-    if authordict[key] == "family":
-        my_graph.add((subj, familyname, authordict[key]))
-
-print(len(my_graph))
-
-
-#print(len(my_graph))
-
-"""
-publications_internal_id = {}
-for idx, row in publications.iterrows():
-    internal_id = "publication-" + str(idx)
-    subj = URIRef(base_url + internal_id)
+dfPublicationVenue = pd.merge(venuesdataframe, publications, left_on="publication_venue", right_on="publication_venue")
+dfPublicationVenue.insert(0, 'PublicationId', range(0, dfPublicationVenue.shape[0]))
+dfPublicationVenue['PublicationId']= dfPublicationVenue['PublicationId'].apply(lambda x: 'publication-'+ str(int(x)))
+for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
+    subj = URIRef(base_url + row["PublicationId"])
 
     if row["type"] == "journal-article":
         if row["type"] != "":
@@ -182,21 +206,21 @@ for idx, row in publications.iterrows():
         my_graph.add((subj, event, Literal(row["event"])))
 
     if row["publisher"] != "":
-        my_graph.add((subj, organization, Literal(row["publisher"]))) 
+        my_graph.add((subj, organization, Literal(row["publisher"]))) #ma questo serve ancora qui? 
 
     if row["publication_venue"] != "":
-        my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))   #venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna capire perchè 
-
+        my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
     
 
     my_graph.add((subj, title, Literal(row["title"])))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
         
+print(my_graph)
     
     
-#venue_internal_id[row["publication venue"]] questo è quello che ha mesos Peroni bisogna ccapire perchè 
 
+"""
 #add data to the database
 #store = SPARQLUpdateStore()
 
@@ -213,8 +237,7 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 store.close()
 
  
+"""
 
-
-print(len(my_graph))
 
 
