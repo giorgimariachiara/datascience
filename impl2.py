@@ -556,7 +556,7 @@ gqp = GenericQueryProcessor()
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(rqp.getVenuesByPublisherId("crossref:281"))
 #print(rqp.getPublicationsByAuthorName("Pe"))
-print(rqp.getDistinctPublisherOfPublications([ "doi:10.1162/qss_a_00109", "doi:10.1007/s11192-021-04097-5", "doi:10.3390/su13116225"]))
+#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1162/qss_a_00109", "doi:10.1007/s11192-021-04097-5", "doi:10.3390/su13116225"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 # print(gqp.getProceedingsByEvent("web"))

@@ -21,9 +21,13 @@ from pandas import DataFrame, concat
 
 
 
+<<<<<<< Updated upstream
 
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
+=======
+publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
+>>>>>>> Stashed changes
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -40,6 +44,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         },encoding="utf-8")
 #print(publication_df.columns)
 
+print(publication_df.info())
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
 
@@ -256,7 +261,7 @@ venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn
 
 venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
 venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace = True)
-print(venue_ext_df)
+
 
 
 
@@ -270,7 +275,7 @@ print(venue_ext_df)
 
 #Venues_ext_df = 
 
-
+print(publication_df.describe(include= "all"))
 
 #Populate the SQL database 
 with connect("publication.db") as con:
@@ -295,6 +300,7 @@ with connect("publication.db") as con:
                 "SELECT * FROM countCited WHERE N = (SELECT MAX(N) FROM countCited);")
 
   
+
 
     con.commit()
 
