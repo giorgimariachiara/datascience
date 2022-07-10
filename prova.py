@@ -82,14 +82,7 @@ for idx, row in publications.iterrows(): #qui l'iterrows va fatto su dfPublicati
 
    # if row["publication_venue"] != "":
     #my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
-    
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
->>>>>>> 73210dc992082f85993f13eeabd3bd1c27b6df45
+
 
     #my_graph.add((subj, title, Literal(row["title"])))
     #my_graph.add((subj, identifier, Literal(row["id"])))
@@ -146,26 +139,25 @@ for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPu
 =======
 for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
->>>>>>> Stashed changes
+
 =======
 for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
->>>>>>> Stashed changes
+
 =======
 for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
->>>>>>> Stashed changes
+
 =======
 for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
->>>>>>> Stashed changes
 
     if row["type"] == "journal-article":
         if row["type"] != "":
                 my_graph.add((subj, RDF.type, JournalArticle)) 
                 my_graph.add((subj, issue, Literal(row["issue"])))
                 my_graph.add((subj, volume, Literal(row["volume"])))
-"""
+
     if row["type"] == "book-chapter":
                 my_graph.add((subj, RDF.type, BookChapter))
 
@@ -198,36 +190,4 @@ for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicat
     my_graph.add((subj, title, Literal(row["title"])))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-        
-print(my_graph)
-    
-    
-
 """
-
-#print(my_graph.print())
-<<<<<<< HEAD
-#print(len(my_graph))
-=======
-    """    
-print(len(my_graph))
->>>>>>> Stashed changes
-=======
-    """    
-print(len(my_graph))
->>>>>>> Stashed changes
-=======
-    """    
-print(len(my_graph))
->>>>>>> Stashed changes
-=======
-    """    
-print(len(my_graph))
->>>>>>> Stashed changes
-=======
-#print(len(my_graph))
->>>>>>> 73210dc992082f85993f13eeabd3bd1c27b6df45
