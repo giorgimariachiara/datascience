@@ -86,6 +86,7 @@ for idx, row in publications.iterrows(): #qui l'iterrows va fatto su dfPublicati
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
     #my_graph.add((subj, title, Literal(row["title"])))
     #my_graph.add((subj, identifier, Literal(row["id"])))
@@ -151,6 +152,10 @@ for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicat
 for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
 >>>>>>> Stashed changes
+=======
+for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
+    subj = URIRef(base_url + row["id"])
+>>>>>>> Stashed changes
 
     if row["type"] == "journal-article":
         if row["type"] != "":
@@ -193,6 +198,7 @@ for idx, row in publications.iterrows(): #qui lìiterrows va fatto su dfPublicat
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         
 print(my_graph)
     
@@ -202,6 +208,10 @@ print(my_graph)
 
 #print(my_graph.print())
 #print(len(my_graph))
+=======
+    """    
+print(len(my_graph))
+>>>>>>> Stashed changes
 =======
     """    
 print(len(my_graph))
