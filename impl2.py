@@ -186,7 +186,6 @@ class GenericQueryProcessor(object):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        #doi = dfMCP["cited"]
         doi = dfMCP["cited"]
         print(dfMCP)
             
@@ -194,10 +193,6 @@ class GenericQueryProcessor(object):
         #     row = list(row)
         #     publicationObj = Publication(*row)
         #     self.addQueryProcessor(publicationObj)
-        for index, row in dfMCP.iterrows():
-            row = list(row)
-            publicationObj = Publication(*row)
-            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
 
@@ -317,10 +312,9 @@ class QueryProcessor(object):
         pass
     
 
-class RelationalDataProcessor(RelationalProcessor):
+# class RelationalDataProcessor(RelationalProcessor):
     
-    def uploadData(csv_path):
-        pass
+#     def uploadData(csv_path):
         
 
 
@@ -343,8 +337,7 @@ class RelationalDataProcessor(RelationalProcessor):
 #                         },encoding="utf-8")
 
     
-    
-    
+
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationsPublishedInYear(self, py):
@@ -558,7 +551,7 @@ gqp = GenericQueryProcessor()
 #print(RelationalQueryProcessor.getDbPath())
 #print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00109"))
+#print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00109"))
 #print(gqp.getVenuesByPublisherId("crossref:281"))
 #print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
 #print(rqp.getVenuesByPublisherId("crossref:281"))

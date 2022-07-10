@@ -1,9 +1,6 @@
 from locale import normalize
 # read csv file with pandas
 
-# from pandas import DataFrame, merge 
-
-
 
 from operator import index
 from numpy import index_exp
@@ -19,12 +16,7 @@ from pandas import read_csv, Series, read_json
 from pandas import DataFrame, concat
 #from impl2 import RelationalDataProcessor, RelationalQueryProcessor 
 
-
-
-
-
-
-publication_df = pd.read_csv("./relational_db/relational_publication.csv",
+publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -41,6 +33,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         },encoding="utf-8")
 #print(publication_df.columns)
 
+print(publication_df.info())
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
 
@@ -56,7 +49,7 @@ organization_internal_id = []
 for idx, row in organization_df.iterrows():
     organization_internal_id.append("organization-" + str(idx))
 organization_df.insert(0, "OrganizationId", Series(organization_internal_id, dtype="string"))
-
+print(organization_df)
 #----------------------------------------
 
 # Venue DataFrame
@@ -78,20 +71,18 @@ venue_df.drop("index", axis=1, inplace = True)
 #----------------------------------------
 
 # Author dataframe
+
 author = json_doc["authors"]
 
 author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
 
 author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
 author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
-
-author_df=pd.DataFrame(author_df)
-
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 
-#print(author_df)
+print(author_df)
 
 #----------------------------------------
 
@@ -134,6 +125,9 @@ person_df = pd.DataFrame({
     "family": Series(family_names_l, dtype="string", name="family_name"),
 })
 
+print(person_df)
+ #qui bisogna fare il merge o no? 
+
 
 #----------------------------------------
 
@@ -147,6 +141,7 @@ proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", rig
 proceedings_df = proceedings_df[["id", "VenueId", "publisher", "event"]]
 proceedings_df = proceedings_df.rename(columns={"VenueId":"publication_venue"})
 proceedings_df = proceedings_df.rename(columns={"id":"doi"})
+#print(proceedings_df)
 
 #----------------------------------------
 
@@ -174,7 +169,7 @@ book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
 book_df = book_df[["doi", "VenueId", "publisher"]]
 book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-
+#print(book_df)
 
 #----------------------------------------
 
@@ -256,7 +251,7 @@ venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn
 
 venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
 venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace = True)
-print(venue_ext_df)
+
 
 
 
@@ -270,7 +265,7 @@ print(venue_ext_df)
 
 #Venues_ext_df = 
 
-
+#print(publication_df.describe(include= "all"))
 
 #Populate the SQL database 
 with connect("publication.db") as con:
@@ -282,7 +277,7 @@ with connect("publication.db") as con:
     proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
-    author_df.to_sql("Authors", con, if_exists="replace", index=False)
+    #author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
     venue_ext_df.to_sql("VenueExt", con, if_exists="replace", index=False)  

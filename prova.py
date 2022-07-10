@@ -33,7 +33,6 @@ Proceeding = URIRef("https://schema.org/Event")
 
 # attributes related to classes
 citation = URIRef("https://schema.org/citation")
-person = URIRef("https://schema.org/Person")
 author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
 publicationYear = URIRef("https://schema.org/datePublished")
@@ -43,7 +42,7 @@ volume = URIRef("https://schema.org/volumeNumber")
 identifier = URIRef("https://schema.org/identifier")
 familyName = URIRef("https://schema.org/familyName")
 givenName = URIRef("https://schema.org/givenName") 
-name = URIRef("https://schema.org/name")
+name = URIRef("https://schema.org/name") #non so se serve 
 chapter = URIRef("https://schema.org/Chapter")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 event = URIRef("https://schema.org/Event")
@@ -99,58 +98,12 @@ venuesdataframe = pd.merge(pvdataframe, organization_df, left_on="publisher", ri
 for idx, row in venuesdataframe.iterrows():
     subj = URIRef(base_url + row["VenueId"])
     
+    
     my_graph.add((subj, title, Literal(row["publication_venue"])))
     my_graph.add((subj, RDF.type, Literal(row["venue_type"])))
-    my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"])))  
+    my_graph.add((subj, publisher, URIRef(base_url + row["GOrganizationId"]))) 
 
 
-person=json_doc["authors"]
-
-doi_l = []
-name_orcid_l = []
-
-for key in person:
-    for item in person[key]:
-        doi_l.append(key)
-        name_orcid_l.append(item)
-
-person_l = []
-
-for item in name_orcid_l:
-    if item not in person_l:
-        person_l.append(item)
-
-family_names_l = []
-for item in person_l:
-   family_names_l.append(item.get("family"))
-
-
-given_names_l = []
-for item in person_l:
-    given_names_l.append(item.get("given"))
-
-
-orcid_l = []
-for item in person_l:
-    orcid_l.append(item.get("orcid"))
-
-person_df = pd.DataFrame({
-    "orcid": Series(orcid_l, dtype="string", name="orc_id"),
-    "given": Series(given_names_l, dtype="string", name="given_name"),
-    "family": Series(family_names_l, dtype="string", name="family_name"),
-})
-
-for idx, row in person_df.iterrows():
-    subj = URIRef(base_url + row["orcid"])
-
-    my_graph.add((subj, RDF.type, person))
-    my_graph.add((subj, givenName, Literal(row["given_name"])))
-    my_graph.add((subj, familyName, Literal(row["family_name"])))
-    #qui quindi non serve la colonna orcid perchè sta nel subj? 
-
-
-#creiamo il dataframe author con doi e orcid
-#author dovrebbe avere un internal id? nel relational non ce l'ha ma qual è quindi la sua primary key? 
 author = json_doc["authors"]
 author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
 author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
@@ -169,75 +122,4 @@ for idx, row in author_df.iterrows():
     my_graph.add((subj, identifier, Literal(row["orc_id"])))
     my_graph.add((subj, doi, Literal(row["doi"])))
 
-
-dfPublicationVenue = pd.merge(venuesdataframe, publications, left_on="publication_venue", right_on="publication_venue")
-dfPublicationVenue.insert(0, 'PublicationId', range(0, dfPublicationVenue.shape[0]))
-dfPublicationVenue['PublicationId']= dfPublicationVenue['PublicationId'].apply(lambda x: 'publication-'+ str(int(x)))
-for idx, row in dfPublicationVenue.iterrows(): #qui lìiterrows va fatto su dfPublicationVenue? 
-    subj = URIRef(base_url + row["PublicationId"])
-
-    if row["type"] == "journal-article":
-        if row["type"] != "":
-                my_graph.add((subj, RDF.type, JournalArticle)) 
-        if row["issue"] != "":
-                my_graph.add((subj, issue, Literal(row["issue"])))
-        if row["volume"] != "":
-                my_graph.add((subj, volume, Literal(row["volume"])))
-
-    elif row["type"] == "book-chapter":
-        if row["type"] != "":
-                my_graph.add((subj, RDF.type, BookChapter))
-                my_graph.add((subj, chapter, Literal(row["chapter"])))
-    else: 
-        if row["type"] == "proceeding-paper":
-                my_graph.add((subj, RDF.type, Proceedingspaper))
-
-    if row["venue_type"] == "book":
-        if row["venue_type"] != "":
-            my_graph.add((subj, RDF.type, Book))
-    elif row["venue_type"] == "journal":
-        if row["venue_type"] != "":
-            my_graph.add((subj, RDF.type, Journal))
-    else:
-        if row["venue_type"] == "proceeding":
-            my_graph.add((subj, RDF.type, Proceeding))
-    
-    if row["event"] != "":  
-        my_graph.add((subj, event, Literal(row["event"])))
-
-    if row["publisher"] != "":
-        my_graph.add((subj, organization, Literal(row["publisher"]))) #ma questo serve ancora qui? 
-
-    if row["publication_venue"] != "":
-        my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
-    
-
-    my_graph.add((subj, title, Literal(row["title"])))
-    my_graph.add((subj, identifier, Literal(row["id"])))
-    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-        
-print(my_graph)
-    
-    
-
-"""
-#add data to the database
-#store = SPARQLUpdateStore()
-
-# The URL of the SPARQL endpoint is the same URL of the Blazegraph
-# instance + '/sparql'
-endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
-
-# It opens the connection with the SPARQL endpoint instance
-store.open((endpoint, endpoint))
-
-for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
-    store.add(triple)   
-# Once finished, remeber to close the connection
-store.close()
-
- 
-"""
-
-
-
+print(my_graph.print())
