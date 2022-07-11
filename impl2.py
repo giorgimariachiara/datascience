@@ -34,6 +34,7 @@ class Publication(IdentifiableEntity):
     
     def __str__(self):
         return str([self.id, self.publication_year, self.title, self.PublicationVenue])
+    
         
     def getPublicationYear(self):
         if self.publication_year:
@@ -313,7 +314,10 @@ class TriplestoreProcessor(object):
         self.endpointUrl = ""
         
     def setEndpointUrl(self, url):
-        self.endpointUrl = 
+        self.endpointUrl = url
+    
+    def getEndpointUrl(self):
+        return self.endpointUrl
         
            
     
