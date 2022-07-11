@@ -203,9 +203,8 @@ book_df= book_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
-#book_df = book_df[["doi", "VenueId", "publisher"]]
-#book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-print(book_df)
+book_df = book_df[["doi", "VenueId", "publisher"]]
+book_df = book_df.rename(columns={"VenueId":"publication_venue"})
 
 #----------------------------------------
 
@@ -287,7 +286,7 @@ venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn
 
 venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
 venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace = True)
-
+print(venues)
 
 
 

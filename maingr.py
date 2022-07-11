@@ -1,4 +1,5 @@
 from ast import For
+from os import urandom
 from platform import mac_ver
 from platformdirs import user_data_dir
 from rdflib import Graph 
@@ -223,8 +224,6 @@ print(nomi)
 #print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
 
 
-
-
 for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
 
@@ -280,13 +279,34 @@ for idx, row in cites_df.iterrows():
         my_graph.add((subj, SCHEMA["citation"], Literal(row["cited"])))
 
     #my_graph.add((subj, BIBO["citing"], Literal(row["citing"])))
-print(len(my_graph))
+
+
+Venue=json_doc["venues_id"]
+
+doi_list = []
+issn_isbn_l = []
+
+for key in Venue:
+    for item in Venue[key]:
+        doi_list.append(key)
+        issn_isbn_l.append(item)
+
+venues = pd.DataFrame({
+    "doi": Series(doi_list, dtype="string", name="doi"),
+    "issn_isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
     
-    
+})
+
+venue_ext_df = pd.merge(dfPublicationVenue, venues, left_on="id", right_on="doi")
+venue_ext_df = venue_ext_df[["VenueId", "issn_isbn"]]
+venue_ext_df.drop_duplicates(subset= ["VenueId", "issn_isbn"], inplace = True)
+
+for idx, row in venue_ext_df.iterrows():
+    subj = URIRef(base_url + row["VenueId"]) #è così? 
+
+    my_graph.add((subj, identifier, Literal(row["issn_isbn"]) )) #è giuto identifier? 
 
 """
-#add data to the database
-#store = SPARQLUpdateStore()
 
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
@@ -302,5 +322,6 @@ store.close()
 
 """
 
-
+#print(my_graph.print())
+print(pvdataframe)
 
