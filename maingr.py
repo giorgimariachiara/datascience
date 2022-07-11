@@ -307,8 +307,7 @@ for idx, row in venue_ext_df.iterrows():
 
     my_graph.add((subj, identifier, Literal(row["issn_isbn"]) )) #è giuto identifier? 
 
-"""
-
+store = SPARQLUpdateStore()
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
 endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -321,7 +320,7 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
-"""
+
 
 #print(my_graph.print())
 print(pvdataframe)
