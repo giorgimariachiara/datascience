@@ -85,6 +85,9 @@ class Organization(IdentifiableEntity):
     def __str__(self):
         return str([self.id, self.name])
     
+    def __str__(self):
+        return str([self.id, self.name])
+    
     def getName(self):
         return self.name
 
@@ -189,7 +192,7 @@ class GenericQueryProcessor(object):
         rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
         doi = dfMCP["cited"]
-        print(dfMCP)
+        #print(dfMCP)
             
         # for index, row in dataFrame.iterrows():
         #     row = list(row)
@@ -319,19 +322,11 @@ class TriplestoreProcessor(object):
     def getEndpointUrl(self):
         return self.endpointUrl
         
-           
-    
-
-
-
-
+        
 class QueryProcessor(object):
     def __init__(self):
         pass
     
-
-               
-            
 
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
@@ -386,7 +381,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(rp0.getDbPath()) as con: 
             venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid " \
                                "JOIN maxCited ON id == cited", con)
-            print(venueDF)
+            return venueDF
+            #print(venueDF)
             
 #SELECT B.issn_isbn, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN VenueExt AS B ON B.publication_venue==A.Venueid JOIN maxCited ON id ==cited 
             
@@ -481,25 +477,35 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         return concat([dfBook, dfJournal, dfProc])  
 
 
-    def getDistinctPublisherOfPublications(self, list):
-        rp0= RelationalProcessor()
-        rp0.setDbPath(dbPath)
-        publisherDFlist = []
-        with connect(rp0.getDbPath()) as con:
-            for doi in list:
-                JournalAsrticledf = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.OrganizationId== B.OrganizationId JOIN JournalArticle C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
-                Proceedingspaperdf = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.OrganizationId== B.OrganizationId JOIN ProceedingsPaper C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con) 
-                BookChapterdf = read_sql("SELECT DISTINCT A.* FROM Organization A JOIN Venueid B ON A.OrganizationId== B.OrganizationId JOIN BookChapter C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)  
-                #publisherDFlist.append(JournalAsrticledf)
-                #publisherDFlist.append(Proceedingspaperdf)
-                #publisherDFlist.append(BookChapterdf)
-               
-                
-                return concat([JournalAsrticledf, Proceedingspaperdf, BookChapterdf])
+    # def getDistinctPublisherOfPublications(self, listOfDoi):
+    #     rp0= RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     outputDFlist = []
+    #     with connect(rp0.getDbPath()) as con:
+    #         for doi in listOfDoi:
+    #             JournalAsrticleDF = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN JournalArticle AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
+    #             ProceedingspaperDF = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN ProceedingsPaper AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con) 
+    #             BookChapterDF = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN BookChapter AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)  
+    #             outputDFlist.append(concat([JournalAsrticleDF, ProceedingspaperDF, BookChapterDF]))
+            
+    #         return outputDFlist
                 
        #l'output non è giusto perchè non appende i risultati di tutti ma solo del primo doi            
     
-
+    def getDistinctPublisherOfPublications(self, listOfDoi):
+        rp0= RelationalProcessor()
+        rp0.setDbPath(dbPath)
+        tempDF = pd.DataFrame()
+        outputDF = pd.DataFrame()
+        with connect(rp0.getDbPath()) as con:
+            for doi in listOfDoi:
+                JournalAsrticleDF = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN JournalArticle AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
+                ProceedingspaperDF = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN ProceedingsPaper AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con) 
+                BookChapterDF = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN BookChapter AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)  
+                tempDF = concat([JournalAsrticleDF, ProceedingspaperDF, BookChapterDF])
+                outputDF = concat([outputDF, tempDF])
+            
+        return outputDF
 
 """
 
@@ -602,6 +608,11 @@ gqp = GenericQueryProcessor()
 #dfMCP = rqp.getMostCitedPublication()
 #print(dfMCP["cited"].iloc[0])
 #print(type(dfMCP["cited"]))
+
+# listOfDOI = ["doi:10.1007/s11192-019-03217-6", "doi:10.1007/s11192-021-04097-5", "doi:10.1007/978-3-030-75722-9_7"]
+# dataframe = gqp.getDistinctPublisherOfPublications(listOfDOI)
+# for object in dataframe:
+#     print(Organization.__str__(object))
 
 
 
