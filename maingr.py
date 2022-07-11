@@ -251,6 +251,7 @@ for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPub
         if row["type"] == "proceeding-paper":
                 my_graph.add((subj, RDF.type, Proceedingspaper))
 
+  
     if row["venue_type_x"] == "book":
         if row["venue_type_x"] != "":
             my_graph.add((subj, RDF.type, Book))
