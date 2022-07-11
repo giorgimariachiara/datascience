@@ -39,7 +39,7 @@ Book = URIRef("https://schema.org/Book")
 Proceeding = URIRef("http://purl.org/ontology/bibo/Proceedings") #sbagliato
 Person = URIRef("https://schema.org/Person")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
-
+Publication = URIRef("https://schema.org/CreativeWork")
 # attributes related to classes
 citing = URIRef("http://purl.org/ontology/bibo/cites")
 citation = URIRef("https://schema.org/citation")
@@ -224,13 +224,13 @@ print(nomi)
 #print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
 
 
-for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
+for idx, row in dfPublicationVenue.iterrows():  
     subj = URIRef(base_url + row["id"])
 
    # if row["publication_venue"] != "":
     my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
     
-
+    my_graph.add((subj, RDF.type, Publication))
     my_graph.add((subj, title, Literal(row["title"])))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
@@ -276,11 +276,10 @@ for idx, row in cites_df.iterrows():
     subj = URIRef(base_url + row["citing"])
 
     if row["cited"] != None:
-
-        my_graph.add((subj, SCHEMA["citation"], Literal(row["cited"])))
+        my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
 
     #my_graph.add((subj, BIBO["citing"], Literal(row["citing"])))
-
+print(my_graph.print())
 
 Venue=json_doc["venues_id"]
 
@@ -303,9 +302,9 @@ venue_ext_df = venue_ext_df[["VenueId", "issn_isbn"]]
 venue_ext_df.drop_duplicates(subset= ["VenueId", "issn_isbn"], inplace = True)
 
 for idx, row in venue_ext_df.iterrows():
-    subj = URIRef(base_url + row["VenueId"]) #è così? 
+    subj = URIRef(base_url + row["VenueId"]) 
 
-    my_graph.add((subj, identifier, Literal(row["issn_isbn"]) )) #è giuto identifier? 
+    my_graph.add((subj, identifier, Literal(row["issn_isbn"]) )) 
 
 store = SPARQLUpdateStore()
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
@@ -323,5 +322,5 @@ store.close()
 
 
 #print(my_graph.print())
-print(pvdataframe)
+
 
