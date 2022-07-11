@@ -1,11 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
-<<<<<<< Updated upstream
 from impl2 import RelationalProcessor
-=======
-
->>>>>>> Stashed changes
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -17,7 +13,6 @@ from pprint import pprint
 from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
-<<<<<<< Updated upstream
 from pandas import DataFrame, concat
 csv_path = "./relational_db/relational_publication.csv"
 json_path = "./relational_db/relational_other_data.json"
@@ -27,15 +22,6 @@ class RelationalDataProcessor(RelationalProcessor):
         data_path_string = str(data_path)
         if data_path_string.endswith(".csv"):
             csv_data = pd.read_csv(data_path,
-=======
-from pyrsistent import v
-
-from impl import ProceedingsPaper 
-
-
-
-publication_df = pd.read_csv("./relational_db/relational_publication.csv",
->>>>>>> Stashed changes
                         dtype={
                                     "id": "string",
                                     "title": "string",
