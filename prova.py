@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from platform import mac_ver
 from platformdirs import user_data_dir
 from rdflib import Graph 
@@ -8,7 +9,6 @@ import pandas as pd
 from pandas import read_csv, Series, read_json
 from rdflib import RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
-from impl2 import Organization
 from json import load
 import pandas as pd 
 from pandas import DataFrame
@@ -20,6 +20,8 @@ my_graph = Graph() #empty rdf graph
 
 #Namespaces used
 SCHEMA = Namespace("https://schema.org/")
+FABIO = Namespace("http://purl.org/spar/fabio/")
+BIBO = Namespace("https://bibliontology.com/")
 
 
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
@@ -32,6 +34,7 @@ Book = URIRef("https://schema.org/Book")
 Proceeding = URIRef("https://schema.org/Event")
 
 # attributes related to classes
+citing = URIRef("http://purl.org/ontology/bibo/cites")
 person = URIRef("https://schema.org/Person")
 citation = URIRef("https://schema.org/citation")
 author = URIRef("https://schema.org/author")
@@ -76,30 +79,19 @@ with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
 
 
+dfPublicationVenue = pd.merge(venuesdataframe, publications, left_on="publication_venue", right_on="publication_venue")
 
-for idx, row in publications.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
+for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
 
    # if row["publication_venue"] != "":
-    #my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
+    my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
+    
 
+    my_graph.add((subj, title, Literal(row["title"])))
+    my_graph.add((subj, identifier, Literal(row["id"])))
+    my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
 
-    #my_graph.add((subj, title, Literal(row["title"])))
-    #my_graph.add((subj, identifier, Literal(row["id"])))
-    #my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-    #my_graph.add((subj, event, Literal(row["event"])))
-
-   # if row["type"] == "book-chapter":
-  #      my_graph.add((subj, RDF.type, BookChapter))
-   #     my_graph.add((subj, chapter, Literal(row["chapter"])))
-    if row["type"] == "journal-article":
-        if row["venue_type"] != "":
-     #       my_graph.add((subj, RDF.type, JournalArticle)) 
-            my_graph.add((subj, issue, Literal(row["issue"])))
-        #my_graph.add((subj, volume, Literal(row["volume"])))
-#print(publications.describe(include="all"))
-print(my_graph.print())
-print(len(my_graph))
 """
 #organization dataframe 
 

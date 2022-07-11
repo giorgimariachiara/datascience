@@ -1,3 +1,4 @@
+from ast import For
 from platform import mac_ver
 from platformdirs import user_data_dir
 from rdflib import Graph 
@@ -8,11 +9,10 @@ import pandas as pd
 from pandas import read_csv, Series, read_json
 from rdflib import RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
-from impl2 import Organization
 from json import load
 import pandas as pd 
 from pandas import DataFrame
-from impl2 import  TriplestoreProcessor
+#from impl2 import TriplestoreProcessor
 
 my_graph = Graph() #empty rdf graph 
 
@@ -21,20 +21,26 @@ my_graph = Graph() #empty rdf graph
 
 #Namespaces used
 SCHEMA = Namespace("https://schema.org/")
+FABIO = Namespace("http://purl.org/spar/fabio/")
+BIBO = Namespace("https://bibliontology.com/")
 
+my_graph.bind('schema', SCHEMA)
+my_graph.bind('fabio', FABIO)
+my_graph.bind('bibo', BIBO)
 
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
 #CLASSES OF RESOURCES
 JournalArticle = URIRef("https://schema.org/ScholarlyArticle")
 BookChapter = URIRef("https://schema.org/Chapter")
-Proceedingspaper = URIRef("https://schema.org/ScholarlyArticle")
+Proceedingspaper = URIRef("http://purl.org/spar/fabio/ProceedingsPaper")
 Journal = URIRef("https://schema.org/Periodical")
 Book = URIRef("https://schema.org/Book")
-Proceeding = URIRef("https://schema.org/Event") #sbagliato
+Proceeding = URIRef("http://purl.org/ontology/bibo/Proceedings") #sbagliato
 Person = URIRef("https://schema.org/Person")
 organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 
 # attributes related to classes
+citing = URIRef("http://purl.org/ontology/bibo/cites")
 citation = URIRef("https://schema.org/citation")
 author = URIRef("https://schema.org/author")
 doi = URIRef("https://schema.org/identifier")
@@ -56,9 +62,10 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # This is the string defining the base URL used to defined
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
-
+"""
 csv_path = "./relational_db/relational_publication.csv"
 json_path = "./relational_db/relational_other_data.json"
+
 
 
 class TriplestoreDataProcessor(TriplestoreProcessor):
@@ -91,31 +98,33 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             
 publications = TriplestoreDataProcessor.uploadData(csv_path)      
 json_doc = TriplestoreDataProcessor.uploadData(json_path)      
+"""
+publications = read_csv("graph_db/graph_publications.csv", 
+                keep_default_na= False,
+                dtype={
+                    "id": "string",
+                    "title": "string",
+                    "type": "string",
+                    "publication_year":"string",
+                    "issue":"string",
+                    "volume":"string",
+                    "chapter":"string",
+                    "publication_venue":"string",
+                    "venue_type": "string",
+                    "publisher": "string",
+                    "event":"string"
+                   })
 
-# publications = read_csv("graph_db/graph_publications.csv", 
-#                 keep_default_na= False,
-#                 dtype={
-#                       "id": "string",
-#                       "title": "string",
-#                       "type": "string",
-#                       "publication_year":"string",
-#                       "issue":"string",
-#                       "volume":"string",
-#                       "chapter":"string",
-#                       "publication_venue":"string",
-#                       "venue_type": "string",
-#                       "publisher": "string",
-#                       "event":"string"
-#                   })
-
-# with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
-#     json_doc = load(f)
+with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
+    json_doc = load(f)
     
 #organization dataframe 
 
 crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
+organization_df = organization_df.rename(columns={"id":"crossref"})
+
 
 organization_df.insert(0, 'GOrganizationId', range(0, organization_df.shape[0]))
 organization_df['GOrganizationId']= organization_df['GOrganizationId'].apply(lambda x: 'organization-'+ str(int(x)))
@@ -124,13 +133,14 @@ for idx, row in organization_df.iterrows():
     subj = URIRef(base_url + row["GOrganizationId"])
     
     my_graph.add((subj, RDF.type, organization))
-    my_graph.add((subj, name, Literal(row["name"])))
-    my_graph.add((subj, identifier, Literal(row["id"])))
+    my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
+    my_graph.add((subj, identifier, Literal(row["crossref"])))
     
 pvdataframe = publications[["publication_venue", "venue_type", "publisher"]].drop_duplicates()
 pvdataframe.insert(0, 'VenueId', range(0, pvdataframe.shape[0]))
 pvdataframe['VenueId']= pvdataframe['VenueId'].apply(lambda x: 'venue-'+ str(int(x)))
-venuesdataframe = pd.merge(pvdataframe, organization_df, left_on="publisher", right_on="id")
+venuesdataframe = pd.merge(pvdataframe, organization_df, left_on="publisher", right_on="crossref")
+
 #print(venuesdataframe.head(5))
 for idx, row in venuesdataframe.iterrows():
     subj = URIRef(base_url + row["VenueId"])
@@ -195,10 +205,6 @@ author_df.rename(columns={"author.family":"family_name","author.given":"given_na
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
 
-#author_df.insert(0, 'AuthorId', range(0, author_df.shape[0]))
-#author_df['AuthorId']= author_df['AuthorId'].apply(lambda x: 'author-'+ str(int(x))) 
-
-
 for idx, row in author_df.iterrows(): 
     subj = URIRef(base_url + row["orc_id"])
 
@@ -207,7 +213,17 @@ for idx, row in author_df.iterrows():
     my_graph.add((subj, author, URIRef(base_url + row["doi"])))
 
 
-dfPublicationVenue = pd.merge(venuesdataframe, publications, left_on="publication_venue", right_on="publication_venue")
+dfPublicationVenue = pd.merge(publications, venuesdataframe, left_on="publication_venue", right_on="publication_venue")
+"""
+nomi = []
+for column in dfPublicationVenue:
+    nomi.append(column)
+print(nomi)
+  """
+print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
+
+
+
 
 for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPublicationVenue? 
     subj = URIRef(base_url + row["id"])
@@ -236,21 +252,34 @@ for idx, row in dfPublicationVenue.iterrows(): #qui l'iterrows va fatto su dfPub
         if row["type"] == "proceeding-paper":
                 my_graph.add((subj, RDF.type, Proceedingspaper))
 
-    if row["venue_type"] == "book":
-        if row["venue_type"] != "":
+    if row["venue_type_x"] == "book":
+        if row["venue_type_x"] != "":
             my_graph.add((subj, RDF.type, Book))
-    elif row["venue_type"] == "journal":
-        if row["venue_type"] != "":
+    elif row["venue_type_x"] == "journal":
+        if row["venue_type_x"] != "":
             my_graph.add((subj, RDF.type, Journal))
     else:
-        if row["venue_type"] == "proceeding":
+        if row["venue_type_x"] == "proceeding":
             my_graph.add((subj, RDF.type, Proceeding))
     
             if row["event"] != "":  
                 my_graph.add((subj, event, Literal(row["event"])))
 
+References = json_doc["references"]
+cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
+cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
+cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
 
-        
+cites_df=pd.DataFrame(cites_df)
+
+for idx, row in cites_df.iterrows():
+    subj = URIRef(base_url + row["citing"])
+
+    if row["cited"] != None:
+
+        my_graph.add((subj, SCHEMA["citation"], Literal(row["cited"])))
+
+    #my_graph.add((subj, BIBO["citing"], Literal(row["citing"])))
 print(len(my_graph))
     
     
