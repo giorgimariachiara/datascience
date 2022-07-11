@@ -1,7 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
-from impl2 import RelationalProcessor
+#from impl2 import RelationalProcessor
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -14,6 +14,8 @@ from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
 from pandas import DataFrame, concat
+
+"""
 csv_path = "./relational_db/relational_publication.csv"
 json_path = "./relational_db/relational_other_data.json"
 
@@ -47,29 +49,29 @@ class RelationalDataProcessor(RelationalProcessor):
 
 publication_df = RelationalDataProcessor.uploadData(csv_path)
 json_doc = RelationalDataProcessor.uploadData(json_path)
+"""
 
 
+publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
+                         dtype={
+                                "id": "string",
+                                "title": "string",
+                                "type": "string",
+                                "publication_year": "string",
+                                "issue": "string",
+                                "volume": "string",
+                                "chapter": "string",
+                                "publication_venue": "string",
+                                "venue_type": "string",
+                                "publisher": "string",
+                                "event": "string"
 
-# publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
-#                         dtype={
-#                                     "id": "string",
-#                                     "title": "string",
-#                                     "type": "string",
-#                                     "publication_year": "string",
-#                                     "issue": "string",
-#                                     "volume": "string",
-#                                     "chapter": "string",
-#                                     "publication_venue": "string",
-#                                     "venue_type": "string",
-#                                     "publisher": "string",
-#                                     "event": "string"
-
-#                         },encoding="utf-8")
+                         },encoding="utf-8")
 
 
 # print(publication_df.info())
-# with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
-#     json_doc = load(f)
+with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
+     json_doc = load(f)
 
 
 #----------------------------------------
@@ -83,7 +85,7 @@ organization_internal_id = []
 for idx, row in organization_df.iterrows():
     organization_internal_id.append("organization-" + str(idx))
 organization_df.insert(0, "OrganizationId", Series(organization_internal_id, dtype="string"))
-print(organization_df)
+
 #----------------------------------------
 
 # Venue DataFrame
@@ -201,9 +203,9 @@ book_df= book_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
-book_df = book_df[["doi", "VenueId", "publisher"]]
-book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-#print(book_df)
+#book_df = book_df[["doi", "VenueId", "publisher"]]
+#book_df = book_df.rename(columns={"VenueId":"publication_venue"})
+print(book_df)
 
 #----------------------------------------
 

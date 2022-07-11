@@ -214,13 +214,13 @@ for idx, row in author_df.iterrows():
 
 
 dfPublicationVenue = pd.merge(publications, venuesdataframe, left_on="publication_venue", right_on="publication_venue")
-"""
+
 nomi = []
 for column in dfPublicationVenue:
     nomi.append(column)
 print(nomi)
-  """
-print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
+  
+#print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
 
 
 
