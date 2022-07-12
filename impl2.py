@@ -162,14 +162,9 @@ class GenericQueryProcessor(object):
         self.queryProcessor.append(QueryProcessor)
         return True
 
-    def getQueryProcessorElement(self, elementNumber):
-        return self.queryProcessor[elementNumber]
-
     def getPublicationsPublishedInYear(self, publicationYear):
         rqp0 = RelationalQueryProcessor()
         dfPY = rqp0.getPublicationsPublishedInYear(publicationYear)
-        # per ogni riga di dfPY. creare un oggetto Publication e aggiungerlo alla lista queryProcessor
-        #dfPY = dfPY.reset_index()
         for index, row in dfPY.iterrows():
             row = list(row)
             publicationObj = Publication(*row)
@@ -186,18 +181,16 @@ class GenericQueryProcessor(object):
         return self.queryProcessor
 
 
-    def getMostCitedPublication(self): #qui mancano gli altri parametri per la classe publication 
+    def getMostCitedPublication(self): 
         rqp0 = RelationalQueryProcessor()
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
-        doi = dfMCP["cited"]
-        #print(dfMCP)
             
-        # for index, row in dataFrame.iterrows():
-        #     row = list(row)
-        #     publicationObj = Publication(*row)
-        #     self.addQueryProcessor(publicationObj)
+        for index, row in dfMCP.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
         return self.queryProcessor
     
 
@@ -318,6 +311,14 @@ class TriplestoreProcessor(object):
         
     def setEndpointUrl(self, url):
         self.endpointUrl = url
+<<<<<<< Updated upstream
+=======
+    
+    def getEndpointUrl(self):
+        return self.endpointUrl
+        
+           
+>>>>>>> Stashed changes
     
     def getEndpointUrl(self):
         return self.endpointUrl
@@ -372,9 +373,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(sql.format(publicationList[2]), con)
             ])
             
-            #MostcitedPP
-
-    
+            
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -382,13 +381,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid " \
                                "JOIN maxCited ON id == cited", con)
             return venueDF
-            #print(venueDF)
             
-#SELECT B.issn_isbn, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN VenueExt AS B ON B.publication_venue==A.Venueid JOIN maxCited ON id ==cited 
             
-
-    
-
     def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
@@ -409,20 +403,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[2], issn_isbn), con)
             ])
 
-    # def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
-    #     rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     with connect(rp0.getDbPath()) as con: 
-    #         dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE  issue = '%s' (AND volume = '%s' AND issn_isbn = '%s')" (str(volume), str(issue), str(issn_isbn)), con)
-    #         #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
-    #     return dfJAI 
+     
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             dfJAI = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN VenueExt B ON A.publication_venue == B.publication_venue WHERE  A.volume = '"+ str(volume) + "' AND A.issue = '" + str(issue) + "' AND B.issn_isbn = '"+ issn_isbn + "'",  con)
-            #dfJAI = read_sql("SELECT title FROM JournalArticle A LEFT JOIN Venueid B ON A.doi == B.id WHERE volume='{}' AND issue= '{}' AND issn_isbn= '{}'" (str(volume), str(issue), str(issn_isbn)), con)
         return dfJAI 
 
     
@@ -475,22 +462,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             dfBook = read_sql('SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM BookChapter A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con)
 
         return concat([dfBook, dfJournal, dfProc])  
-
-
-    # def getDistinctPublisherOfPublications(self, listOfDoi):
-    #     rp0= RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     outputDFlist = []
-    #     with connect(rp0.getDbPath()) as con:
-    #         for doi in listOfDoi:
-    #             JournalAsrticleDF = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN JournalArticle AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
-    #             ProceedingspaperDF = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN ProceedingsPaper AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con) 
-    #             BookChapterDF = read_sql("SELECT A.* FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN BookChapter AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)  
-    #             outputDFlist.append(concat([JournalAsrticleDF, ProceedingspaperDF, BookChapterDF]))
             
-    #         return outputDFlist
-                
-       #l'output non è giusto perchè non appende i risultati di tutti ma solo del primo doi            
     
     def getDistinctPublisherOfPublications(self, listOfDoi):
         rp0= RelationalProcessor()
@@ -605,8 +577,8 @@ gqp = GenericQueryProcessor()
 
 #print(rqp.getPublicationInVenue("issn:2641-3337"))
 
-#dfMCP = rqp.getMostCitedPublication()
-#print(dfMCP["cited"].iloc[0])
+dfMCP = gqp.getMostCitedPublication()
+print(dfMCP)
 #print(type(dfMCP["cited"]))
 
 # listOfDOI = ["doi:10.1007/s11192-019-03217-6", "doi:10.1007/s11192-021-04097-5", "doi:10.1007/978-3-030-75722-9_7"]
