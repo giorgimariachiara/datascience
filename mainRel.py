@@ -50,7 +50,7 @@ class RelationalDataProcessor(RelationalProcessor):
 publication_df = RelationalDataProcessor.uploadData(csv_path)
 json_doc = RelationalDataProcessor.uploadData(json_path)
 
-
+"""
 
 publication_df = pd.read_csv("./relational_db/relational_publication.csv", 
                         dtype={
@@ -73,7 +73,7 @@ publication_df = pd.read_csv("./relational_db/relational_publication.csv",
 with open("./relational_db/relational_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
 
-
+"""
 #----------------------------------------
 
 # Organization DataFrame
@@ -85,7 +85,7 @@ organization_internal_id = []
 for idx, row in organization_df.iterrows():
     organization_internal_id.append("organization-" + str(idx))
 organization_df.insert(0, "OrganizationId", Series(organization_internal_id, dtype="string"))
-print(organization_df)
+
 #----------------------------------------
 
 # Venue DataFrame
@@ -286,7 +286,7 @@ venue_ext_dfjournal = merge(journal_article_df, venues, left_on="doi", right_on=
 venue_ext_dfjournal = venue_ext_dfjournal[["publication_venue", "issn_isbn"]]
 venue_ext_dfbook = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfbook = venue_ext_dfbook[["publication_venue", "issn_isbn"]]
-venue_ext_dfproceeding = merge(proceedings_df, venues, left_on="doi", right_on="doi")
+venue_ext_dfproceeding = merge(Proceedings_paper_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn"]]
 
 venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfproceeding])
