@@ -356,7 +356,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 read_sql(SQL.format(publications[2], orcid), con)
             ])
     
-    def getMostCitedPublication():
+    def getMostCitedPublication(self):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
@@ -506,6 +506,19 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 
 rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
+
+# print(rqp.getPublicationsPublishedInYear(2020))
+# print(gqp.getPublicationsPublishedInYear(2020))
+
+#print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+
+print(rqp.getMostCitedPublication())
+#print(gqp.getMostCitedPublication())
+
+
+
+
 #listaQP = rqp.getPublicationsPublishedInYear(2020)
 
 # for object in listaQP:
@@ -530,11 +543,9 @@ gqp = GenericQueryProcessor()
 
 #rqp.setDbPath(dbPath)
 #rqp.setDbPath(dbPath)  
-#print(gqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
 #print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00109"))
 #print(rqp.getVenuesByPublisherId("crossref:281"))
@@ -545,7 +556,6 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
 #print(rqp.getProceedingsByEvent("web"))
-#print(rqp.getMostCitedPublication())
 
 
 
