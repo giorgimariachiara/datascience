@@ -100,6 +100,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 publications = TriplestoreDataProcessor.uploadData(csv_path)      
 json_doc = TriplestoreDataProcessor.uploadData(json_path)      
 """
+
 publications = read_csv("graph_db/graph_publications.csv", 
                 keep_default_na= False,
                 dtype={
