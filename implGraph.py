@@ -17,7 +17,6 @@ class TripleQueryProcessor(TriplestoreProcessor, QueryProcessor):
             ?s ?p ?o
         }
         """
-        print("diomerda")
         ciao = tp0.query(query)
         print(ciao)
         
