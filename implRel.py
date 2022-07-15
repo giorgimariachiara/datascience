@@ -602,10 +602,10 @@ gqp = GenericQueryProcessor()
 # mostCitedPubDOI = mostCitedPub["doi"].tolist()
 # print(mostCitedPubDOI)   
 
-objList = gqp.getMostCitedVenue()
+# objList = gqp.getMostCitedVenue()
 
-for elem in objList:
-    print(Venue.__str__(elem))
+# for elem in objList:
+#     print(Venue.__str__(elem))
 
 
 
