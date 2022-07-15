@@ -13,7 +13,7 @@ from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from json import load
 import pandas as pd 
 from pandas import DataFrame
-#from impl2 import TriplestoreProcessor
+from implRel import TriplestoreProcessor
 
 my_graph = Graph() #empty rdf graph 
 
@@ -63,7 +63,7 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # This is the string defining the base URL used to defined
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
-"""
+
 csv_path = "./relational_db/relational_publication.csv"
 json_path = "./relational_db/relational_other_data.json"
 
@@ -118,7 +118,7 @@ publications = read_csv("graph_db/graph_publications.csv",
 
 with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
-    
+    """
 #organization dataframe 
 
 crossref = json_doc.get("publishers")
@@ -309,10 +309,10 @@ for idx, row in venue_ext_df.iterrows():
 store = SPARQLUpdateStore()
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
-endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
+endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 
 # It opens the connection with the SPARQL endpoint instance
-store.open((endpoint, endpoint))
+store.open((endpointUrl, endpointUrl))
 
 for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
     store.add(triple)   
@@ -321,6 +321,6 @@ store.close()
 
 
 
-#print(my_graph.print())
+print(my_graph.print())
 
 

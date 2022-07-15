@@ -1,7 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
-from impl2 import RelationalProcessor
+from implRel import RelationalProcessor
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -173,9 +173,9 @@ proceedings_df = publication_df.query("venue_type =='proceedings'")
 proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", right_on="publication_venue")
-proceedings_df = proceedings_df[["id", "VenueId", "publisher", "event"]]
-proceedings_df = proceedings_df.rename(columns={"VenueId":"publication_venue"})
-proceedings_df = proceedings_df.rename(columns={"id":"doi"})
+proceedings_df = proceedings_df[["VenueId"]]
+proceedings_df = proceedings_df.rename(columns={"VenueId":"proceedings_venue"})
+
 #print(proceedings_df)
 
 #----------------------------------------
@@ -202,9 +202,10 @@ book_df= book_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
-book_df = book_df[["doi", "VenueId", "publisher"]]
-book_df = book_df.rename(columns={"VenueId":"publication_venue"})
-#print(book_df)
+book_df = book_df[["VenueId"]]
+book_df = book_df.rename(columns={"VenueId":"book_venue"})
+book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
+
 
 #----------------------------------------
 
@@ -216,8 +217,10 @@ journal_df= journal_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 journal_df = journal_df.rename(columns={"id":"doi"})
 journal_df= merge(venue_df, journal_df, left_on="publication_venue", right_on="publication_venue")
-journal_df = journal_df[["doi", "VenueId", "publisher"]]
-journal_df = journal_df.rename(columns={"VenueId":"publication_venue"})
+journal_df = journal_df[["VenueId"]]
+journal_df = journal_df.rename(columns={"VenueId":"journal_venue"})
+journal_df.drop_duplicates(subset = ["journal_venue"], inplace= True)
+
 
 
 
@@ -258,7 +261,8 @@ Proceedings_paper_df = Proceedings_paper_df[["id", "publication_year", "title", 
 Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 Proceedings_paper_df= merge(venue_df, Proceedings_paper_df, left_on="publication_venue", right_on="publication_venue")
-#print(proceedings_df)
+
+
 #----------------------------------------
 #Venues ext Dataframe
 Venue=json_doc["venues_id"]

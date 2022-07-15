@@ -487,7 +487,8 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 
 rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
-# listaQP = gqp.getPublicationsPublishedInYear(2020)
+#listaQP = rqp.getPublicationsPublishedInYear(2020)
+
 # for object in listaQP:
     
 #     print(type(Publication.__str__(object)))
@@ -514,18 +515,18 @@ gqp = GenericQueryProcessor()
 #print(rqp.getDbPath())
 #RelationalQueryProcessor.setDbPath(dbPath)
 #print(RelationalQueryProcessor.getDbPath())
-#print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
+#print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-#print(rqp.getPublicationAuthors("doi:10.1162/qss_a_00109"))
-#print(gqp.getVenuesByPublisherId("crossref:281"))
-#print(gqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(gqp.getPublicationAuthors("doi:10.1162/qss_a_00109"))
 #print(rqp.getVenuesByPublisherId("crossref:281"))
-#print(rqp.getPublicationsByAuthorName("Pe"))
+#print(rqp.getJournalArticlesInJournal("issn:2641-3337"))
+#print(rqp.getVenuesByPublisherId("crossref:281"))
+#print(gqp.getPublicationsByAuthorName("Pe"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1162/qss_a_00109", "doi:10.1007/s11192-021-04097-5", "doi:10.3390/su13116225"]))
 #print(rqp.getDistinctPublisherOfPublications(testList))
 
-# print(gqp.getProceedingsByEvent("web"))
-#print(gqp.getMostCitedPublication())
+#print(rqp.getProceedingsByEvent("web"))
+#print(rqp.getMostCitedPublication())
 
 
 
@@ -556,9 +557,9 @@ gqp = GenericQueryProcessor()
     
 
 
-#JADataframe = rqp.getJournalArticlesInVolume(21,"issn:1616-5187")
+#JADataframe = gqp.getJournalArticlesInVolume(21,"issn:1616-5187")
 
-#print(gqp.getJournalArticlesInIssue(JADataframe))
+#print(rqp.getJournalArticlesInIssue(2, 21,"issn:1616-5187"))
 #print(JADataframe)
 
 
@@ -567,16 +568,16 @@ gqp = GenericQueryProcessor()
 # print(type(Publication.__str__(publicationObj)))
 
 
-#print(rqp.getPublicationInVenue("issn:2641-3337"))
+#print(gqp.getPublicationInVenue("issn:2641-3337"))
 
-dfMCP = gqp.getMostCitedPublication()
-print(dfMCP)
+
 #print(type(dfMCP["cited"]))
 
-# listOfDOI = ["doi:10.1007/s11192-019-03217-6", "doi:10.1007/s11192-021-04097-5", "doi:10.1007/978-3-030-75722-9_7"]
-# dataframe = gqp.getDistinctPublisherOfPublications(listOfDOI)
-# for object in dataframe:
-#     print(Organization.__str__(object))
+#listOfDOI = ["doi:10.1007/s11192-019-03217-6", "doi:10.1007/s11192-021-04097-5", "doi:10.1007/978-3-030-75722-9_7"]
+#dataframe = gqp.getDistinctPublisherOfPublications(listOfDOI)
+#print(dataframe)
+#for object in dataframe:
+    #print(Organization.__str__(object))
 
 
 
