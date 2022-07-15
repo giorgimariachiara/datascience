@@ -20,11 +20,8 @@ class TripleQueryProcessor(TriplestoreProcessor, QueryProcessor):
             ?s ?p ?o }
         }
         """
-<<<<<<< Updated upstream
         ciao = tp0.query(query)
-=======
         ciao = g.query(query)
->>>>>>> Stashed changes
         print(ciao)
         
         
