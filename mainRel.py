@@ -103,7 +103,7 @@ for idx, row in venue_df.iterrows():
 venue_df.insert(0, "Id", Series(venue_internal_id, dtype="string"))
 venue_df.drop("index", axis=1, inplace = True)
 
-print(venue_df)
+#print(venue_df)
 
 #----------------------------------------
 
@@ -299,7 +299,7 @@ venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace
 
 
 
-#print(venue_ext_df)
+print(venue_ext_df)
 
 
 #df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
