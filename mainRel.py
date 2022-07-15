@@ -100,8 +100,10 @@ venue_df = venue_df.reset_index()
 venue_internal_id = []
 for idx, row in venue_df.iterrows():
     venue_internal_id.append("venue-" + str(idx))
-venue_df.insert(0, "VenueId", Series(venue_internal_id, dtype="string"))
+venue_df.insert(0, "Id", Series(venue_internal_id, dtype="string"))
 venue_df.drop("index", axis=1, inplace = True)
+
+print(venue_df)
 
 #----------------------------------------
 
@@ -172,9 +174,9 @@ person_df = pd.DataFrame({
 proceedings_df = publication_df.query("venue_type =='proceedings'")
 proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", right_on="publication_venue")
-proceedings_df = proceedings_df[["VenueId"]]
-proceedings_df = proceedings_df.rename(columns={"VenueId":"proceedings_venue"})
+#proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", right_on="publication_venue")
+#proceedings_df = proceedings_df[["VenueId"]]
+#proceedings_df = proceedings_df.rename(columns={"VenueId":"proceedings_venue"})
 
 
 
@@ -202,13 +204,13 @@ book_df= book_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
-book_df = book_df[["VenueId"]]
-book_df = book_df.rename(columns={"VenueId":"book_venue"})
-book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
+#book_df = book_df[["VenueId"]]
+#book_df = book_df.rename(columns={"VenueId":"book_venue"})
+#book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
 
 #print(book_df)
 
-print(venue_df)
+#print(book_df)
 #----------------------------------------
 
 
@@ -237,7 +239,7 @@ journal_article_df = journal_article_df[["id", "publication_year", "title", "pub
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 #journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 journal_article_df= merge(venue_df, journal_article_df, left_on="publication_venue", right_on="publication_venue")
-journal_article_df = journal_article_df[["Id", "id", "publication_year", "title", "issue", "volume"]]
+journal_article_df = journal_article_df[["VenueId", "id", "publication_year", "title", "issue", "volume"]]
 journal_article_df = journal_article_df.rename(columns={"VenueId":"publication_venue"})
 journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 
@@ -252,7 +254,7 @@ book_chapter_df = book_chapter_df[["id", "publication_year", "title", "publicati
 book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_chapter_df= merge(venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
-book_chapter_df = book_chapter_df[["Id", "doi", "title", "publication_year", "chapter"]]
+book_chapter_df = book_chapter_df[["VenueId", "doi", "title", "publication_year", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"VenueId":"publication_venue"})
 
 #----------------------------------------
@@ -284,6 +286,7 @@ venues = pd.DataFrame({
 })
 
 venue_ext_dfjournal = merge(journal_article_df, venues, left_on="publication_venue", right_on="VenueId")
+#print(venue_ext_dfjournal)
 venue_ext_dfjournal = venue_ext_dfjournal[["publication_venue", "issn_isbn"]]
 venue_ext_dfbook = merge(book_chapter_df, venues, left_on="publication_venue", right_on="VenueId")
 venue_ext_dfbook = venue_ext_dfbook[["publication_venue", "issn_isbn"]]
