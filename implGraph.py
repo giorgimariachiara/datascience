@@ -20,7 +20,6 @@ class TripleQueryProcessor(TriplestoreProcessor, QueryProcessor):
             ?s ?p ?o }
         }
         """
-        ciao = tp0.query(query)
         ciao = g.query(query)
         print(ciao)
         

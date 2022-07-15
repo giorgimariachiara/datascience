@@ -329,14 +329,14 @@ my_graph.bind('schema', SCHEMA)
 my_graph.bind('fabio', FABIO)
 my_graph.bind('bibo', BIBO)
 
-for idx, row in Data.organiza    organization_df.iterrows():
+for idx, row in Data.organization_df.iterrows():
     subj = URIRef(base_url + row["GOrganizationId"])
     
     my_graph.add((subj, RDF.type, organization))
     my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
     my_graph.add((subj, identifier, Literal(row["crossref"])))
 
-for idx, row in venuesdataframe.iterrows():
+for idx, row in Data.venuesId.iterrows():
     subj = URIRef(base_url + row["VenueId"])
     
     my_graph.add((subj, title, Literal(row["publication_venue"])))
