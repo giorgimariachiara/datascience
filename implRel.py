@@ -370,8 +370,10 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         rp0 = RelationalProcessor()
         rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
-            venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid " \
-                               "JOIN maxCited ON id == cited", con)
+            # venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid  \
+            #                    JOIN maxCited ON id == cited", con)
+            venueDF = read_sql("SELECT VenueId, publication_venue, OrganizationID FROM Venueid  \
+                               JOIN maxCited ON VenueId == cited", con)
             return venueDF
             
             
