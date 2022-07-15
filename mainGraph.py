@@ -14,20 +14,12 @@ from json import load
 import pandas as pd 
 from pandas import DataFrame
 from implRel import TriplestoreProcessor
-
-my_graph = Graph() #empty rdf graph 
-
-
-my_graph = Graph() #empty rdf graph 
+from extraclasses import Data 
 
 #Namespaces used
 SCHEMA = Namespace("https://schema.org/")
 FABIO = Namespace("http://purl.org/spar/fabio/")
 BIBO = Namespace("https://bibliontology.com/")
-
-my_graph.bind('schema', SCHEMA)
-my_graph.bind('fabio', FABIO)
-my_graph.bind('bibo', BIBO)
 
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
 #CLASSES OF RESOURCES
@@ -64,17 +56,26 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
-csv_path = "./relational_db/relational_publication.csv"
-json_path = "./relational_db/relational_other_data.json"
+csv_path = "./graph_db/graph_publications.csv"
+json_path = "./graph_db/graph_other_data.json"
 
+#csv_path = "./relational_db/relational_publication.csv"
+#json_path = "./relational_db/relational_other_data.json"
 
 
 class TriplestoreDataProcessor(TriplestoreProcessor):
     
     def uploadData(data_path):
+        csv = "graph_publications.csv"
+        json = "graph_other_data.json"
+        gdata= Data()
+         
+
+
+        """
         data_path_string = str(data_path)
         if data_path_string.endswith(".csv"):
-            csv_data = pd.read_csv(data_path,
+            csv_data = pd.read_csv(data_path, keep_default_na= False,
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -99,7 +100,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             
 publications = TriplestoreDataProcessor.uploadData(csv_path)      
 json_doc = TriplestoreDataProcessor.uploadData(json_path)      
-"""
+
 
 publications = read_csv("graph_db/graph_publications.csv", 
                 keep_default_na= False,
@@ -119,7 +120,7 @@ publications = read_csv("graph_db/graph_publications.csv",
 
 with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
-    """
+"""
 #organization dataframe 
 
 crossref = json_doc.get("publishers")
@@ -216,11 +217,13 @@ for idx, row in author_df.iterrows():
 
 
 dfPublicationVenue = pd.merge(publications, venuesdataframe, left_on="publication_venue", right_on="publication_venue")
-
+"""
 nomi = []
 for column in dfPublicationVenue:
     nomi.append(column)
 print(nomi)
+"""
+
   
 #print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
 
@@ -235,22 +238,23 @@ for idx, row in dfPublicationVenue.iterrows():
     my_graph.add((subj, title, Literal(row["title"])))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+    print(row["id"] + " - " + row["issue"])
 
     if row["type"] == "journal-article":
         if row["type"] != "":
-                my_graph.add((subj, RDF.type, JournalArticle)) 
+            my_graph.add((subj, RDF.type, JournalArticle)) 
         if row["issue"] != "":
-                my_graph.add((subj, issue, Literal(row["issue"])))
+            my_graph.add((subj, issue, Literal(row["issue"])))
         if row["volume"] != "":
                 my_graph.add((subj, volume, Literal(row["volume"])))
 
     elif row["type"] == "book-chapter":
         if row["type"] != "":
-                my_graph.add((subj, RDF.type, BookChapter))
-                my_graph.add((subj, chapter, Literal(row["chapter"])))
+            my_graph.add((subj, RDF.type, BookChapter))
+            my_graph.add((subj, chapter, Literal(row["chapter"])))
     else: 
         if row["type"] == "proceeding-paper":
-                my_graph.add((subj, RDF.type, Proceedingspaper))
+            my_graph.add((subj, RDF.type, Proceedingspaper))
 
   
     if row["venue_type_x"] == "book":
@@ -280,7 +284,7 @@ for idx, row in cites_df.iterrows():
         my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
 
     #my_graph.add((subj, BIBO["citing"], Literal(row["citing"])))
-print(my_graph.print())
+
 
 Venue=json_doc["venues_id"]
 
@@ -307,6 +311,22 @@ for idx, row in venue_ext_df.iterrows():
 
     my_graph.add((subj, identifier, Literal(row["issn_isbn"]) )) 
 
+#qui comincia il trasferimento dai dataframe al graph 
+
+my_graph = Graph() 
+
+my_graph.bind('schema', SCHEMA)
+my_graph.bind('fabio', FABIO)
+my_graph.bind('bibo', BIBO)
+
+for idx, row in organization_df.iterrows():
+    subj = URIRef(base_url + row["GOrganizationId"])
+    
+    my_graph.add((subj, RDF.type, organization))
+    my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
+    my_graph.add((subj, identifier, Literal(row["crossref"])))
+
+"""
 store = SPARQLUpdateStore()
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
 # instance + '/sparql'
@@ -320,8 +340,15 @@ for triple in my_graph.triples((None, None, None)): #none none none means that i
 # Once finished, remeber to close the connection
 store.close()
 
+query = 
+        SELECT *
+        WHERE {
+            ?s rdf:type schema:ScholarlyArticle.
+            ?s schema:datePublished "2021".
+            ?s ?p ?o 
+        }
+        
+"""
 
-
-print(my_graph.print())
 
 
