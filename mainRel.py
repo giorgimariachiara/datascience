@@ -100,7 +100,7 @@ venue_df = venue_df.reset_index()
 venue_internal_id = []
 for idx, row in venue_df.iterrows():
     venue_internal_id.append("venue-" + str(idx))
-venue_df.insert(0, "Id", Series(venue_internal_id, dtype="string"))
+venue_df.insert(0, "VenueId", Series(venue_internal_id, dtype="string"))
 venue_df.drop("index", axis=1, inplace = True)
 
 
@@ -175,11 +175,11 @@ person_df = pd.DataFrame({
 proceedings_df = publication_df.query("venue_type =='proceedings'")
 proceedings_df = proceedings_df[["id", "publication_venue", "publisher", "event"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
-#proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", right_on="publication_venue")
-#proceedings_df = proceedings_df[["VenueId"]]
-#proceedings_df = proceedings_df.rename(columns={"VenueId":"proceedings_venue"})
+proceedings_df= merge(venue_df, proceedings_df, left_on="publication_venue", right_on="publication_venue")
+proceedings_df = proceedings_df[["VenueId"]]
+proceedings_df = proceedings_df.rename(columns={"VenueId":"proceedings_venue"})
 
-
+#print(proceedings_df)
 
 #----------------------------------------
 
@@ -193,7 +193,7 @@ cites_df.rename(columns={"References.keys()":"citing","References.values()":"cit
 
 cites_df=pd.DataFrame(cites_df)
 
-
+#print(cites_df)
 #----------------------------------------
 
 
@@ -205,9 +205,9 @@ book_df= book_df[["id", "publication_venue", "publisher"]]
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_df = book_df.rename(columns={"id":"doi"})
 book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publication_venue")
-#book_df = book_df[["VenueId"]]
-#book_df = book_df.rename(columns={"VenueId":"book_venue"})
-#book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
+book_df = book_df[["VenueId"]]
+book_df = book_df.rename(columns={"VenueId":"book_venue"})
+book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
 
 
 
@@ -228,7 +228,7 @@ journal_df = journal_df.rename(columns={"VenueId":"journal_venue"})
 journal_df.drop_duplicates(subset = ["journal_venue"], inplace= True)
 
 
-
+#print(journal_df)
 
 
 #----------------------------------------
@@ -244,7 +244,7 @@ journal_article_df= merge(venue_df, journal_article_df, left_on="publication_ven
 journal_article_df = journal_article_df[["VenueId", "id", "publication_year", "title", "issue", "volume"]]
 journal_article_df = journal_article_df.rename(columns={"VenueId":"publication_venue"})
 journal_article_df = journal_article_df.rename(columns={"id":"doi"})
-
+#print(journal_article_df)
 #----------------------------------------
 
 # Book chapter DataFrame
@@ -258,7 +258,7 @@ pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_chapter_df= merge(venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
 book_chapter_df = book_chapter_df[["VenueId", "doi", "title", "publication_year", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"VenueId":"publication_venue"})
-
+#print(book_chapter_df)
 #----------------------------------------
 # Proceedings paper DataFrame
 
@@ -268,7 +268,7 @@ Proceedings_paper_df = Proceedings_paper_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 Proceedings_paper_df= merge(venue_df, Proceedings_paper_df, left_on="publication_venue", right_on="publication_venue")
 
-
+#print(Proceedings_paper_df)
 #----------------------------------------
 #Venues ext Dataframe
 Venue=json_doc["venues_id"]
@@ -299,7 +299,7 @@ venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfprocee
 venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace = True)
 
 
-#print(venue_ext_dfjournal)
+print(venue_ext_dfjournal)
 
 
 
@@ -323,7 +323,7 @@ with connect("publication.db") as con:
     proceedings_df.to_sql("Proceedings", con, if_exists="replace", index=False)
     organization_df.to_sql("Organization", con, if_exists="replace", index=False)
     person_df.to_sql("Person", con, if_exists="replace", index=False)
-    #author_df.to_sql("Authors", con, if_exists="replace", index=False)
+    author_df.to_sql("Authors", con, if_exists="replace", index=False)
     cites_df.to_sql("Cites", con, if_exists="replace", index=False)
     Proceedings_paper_df.to_sql("ProceedingsPaper", con, if_exists="replace", index=False)  
     venue_ext_df.to_sql("VenueExt", con, if_exists="replace", index=False)  
