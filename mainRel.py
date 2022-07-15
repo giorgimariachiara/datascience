@@ -14,6 +14,7 @@ from pandas import read_sql
 import pandas as pd
 from pandas import read_csv, Series, read_json
 from pandas import DataFrame, concat
+
 csv_path = "./relational_db/relational_publication.csv"
 json_path = "./relational_db/relational_other_data.json"
 
@@ -21,7 +22,7 @@ class RelationalDataProcessor(RelationalProcessor):
     def uploadData(data_path):
         data_path_string = str(data_path)
         if data_path_string.endswith(".csv"):
-            csv_data = pd.read_csv(data_path,
+            csv_data = pd.read_csv(data_path, keep_default_na= False,
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -206,7 +207,7 @@ book_df = book_df[["VenueId"]]
 book_df = book_df.rename(columns={"VenueId":"book_venue"})
 book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
 
-
+print(book_df)
 #----------------------------------------
 
 
