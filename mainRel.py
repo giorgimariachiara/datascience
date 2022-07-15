@@ -210,7 +210,7 @@ book_df= merge(venue_df, book_df, left_on="publication_venue", right_on="publica
 
 #print(book_df)
 
-print(book_df)
+#print(book_df)
 #----------------------------------------
 
 
@@ -239,7 +239,7 @@ journal_article_df = journal_article_df[["id", "publication_year", "title", "pub
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 #journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 journal_article_df= merge(venue_df, journal_article_df, left_on="publication_venue", right_on="publication_venue")
-journal_article_df = journal_article_df[["VenueId", "id", "publication_year", "title", "issue", "volume"]]
+journal_article_df = journal_article_df[["Id", "id", "publication_year", "title", "issue", "volume"]]
 journal_article_df = journal_article_df.rename(columns={"VenueId":"publication_venue"})
 journal_article_df = journal_article_df.rename(columns={"id":"doi"})
 
@@ -254,7 +254,7 @@ book_chapter_df = book_chapter_df[["id", "publication_year", "title", "publicati
 book_chapter_df = book_chapter_df.rename(columns={"id":"doi"})
 pd.set_option("display.max_colwidth", None, "display.max_rows", None)
 book_chapter_df= merge(venue_df, book_chapter_df, left_on="publication_venue", right_on="publication_venue")
-book_chapter_df = book_chapter_df[["VenueId", "doi", "title", "publication_year", "chapter"]]
+book_chapter_df = book_chapter_df[["Id", "doi", "title", "publication_year", "chapter"]]
 book_chapter_df = book_chapter_df.rename(columns={"VenueId":"publication_venue"})
 
 #----------------------------------------
