@@ -103,6 +103,8 @@ for idx, row in venue_df.iterrows():
 venue_df.insert(0, "VenueId", Series(venue_internal_id, dtype="string"))
 venue_df.drop("index", axis=1, inplace = True)
 
+
+
 #----------------------------------------
 
 # Author dataframe
@@ -206,9 +208,9 @@ book_df = book_df[["VenueId"]]
 book_df = book_df.rename(columns={"VenueId":"book_venue"})
 book_df.drop_duplicates(subset= ["book_venue"], inplace= True)
 
-#print(book_df)
 
-print(venue_df)
+
+#print(venue_df)
 #----------------------------------------
 
 
@@ -283,9 +285,10 @@ venues = pd.DataFrame({
     
 })
 
-venue_ext_dfjournal = merge(journal_article_df, venues, left_on="publication_venue", right_on="VenueId")
+
+venue_ext_dfjournal = merge(journal_article_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfjournal = venue_ext_dfjournal[["publication_venue", "issn_isbn"]]
-venue_ext_dfbook = merge(book_chapter_df, venues, left_on="publication_venue", right_on="VenueId")
+venue_ext_dfbook = merge(book_chapter_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfbook = venue_ext_dfbook[["publication_venue", "issn_isbn"]]
 venue_ext_dfproceeding = merge(Proceedings_paper_df, venues, left_on="doi", right_on="doi")
 venue_ext_dfproceeding = venue_ext_dfproceeding[["publication_venue", "issn_isbn"]]
@@ -294,9 +297,9 @@ venue_ext_df = concat([venue_ext_dfjournal, venue_ext_dfbook, venue_ext_dfprocee
 venue_ext_df.drop_duplicates(subset= ["publication_venue", "issn_isbn"], inplace = True)
 
 
+#print(venue_ext_dfjournal)
 
-
-#print(venue_ext_df)
+print(venue_ext_dfbook)
 
 
 #df_joinVV = merge(venues, venue_df, left_on="doi", right_on = "id") 
