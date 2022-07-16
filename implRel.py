@@ -513,7 +513,7 @@ gqp = GenericQueryProcessor()
 #print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 #print(gqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
 
-print(rqp.getMostCitedPublication())
+#print(rqp.getMostCitedPublication())
 #print(gqp.getMostCitedPublication())
 
 
