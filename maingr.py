@@ -213,13 +213,13 @@ for idx, row in author_df.iterrows():
    # my_graph.add((subj, identifier, Literal(row["orc_id"])))
     my_graph.add((subj, author, URIRef(base_url + row["doi"])))
 
-
+print(author_df)
 dfPublicationVenue = pd.merge(publications, venuesdataframe, left_on="publication_venue", right_on="publication_venue")
 
 nomi = []
 for column in dfPublicationVenue:
     nomi.append(column)
-print(nomi)
+
   
 #print(dfPublicationVenue[["venue_type_x", "venue_type_y"]])  
 
@@ -279,7 +279,7 @@ for idx, row in cites_df.iterrows():
         my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
 
     #my_graph.add((subj, BIBO["citing"], Literal(row["citing"])))
-print(my_graph.print())
+
 
 Venue=json_doc["venues_id"]
 
@@ -300,7 +300,7 @@ venues = pd.DataFrame({
 venue_ext_df = pd.merge(dfPublicationVenue, venues, left_on="id", right_on="doi")
 venue_ext_df = venue_ext_df[["VenueId", "issn_isbn"]]
 venue_ext_df.drop_duplicates(subset= ["VenueId", "issn_isbn"], inplace = True)
-
+print(venue_ext_df)
 for idx, row in venue_ext_df.iterrows():
     subj = URIRef(base_url + row["VenueId"]) 
 

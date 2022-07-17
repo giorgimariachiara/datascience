@@ -311,19 +311,11 @@ class TriplestoreProcessor(object):
         
     def setEndpointUrl(self, url):
         self.endpointUrl = url
-<<<<<<< Updated upstream
-=======
     
     def getEndpointUrl(self):
         return self.endpointUrl
         
-           
->>>>>>> Stashed changes
-    
-    def getEndpointUrl(self):
-        return self.endpointUrl
-        
-        
+                  
 class QueryProcessor(object):
     def __init__(self):
         pass
