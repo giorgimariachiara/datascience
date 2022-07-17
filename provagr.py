@@ -19,3 +19,10 @@ if __name__ == "__main__":
         print(f"\t- {s}")
         if count >= 3:
             break
+    
+    
+    
+    
+    
+  
+
