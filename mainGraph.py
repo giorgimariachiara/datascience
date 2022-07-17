@@ -59,18 +59,24 @@ base_url = "https://github.com/giorgimariachiara/datascience/res/"
 csv_path = "./graph_db/graph_publications.csv"
 json_path = "./graph_db/graph_other_data.json"
 
-#csv_path = "./relational_db/relational_publication.csv"
-#json_path = "./relational_db/relational_other_data.json"
-
-
 class TriplestoreDataProcessor(TriplestoreProcessor):
     
     def uploadData(data_path):
         csv = "graph_publications.csv"
         json = "graph_other_data.json"
-        gdata= Data()
-         
+        gdata= Data(csv, json)
+        #gdata = gdata(csv,json) 
 
+        my_graph = Graph()
+        for idx, row in gdata.Person.iterrows():
+            subj = URIRef(base_url + row["orcid"])
+
+            my_graph.add((subj, RDF.type, Person))
+            my_graph.add((subj, givenName, Literal(row["given"])))
+            my_graph.add((subj, familyName, Literal(row["family"])))
+            my_graph.add((subj, identifier, Literal(row["orcid"])))
+
+        print(len(my_graph))
 
         """
         data_path_string = str(data_path)
@@ -100,6 +106,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             
 publications = TriplestoreDataProcessor.uploadData(csv_path)      
 json_doc = TriplestoreDataProcessor.uploadData(json_path)      
+"""
 
 
 publications = read_csv("graph_db/graph_publications.csv", 
@@ -120,9 +127,8 @@ publications = read_csv("graph_db/graph_publications.csv",
 
 with open("graph_db/graph_other_data.json", "r", encoding="utf-8") as f:
     json_doc = load(f)
-"""
+
 #organization dataframe 
-"""
 crossref = json_doc.get("publishers")
 id_and_name = crossref.values()
 organization_df = pd.DataFrame(id_and_name)
@@ -131,7 +137,7 @@ organization_df = organization_df.rename(columns={"id":"crossref"})
 
 organization_df.insert(0, 'GOrganizationId', range(0, organization_df.shape[0]))
 organization_df['GOrganizationId']= organization_df['GOrganizationId'].apply(lambda x: 'organization-'+ str(int(x)))
-"""
+print(organization_df)
 """
 for idx, row in organization_df.iterrows():
     subj = URIRef(base_url + row["GOrganizationId"])
@@ -141,12 +147,13 @@ for idx, row in organization_df.iterrows():
     my_graph.add((subj, identifier, Literal(row["crossref"])))
     
 """
-"""
+
 pvdataframe = publications[["publication_venue", "venue_type", "publisher"]].drop_duplicates()
 pvdataframe.insert(0, 'VenueId', range(0, pvdataframe.shape[0]))
 pvdataframe['VenueId']= pvdataframe['VenueId'].apply(lambda x: 'venue-'+ str(int(x)))
 venuesdataframe = pd.merge(pvdataframe, organization_df, left_on="publisher", right_on="crossref")
-"""
+print(venuesdataframe)
+
 """
 #print(venuesdataframe.head(5))
 for idx, row in venuesdataframe.iterrows():
@@ -231,7 +238,7 @@ for column in dfPublicationVenue:
 #dfPublicationVenue = pd.merge(publications, venuesdataframe, left_on="publication_venue", right_on="publication_venue")
 """
 nomi = []
-for column in dfPublicationVenue:
+for column in venuesdataframe:
     nomi.append(column)
 print(nomi)
 """
@@ -331,14 +338,14 @@ for idx, row in venue_ext_df.iterrows():
 """
 
 #qui comincia il trasferimento dai dataframe al graph 
-
+"""
 my_graph = Graph() 
 
 my_graph.bind('schema', SCHEMA)
 my_graph.bind('fabio', FABIO)
 my_graph.bind('bibo', BIBO)
 
-for idx, row in Data.organization_df.iterrows():
+for idx, row in PublishersDF.iterrows():
     subj = URIRef(base_url + row["GOrganizationId"])
     
     my_graph.add((subj, RDF.type, organization))
@@ -377,7 +384,7 @@ for idx, row in dfPublicationVenue.iterrows():
     my_graph.add((subj, title, Literal(row["title"])))
     my_graph.add((subj, identifier, Literal(row["id"])))
     my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-    print(row["id"] + " - " + row["issue"])
+    #print(row["id"] + " - " + row["issue"])
 
     if row["type"] == "journal-article":
         if row["type"] != "":
@@ -419,7 +426,7 @@ for idx, row in venue_ext_df.iterrows():
     subj = URIRef(base_url + row["VenueId"]) 
 
     my_graph.add((subj, identifier, Literal(row["issn_isbn"]) )) 
-
+"""
 """
 store = SPARQLUpdateStore()
 # The URL of the SPARQL endpoint is the same URL of the Blazegraph
