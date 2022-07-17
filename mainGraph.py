@@ -70,12 +70,21 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
         my_graph = Graph()
         for idx, row in gdata.Person.iterrows():
             subj = URIRef(base_url + row["orcid"])
+<<<<<<< Updated upstream
 
             my_graph.add((subj, RDF.type, Person))
             my_graph.add((subj, givenName, Literal(row["given"])))
             my_graph.add((subj, familyName, Literal(row["family"])))
             my_graph.add((subj, identifier, Literal(row["orcid"])))
 
+=======
+
+            my_graph.add((subj, RDF.type, Person))
+            my_graph.add((subj, givenName, Literal(row["given"])))
+            my_graph.add((subj, familyName, Literal(row["family"])))
+            my_graph.add((subj, identifier, Literal(row["orcid"])))
+
+>>>>>>> Stashed changes
         print(len(my_graph))
 
         """
