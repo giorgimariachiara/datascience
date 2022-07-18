@@ -168,7 +168,7 @@ class RelationalDataProcessor(RelationalProcessor):
 
         cites_df=pd.DataFrame(cites_df)
 
-        #print(cites_df)
+        print(cites_df)
         #----------------------------------------
 
 
