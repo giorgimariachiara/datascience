@@ -319,6 +319,7 @@ class TriplestoreProcessor(object):
     def getEndpointUrl(self):
         return self.endpointUrl
         
+                  
         
 class QueryProcessor(object):
     def __init__(self):

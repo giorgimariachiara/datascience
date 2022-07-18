@@ -2,8 +2,6 @@ from rdflib import Graph, URIRef, Namespace
 from rdflib.plugins.stores.sparqlstore import SPARQLStore
 
 
-
-
 if __name__ == "__main__":
 
     dbo = Namespace("http://dbpedia.org/ontology/")
