@@ -12,10 +12,10 @@ from rdflib import RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from json import load
 import pandas as pd 
-from pandas import DataFrame
 from implRel import TriplestoreProcessor
-from extraclasses import Data 
+from extraclasses import Data
 
+"""
 #Namespaces used
 SCHEMA = Namespace("https://schema.org/")
 FABIO = Namespace("http://purl.org/spar/fabio/")
@@ -56,12 +56,56 @@ publicationVenue = URIRef("https://schema.org/isPartOf")
 # the URLs of all the resources created from the data
 base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
+"""
+
 csv = "./graph_db/graph_publications.csv"
 jsn = "./graph_db/graph_other_data.json"
 
 class TriplestoreDataProcessor(TriplestoreProcessor):
-    
-    def uploadData(data_path):
+    def __init__(self):
+        super().__init__()
+     #bisogna aggiungere def init-- o no ? 
+    def uploadData(self, data_path):
+
+        #Namespaces used
+        SCHEMA = Namespace("https://schema.org/")
+        FABIO = Namespace("http://purl.org/spar/fabio/")
+        BIBO = Namespace("https://bibliontology.com/")
+
+        #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
+        #CLASSES OF RESOURCES
+        JournalArticle = URIRef("https://schema.org/ScholarlyArticle")
+        BookChapter = URIRef("https://schema.org/Chapter")
+        Proceedingspaper = URIRef("http://purl.org/spar/fabio/ProceedingsPaper")
+        Journal = URIRef("https://schema.org/Periodical")
+        Book = URIRef("https://schema.org/Book")
+        Proceeding = URIRef("http://purl.org/ontology/bibo/Proceedings") #sbagliato
+        Person = URIRef("https://schema.org/Person")
+        organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
+        Publication = URIRef("https://schema.org/CreativeWork")
+        # attributes related to classes
+        citing = URIRef("http://purl.org/ontology/bibo/cites")
+        citation = URIRef("https://schema.org/citation")
+        author = URIRef("https://schema.org/author")
+        doi = URIRef("https://schema.org/identifier")
+        publicationYear = URIRef("https://schema.org/datePublished")
+        title = URIRef("https://schema.org/name")
+        issue = URIRef("https://schema.org/issueNumber")
+        volume = URIRef("https://schema.org/volumeNumber")
+        identifier = URIRef("https://schema.org/identifier")
+        familyName = URIRef("https://schema.org/familyName")
+        givenName = URIRef("https://schema.org/givenName") 
+        name = URIRef("https://schema.org/name")
+        chapter = URIRef("https://schema.org/Chapter")
+        event = URIRef("https://schema.org/Event")
+        publisher = URIRef("https://schema.org/publisher")
+
+        # relations among classes
+        publicationVenue = URIRef("https://schema.org/isPartOf")
+
+        # This is the string defining the base URL used to defined
+        # the URLs of all the resources created from the data
+        base_url = "https://github.com/giorgimariachiara/datascience/res/"
         Dataobject= Data(csv, jsn)
 
         my_graph = Graph()
@@ -69,6 +113,14 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
         my_graph.bind('schema', SCHEMA)
         my_graph.bind('fabio', FABIO)
         my_graph.bind('bibo', BIBO)
+
+
+        for idx, row in Dataobject.Organization_DF.iterrows():
+            subj = URIRef(base_url + row["GOrganizationId"])
+    
+        my_graph.add((subj, RDF.type, organization))
+        my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
+        my_graph.add((subj, identifier, Literal(row["crossref"])))
 
         for idx, row in Dataobject.Publication_DF.iterrows():  
             subj = URIRef(base_url + row["id"])
@@ -123,7 +175,23 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
         my_graph.add((subj, identifier, Literal(row["issn_isbn"]) ))
 
-        print(len(my_graph))
+        for idx, row in Dataobject.Person_DF.iterrows():
+            subj = URIRef(base_url + row["orcid"])
+
+        my_graph.add((subj, RDF.type, Person))
+        my_graph.add((subj, givenName, Literal(row["given"])))
+        my_graph.add((subj, familyName, Literal(row["family"])))
+        my_graph.add((subj, identifier, Literal(row["orcid"])))
+
+        for idx, row in Dataobject.Author_DF.iterrows(): 
+            subj = URIRef(base_url + row["orc_id"])
+
+        # my_graph.add((subj, RDF.type, author))
+        # my_graph.add((subj, identifier, Literal(row["orc_id"])))
+        my_graph.add((subj, author, URIRef(base_url + row["doi"])))
+
+    
+
 """
         data_path_string = str(data_path)
         if data_path_string.endswith(".csv"):

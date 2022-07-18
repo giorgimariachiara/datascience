@@ -5,7 +5,6 @@ from json import load, loads
 from sqlite3 import connect
 from pandas import DataFrame, Series, merge
 import os.path
-from mainRel import Venue
 
 
 csv = "./graph_db/graph_publications.csv"
