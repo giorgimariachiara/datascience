@@ -10,7 +10,7 @@ import json
 from json import load
 
 
-dbPath = "./publication.db"
+#dbPath = "./publication.db"
 
 class IdentifiableEntity(object):
     def __init__(self, id):  
@@ -184,7 +184,7 @@ class GenericQueryProcessor(object):
     def getMostCitedPublication(self): 
         rqp0 = RelationalQueryProcessor()
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         dfMCP = rqp0.getMostCitedPublication()
             
         for index, row in dfMCP.iterrows():
@@ -299,8 +299,8 @@ class GenericQueryProcessor(object):
 
 
 class RelationalProcessor(object):
-    def __init__(self):
-        self.dbPath = ""
+    def __init__(self, dbPath = ""):
+        self.dbPath = dbPath
 
     def setDbPath(self, path):
         self.dbPath = path
@@ -330,7 +330,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationsPublishedInYear(self, py):
        rp0 = RelationalProcessor()
-       rp0.setDbPath(dbPath)
+       #rp0.setDbPath(dbPath)
        with connect(rp0.getDbPath()) as con:
             
         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
@@ -344,7 +344,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationsByAuthorId(self, orcid):
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)   
+        #rp0.setDbPath(dbPath)   
         with connect(rp0.getDbPath()) as con:   
             #JournalArticleDF = read_sql("SELECT A.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '" + orcid + "'", con)
             #BookChapterDF = read_sql("SELECT * FROM BookChapter AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)  
@@ -359,7 +359,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
     def getMostCitedPublication(self):
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             publicationList = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             sql = "SELECT doi, publication_year, title, publication_venue " \
@@ -382,7 +382,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         
     def getMostCitedVenue(self):
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         mostCitedPub = RelationalQueryProcessor.getMostCitedPublication()
         mostCitedPubDOI = mostCitedPub["doi"].tolist()
         mostCitedVenueDF = DataFrame()
@@ -397,7 +397,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             
     def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             VenuesDF = read_sql("SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN Organization AS B ON A.OrganizationId == B.OrganizationId WHERE B.id = '" + publisher + "'", con)
         return VenuesDF.drop_duplicates(subset=['publication_venue'])
@@ -405,7 +405,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
     def getPublicationInVenue(self, issn_isbn):
         rp0= RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             SQL ="SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A LEFT JOIN VenueExt AS B ON A.publication_venue == B.publication_venue WHERE B.issn_isbn = '{}'"
@@ -419,7 +419,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
     def getJournalArticlesInIssue(self, volume, issue, issn_isbn): #mi continua a dire str object is not callableee
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             dfJAI = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle A LEFT JOIN VenueExt B ON A.publication_venue == B.publication_venue WHERE  A.volume = '"+ str(volume) + "' AND A.issue = '" + str(issue) + "' AND B.issn_isbn = '"+ issn_isbn + "'",  con)
         return dfJAI 
@@ -428,7 +428,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
     def getJournalArticlesInVolume(self, volume, issn_isbn): #str object is not callable
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             #dfJAV = read_sql("SELECT title FROM JournalArticle AS A LEFT JOIN Venueid AS B ON A.doi == B.id WHERE volume = {} AND issn_isbn = {})" (volume), (issn_isbn), con)
             dfJAV = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN VenueExt AS B ON A.publication_venue == B.publication_venue WHERE A.volume = '" + str(volume) + "' AND B.issn_isbn = '"+ issn_isbn + "'", con)
@@ -437,14 +437,14 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getJournalArticlesInJournal(self, issn):
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             dfJAJ = read_sql("SELECT A.doi, A.publication_year, A.title, A.publication_venue, A.issue, A.volume FROM JournalArticle AS A LEFT JOIN VenueExt AS B ON A.publication_venue == B.publication_venue WHERE B.issn_isbn = '" + issn + "'", con) 
         return dfJAJ     
     
     def getProceedingsByEvent(self, name):
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         #name = name.lower()
         with connect(rp0.getDbPath()) as con: 
             events = read_sql('SELECT B.* FROM ProceedingsPaper A LEFT JOIN Proceedings B ON A.doi == B.doi WHERE B.Event LIKE "%' + name.lower() + '%"', con)
@@ -453,7 +453,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationAuthors(self, publication): 
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con: 
             publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
             SQL = "SELECT C.* FROM {} AS A JOIN Authors AS B ON A.doi == B.doi JOIN Person AS C ON B.orc_id == C.orcid WHERE A.doi = '{}'"
@@ -466,7 +466,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationsByAuthorName(self, name): #da controllare come si può mettere il formato più ordinato 
         rp0 = RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         with connect(rp0.getDbPath()) as con:
         
             dfProc = read_sql('SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM ProceedingsPaper A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc_id == C.orcid) D ON A.doi == D.doi WHERE D.given LIKE "%' + name + '%"', con) 
@@ -478,7 +478,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     
     def getDistinctPublisherOfPublications(self, listOfDoi):
         rp0= RelationalProcessor()
-        rp0.setDbPath(dbPath)
+        #rp0.setDbPath(dbPath)
         tempDF = pd.DataFrame()
         outputDF = pd.DataFrame()
         with connect(rp0.getDbPath()) as con:
@@ -505,8 +505,8 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 #testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-rqp = RelationalQueryProcessor()
-gqp = GenericQueryProcessor()
+# rqp = RelationalQueryProcessor()
+# gqp = GenericQueryProcessor()
 
 # print(rqp.getPublicationsPublishedInYear(2020))
 # print(gqp.getPublicationsPublishedInYear(2020))

@@ -165,10 +165,10 @@ for column in oggetto.PublishersDF:
 print(nomi)
 """
 class Data:
-    def __init__(self, csv, jsn):
+    def __init__(self, path, csv, jsn):
 
-        if os.path.exists(csv):
-            PublicationsDF = pd.read_csv(csv, keep_default_na= False,
+        if os.path.exists(path + csv):
+            PublicationsDF = pd.read_csv(path + csv, keep_default_na= False,
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -187,9 +187,9 @@ class Data:
         else:
             print("WARNING: CSV file '" + csv + "' does not exist!")
         
-        if os.path.exists(jsn):
+        if os.path.exists(path + jsn):
         # read JSON 
-            with open(jsn, "r", encoding="utf-8") as f:
+            with open(path + jsn, "r", encoding="utf-8") as f:
                 json_doc = load(f)
         else:
             print("WARNING: JSON file '" + jsn + "' does not exist!")
@@ -294,6 +294,15 @@ class Data:
             "issn_isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
             
         })
+        
+        
+print("this module is in name: '" + __name__ + "'")
+if __name__ == "__main__":
+    csv = "relational_publication.csv"
+    jsn = "relational_other_data.json"
+    path = "./relational_db/"
+    Dataobject = Data(path, csv, jsn)
+    print(Dataobject.Cites_DF.head(5))
 
 
 

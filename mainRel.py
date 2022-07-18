@@ -1,7 +1,8 @@
+
 from locale import normalize
 # read csv file with pandas
 
-from implRel import RelationalProcessor
+from implRel import RelationalProcessor as rp, RelationalQueryProcessor
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -18,15 +19,21 @@ from extraclasses import Data
 
 csv = "./relational_db/relational_publication.csv"
 jsn = "./relational_db/relational_other_data.json"
+relationalDataPath = "./relational_db/"
 
-class RelationalDataProcessor(RelationalProcessor):    
-    def uploadData(self, publication_DB):
-
-        Dataobject = Data(csv, jsn)
+class RelationalDataProcessor(rp):  
+    
+    def uploadData(self, path):
+        csv = "relational_publication.csv"
+        jsn = "relational_other_data.json"
+       
+        Dataobject = Data(path, csv, jsn)
         
         
         #Populate the SQL database 
-        with connect(publication_DB) as con:
+        #with connect(RelationalQueryProcessor.getDbPath(self)) as con:
+        with connect(rpInstance.getDbPath()) as con:
+            
             Dataobject.Venue_DF.to_sql("Venue", con, if_exists="replace", index=False)
             Dataobject.Journal_DF.to_sql("Journal", con, if_exists="replace", index=False)
             Dataobject.Book_DF.to_sql("Book", con, if_exists="replace", index=False)
@@ -51,7 +58,19 @@ class RelationalDataProcessor(RelationalProcessor):
                         
 
             con.commit()
+            
 
-runner = RelationalDataProcessor()
 
-print(runner.uploadData("publication.db"))
+
+
+print("this module is in name: '" + __name__ + "'")
+if __name__ == "__main__":
+    csv = "relational_publication.csv"
+    jsn = "relational_other_data.json"
+    path = "./relational_db/"
+    Dataobject = Data(path, csv, jsn)
+    rpInstance = rp()
+    rpInstance.setDbPath(path = "publication.db")
+    print(rpInstance.getDbPath())
+    obj = RelationalDataProcessor()
+    obj.uploadData(path)
