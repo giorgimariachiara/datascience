@@ -296,10 +296,5 @@ class Data:
             
         })
 
-oggetto = Data(csv, jsn)
-ogge = oggetto.VenuesExt_DF
-ogge2 = oggetto.Person_DF
 
-
-print(ogge)
 
