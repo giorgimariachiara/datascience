@@ -165,7 +165,7 @@ for column in oggetto.PublishersDF:
     nomi.append(column)
 print(nomi)
 """
-class Data2:
+class Data:
     def __init__(self, csv, jsn):
 
         if os.path.exists(csv):
@@ -195,6 +195,7 @@ class Data2:
         else:
             print("WARNING: JSON file '" + jsn + "' does not exist!")
 
+
         #AUTHOR DATAFRAME
         author = json_doc["authors"]
         author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
@@ -210,7 +211,7 @@ class Data2:
         cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
         cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
         self.Cites_DF = cites_df   #qui è da vedere se siamo sicuri di voelr togliere quelli che non citano nulla (o dobbiamo scrivere che se non lo trovi non cito nulla)
-    
+
         #PERSON DATAFRAME 
         author = json_doc["authors"]
         person_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
@@ -234,7 +235,6 @@ class Data2:
                 .groupby(["publication_venue"], as_index=False).min()\
                 .rename(columns={"publication_venue" : "title", "publisher" : "publisherId"})\
                 .reindex(["venueid", "title", "venue_type", "publisherId"], axis = "columns")
-        print(venue_df.head(5))
         self.Venue_DF = venue_df
         #da chiedere il funzionamento
 
@@ -278,11 +278,28 @@ class Data2:
         proceedings_df = pd.merge(venue_df, proceedings_df, left_on="title", right_on="publication_venue")\
             .query("venue_type == 'proceedings'")
         self.Proceedings_DF = proceedings_df[["venueid", "title", "event", "publisherId"]]
-              
+        
+        #VENUE EXTERNAL ID
+        Venue=json_doc["venues_id"]
 
-oggetto = Data2(csv, jsn)
-ogge = oggetto.Proceedings_DF
+        doi_list = []
+        issn_isbn_l = []
+
+        for key in Venue:
+            for item in Venue[key]:
+                doi_list.append(key)
+                issn_isbn_l.append(item)
+
+        self.VenuesExt_DF = pd.DataFrame({
+            "doi": Series(doi_list, dtype="string", name="doi"),
+            "issn_isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
+            
+        })
+
+oggetto = Data(csv, jsn)
+ogge = oggetto.VenuesExt_DF
 ogge2 = oggetto.Person_DF
 
 
 print(ogge)
+

@@ -40,9 +40,6 @@ class RelationalDataProcessor(RelationalProcessor):
         with open(JSNdata_path, "r", encoding="utf-8") as f:
                 json_data = load(f)
         
-          
-    
-        
 
         # publication_df = uploadData(csv_path)
         # json_doc = uploadData(json_path)
