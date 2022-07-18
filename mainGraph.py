@@ -123,7 +123,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
         my_graph.add((subj, identifier, Literal(row["issn_isbn"]) ))
 
-        print(len(my_graph))
+        #print(len(my_graph))
 """
         data_path_string = str(data_path)
         if data_path_string.endswith(".csv"):
