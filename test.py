@@ -1,7 +1,7 @@
 from locale import normalize
 # read csv file with pandas
 
-from implRel import RelationalProcessor
+from implRel import RelationalProcessor, RelationalQueryProcessor
 from operator import index
 from numpy import index_exp
 from pandas import merge 
@@ -20,18 +20,20 @@ import implRel as pc2
 import mainGraph as pc3
 
 import os 
-dir_path = os.path.dirname(os.path.realpath(__file__))
+# dir_path = os.path.dirname(os.path.realpath(__file__))
 
-RelDataPth = dir_path + "/relational_db/"
-RelDbPthFN = "Publications.sqlite"
-TriStrDataPth = ""
-EndpointUrl = ""
+# RelDataPth = dir_path + "/relational_db/"
+# RelDbPthFN = "Publications.sqlite"
+# TriStrDataPth = ""
+# EndpointUrl = ""
+# rqp = RelationalQueryProcessor()
+# rdp = pc.RelationalDataProcessor(RelDbPthFN)
+# rdp.uploadData(RelDataPth)
+# tdp = pc3.TriplestoreDataProcessor(EndpointUrl)
+# tdp.uploadData(TriStrDataPth)
+#gqp = pc2.GenericQueryProcessor(pc2.QueryProcessor())
 
-rdp = pc.RelationalDataProcessor(RelDbPthFN)
-rdp.uploadData(RelDataPth)
-tdp = pc3.TriplestoreDataProcessor(EndpointUrl)
-tdp.uploadData(TriStrDataPth)
-gqp = pc2.GenericQueryProcessor(pc2.QueryProcessor())
 
-print(gqp.getPublicationsByAuthorId("orcid"))
-print(gqp.getPublicationsPublishedInYear(2012))
+
+#print(RelationalQueryProcessor.getPublicationsPublishedInYear(2020))
+

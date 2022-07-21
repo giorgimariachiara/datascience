@@ -6,6 +6,8 @@ from sqlite3 import connect
 from pandas import DataFrame, Series, merge
 import os.path
 
+from implRel import Publication
+
 
 csv = "./graph_db/graph_publications.csv"
 jsn = "./graph_db/graph_other_data.json"
@@ -195,62 +197,13 @@ class Data:
             print("WARNING: JSON file '" + jsn + "' does not exist!")
 
 
-        #AUTHOR DATAFRAME
-        author = json_doc["authors"]
-        author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
-        author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
-        author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
-        author_df.drop("family_name", axis=1, inplace = True)
-        author_df.drop("given_name", axis =1, inplace = True)
-        self.Author_DF = author_df
 
-        #CITES DATAFRAME
-        References = json_doc["references"]
-        cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
-        cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
-        cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
-        self.Cites_DF = cites_df   #qui è da vedere se siamo sicuri di voelr togliere quelli che non citano nulla (o dobbiamo scrivere che se non lo trovi non cito nulla)
-
-        #PERSON DATAFRAME 
-        author = json_doc["authors"]
-        person_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
-        person_df=pd.json_normalize(json.loads(person_df.to_json(orient="records")))
-        person_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
-        self.Person_DF = person_df
-
-        #VENUE DATAFRAME
-        venues_df = pd.DataFrame.from_dict(json_doc["venues_id"], orient='index', columns = ['id1', 'id2'])
-        veid = pd.merge(PublicationsDF.filter(items=["id", "publication_venue", 'venue_type', 'publisher']),\
-                        venues_df, left_on = "id", right_index = True)\
-                    .drop(columns="id")\
-                    .drop_duplicates()
-
-        # Pivot 'external_ids' to 'id', select MIN() to make it unique
-        
-        venue_df = pd.concat([
-            veid.drop(columns="id2").rename(columns={"id1" : "venueid"}),
-            veid.drop(columns="id1").rename(columns={"id2" : "venueid"}),
-            ]).dropna()\
-                .groupby(["publication_venue"], as_index=False).min()\
-                .rename(columns={"publication_venue" : "title", "publisher" : "publisherId"})\
-                .reindex(["venueid", "title", "venue_type", "publisherId"], axis = "columns")
-        self.Venue_DF = venue_df
-        #da chiedere il funzionamento
-
-        #ORGANIZATION DATAFRAME 
-        crossref = json_doc["publishers"]
-        id_and_name = crossref.values()
-        organization_df = pd.DataFrame(id_and_name)
-        self.Organization_DF = organization_df
+        # DATAFRAME FROM CSV
 
         #PUBLICATION DATAFRAME 
         
-        publication_df = PublicationsDF[["id", "title", "type", "publicationYear","publisher", "publication_venue"]]
-        publication_df = pd.merge(venue_df, publication_df, left_on="title", right_on="publication_venue")
-        publication_df = publication_df[["id", "title_x", "type", "publicationYear", "publisherId"]]\
-                        .rename(columns={"publisherId" : "PublicationVenueId", "title_x":"title"})
-        self.Publication_DF = publication_df
-
+        self.Publication_DF = PublicationsDF[["id", "title", "type", "publicationYear","publisher", "publication_venue"]]
+        
         #BOOK CHAPTER DATAFRAME
         book_chapter_df = PublicationsDF.query("type == 'book-chapter'")
         book_chapter_df = book_chapter_df[["id", "chapter"]]
@@ -265,35 +218,94 @@ class Data:
         proceedings_paper_df = PublicationsDF.query("type == 'proceeding-paper'")
         proceedings_paper_df = proceedings_paper_df[["id"]]
         self.Proceedings_paper_DF = proceedings_paper_df
-
-        #BOOK DATAFRAME
-        self.Book_DF = venue_df.query("venue_type == 'book'")
-
+        
+         #BOOK DATAFRAME
+        book_df = PublicationsDF.query("venue_type == 'book'")
+        self.Book_DF = book_df[["id", "publication_venue"]]
+        #print(self.Book_DF)
+        
+        
         #JOURNAL DATAFRAME
-        self.Journal_DF= venue_df.query("venue_type == 'journal'")
+        journal_df = PublicationsDF.query("venue_type == 'journal'")
+        self.Journal_DF= journal_df[["id", "publication_venue"]]
+        print(self.Journal_DF.head(7))
         
         #PROCEEDINGS DATAFRAME
-        proceedings_df = PublicationsDF[["id", "publication_venue", "event"]]
-        proceedings_df = pd.merge(venue_df, proceedings_df, left_on="title", right_on="publication_venue")\
-            .query("venue_type == 'proceedings'")
-        self.Proceedings_DF = proceedings_df[["venueid", "title", "event", "publisherId"]]
+        proceedings_df= PublicationsDF.query("venue_type == 'proceedings'")
+        self.Proceedings_DF = proceedings_df[["id", "publication_venue", "event"]]
+        #print(self.Proceedings_DF)
+
+        # DATAFRAME FROM JSON 
         
-        #VENUE EXTERNAL ID
-        Venue=json_doc["venues_id"]
+        #VENUE DATAFRAME
+        venues_df = json_doc["venues_id"]
+        self.Venues_DF = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
+        #print(venues_df)          
+       
+        #AUTHOR DATAFRAME
+        author = json_doc["authors"]
+        author_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
+        author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
+        author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+        author_df.drop("family_name", axis=1, inplace = True)
+        author_df.drop("given_name", axis =1, inplace = True)
+        self.Author_DF = author_df
+        #print(self.Author_DF)
 
-        doi_list = []
-        issn_isbn_l = []
+        #CITES DATAFRAME
+        References = json_doc["references"]
+        cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
+        cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
+        cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
+        self.Cites_DF = cites_df   #qui è da vedere se siamo sicuri di voelr togliere quelli che non citano nulla (o dobbiamo scrivere che se non lo trovi non cito nulla)
+        #print(self.Cites_DF)
 
-        for key in Venue:
-            for item in Venue[key]:
-                doi_list.append(key)
-                issn_isbn_l.append(item)
 
-        self.VenuesExt_DF = pd.DataFrame({
-            "doi": Series(doi_list, dtype="string", name="doi"),
-            "issn_isbn": Series(issn_isbn_l, dtype="string", name="issn_isbn"),
-            
-        })
+        #PERSON DATAFRAME 
+        author = json_doc["authors"]
+        person_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
+        person_df=pd.json_normalize(json.loads(person_df.to_json(orient="records")))
+        person_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+        self.Person_DF = person_df
+        #print(self.Person_DF)
+
+        
+        
+        #PROCEEDINGS DATAFRAME
+        self.Proceedings_DF= PublicationsDF.query("venue_type == 'proceedings'")
+        self.Proceedings_DF = PublicationsDF[["id", "publication_venue", "event"]]
+        # proceedings_df = pd.merge(venue_df, proceedings_df, left_on="title", right_on="publication_venue")\
+        #     .query("venue_type == 'proceedings'")
+        # self.Proceedings_DF = proceedings_df[["venueid", "title", "event", "publisherId"]]
+
+
+        
+
+        # Pivot 'external_ids' to 'id', select MIN() to make it unique
+        
+        # venue_df = pd.concat([
+        #     veid.drop(columns="id2").rename(columns={"id1" : "venueid"}),
+        #     veid.drop(columns="id1").rename(columns={"id2" : "venueid"}),
+        #     ]).dropna()\
+        #         .groupby(["publication_venue"], as_index=False).min()\
+        #         .rename(columns={"publication_venue" : "title", "publisher" : "publisherId"})\
+        #         .reindex(["venueid", "title", "venue_type", "publisherId"], axis = "columns")
+        # self.Venue_DF = venue_df
+        #da chiedere il funzionamento
+        #print(venues_df)
+
+        #ORGANIZATION DATAFRAME 
+        crossref = json_doc["publishers"]
+        id_and_name = crossref.values()
+        organization_df = pd.DataFrame(id_and_name)
+        self.Organization_DF = organization_df
+        
+
+        
+
+        
+        
+        
         
         
 print("this module is in name: '" + __name__ + "'")
@@ -302,7 +314,7 @@ if __name__ == "__main__":
     jsn = "relational_other_data.json"
     path = "./relational_db/"
     Dataobject = Data(path, csv, jsn)
-    print(Dataobject.Cites_DF.head(5))
+    #print(Dataobject.Cites_DF.head(5))
 
 
 
