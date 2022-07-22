@@ -222,8 +222,7 @@ class Data:
          #BOOK DATAFRAME
         book_df = PublicationsDF.query("venue_type == 'book'")
         self.Book_DF = book_df[["id", "publication_venue"]]
-        #print(self.Book_DF)
-        
+        #print(self.Book_DF)     
         
         #JOURNAL DATAFRAME
         journal_df = PublicationsDF.query("venue_type == 'journal'")
@@ -270,44 +269,17 @@ class Data:
         #print(self.Person_DF)
 
         
-        
         #PROCEEDINGS DATAFRAME
         self.Proceedings_DF= PublicationsDF.query("venue_type == 'proceedings'")
         self.Proceedings_DF = PublicationsDF[["id", "publication_venue", "event"]]
-        # proceedings_df = pd.merge(venue_df, proceedings_df, left_on="title", right_on="publication_venue")\
-        #     .query("venue_type == 'proceedings'")
-        # self.Proceedings_DF = proceedings_df[["venueid", "title", "event", "publisherId"]]
 
-
-        
-
-        # Pivot 'external_ids' to 'id', select MIN() to make it unique
-        
-        # venue_df = pd.concat([
-        #     veid.drop(columns="id2").rename(columns={"id1" : "venueid"}),
-        #     veid.drop(columns="id1").rename(columns={"id2" : "venueid"}),
-        #     ]).dropna()\
-        #         .groupby(["publication_venue"], as_index=False).min()\
-        #         .rename(columns={"publication_venue" : "title", "publisher" : "publisherId"})\
-        #         .reindex(["venueid", "title", "venue_type", "publisherId"], axis = "columns")
-        # self.Venue_DF = venue_df
-        #da chiedere il funzionamento
-        #print(venues_df)
-
-        #ORGANIZATION DATAFRAME 
+         #ORGANIZATION DATAFRAME 
         crossref = json_doc["publishers"]
         id_and_name = crossref.values()
         organization_df = pd.DataFrame(id_and_name)
-        self.Organization_DF = organization_df
-        
+        self.Organization_DF = organization_df 
 
-        
-
-        
-        
-        
-        
-        
+ """       
 print("this module is in name: '" + __name__ + "'")
 if __name__ == "__main__":
     csv = "relational_publication.csv"
@@ -316,5 +288,5 @@ if __name__ == "__main__":
     Dataobject = Data(path, csv, jsn)
     #print(Dataobject.Cites_DF.head(5))
 
-
+"""
 

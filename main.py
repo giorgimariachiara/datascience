@@ -17,7 +17,7 @@ from pyrsistent import v
 from impl import ProceedingsPaper 
 
 
-
+"""
 publication_df = pd.read_csv("./relational_db/relational_publication.csv",
                         dtype={
                                     "id": "string",
@@ -214,5 +214,5 @@ with connect("publications.db") as con:
 
 
 
-
+"""
 

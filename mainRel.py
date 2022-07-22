@@ -47,11 +47,12 @@ class RelationalDataProcessor(rp):
     
     def uploadData(self, path):
         
-        
+        obj.setDbPath(path) 
         #Populate the SQL database 
         #with connect(RelationalQueryProcessor.getDbPath(self)) as con:
         with connect(obj.getDbPath()) as con:
             
+            Dataobject = Data()
             Dataobject.Journal_DF.to_sql("Journal", con, if_exists="replace", index=False)
             Dataobject.Book_DF.to_sql("Book", con, if_exists="replace", index=False)
             Dataobject.Journal_article_DF.to_sql("JournalArticle", con, if_exists="replace", index=False)

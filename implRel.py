@@ -10,9 +10,6 @@ from unicodedata import name
 import json
 from json import load
 
-
-
-
 class IdentifiableEntity(object):
     def __init__(self, id):  
             self.id = id 
@@ -335,7 +332,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
     def getPublicationsPublishedInYear(self, publicationYear):
        with connect(self.getDbPath()) as con:
-        print("diocane")
         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
         SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
         return concat([
@@ -511,7 +507,7 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 rqp = RelationalQueryProcessor()
 gqp = GenericQueryProcessor()
 
-# print(rqp.getPublicationsPublishedInYear(2020))
+print(rqp.getPublicationsPublishedInYear(2020))
 # print(gqp.getPublicationsPublishedInYear(2020))
 
 #print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
