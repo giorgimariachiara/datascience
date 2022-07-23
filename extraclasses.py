@@ -7,6 +7,8 @@ from sqlite3 import connect
 from pandas import DataFrame, Series, merge
 import os.path
 
+
+
 #csv = "./graph_db/graph_publications.csv"
 #jsn = "./graph_db/graph_other_data.json"
 
@@ -165,7 +167,7 @@ for column in oggetto.PublishersDF:
 print(nomi)
 """
 
-class DataCSV: #di chi è figlia? 
+class DataCSV: #di chi è figlia?ho provato a mettere figlia di relational processor così da poter utilizzare nel mainRel il getdbpath direttamente da questa classe ma non funziona 
     def __init__(self, path, csv):
         self.path = path
         self.csv = csv

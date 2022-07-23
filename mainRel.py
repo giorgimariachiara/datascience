@@ -35,6 +35,8 @@ class RelationalProcessor(object):
         return self.dbPath
 
 class RelationalDataProcessor(RelationalProcessor):  
+    def __init__(self, dbPath=""):
+        super().__init__(dbPath)
         
     def uploadData(self, path):    # path to input data file
         f_ext = os.path.splitext(path)[1]
