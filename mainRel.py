@@ -6,7 +6,7 @@ from numpy import index_exp
 from pandas import merge 
 from collections import deque
 import json
-from json import load
+from json import load, loads
 from sqlite3 import connect
 from pprint import pprint
 from pandas import read_sql
@@ -17,8 +17,9 @@ from extraclasses import DataJSON, DataCSV
 import os.path
 
 csv = "./relational_db/relational_publication.csv"
-jsn = "./relational_db/relational_other_data.json"
+jsonf = "./relational_db/relational_other_data.json"
 path = "./relational_db/"
+
 
 class RelationalProcessor(object):
     print("instance of relational processor ")
@@ -37,8 +38,8 @@ class RelationalDataProcessor(RelationalProcessor):
         
     def uploadData(self, path):    # path to input data file
         f_ext = os.path.splitext(path)[1]
-        if f_ext.upper() == "CSV":
-            CSV_Rdata = DataCSV(path) #la classe data verrà divisa in due classi DataCSV e DataJson 
+        if f_ext.upper() == ".CSV":
+            CSV_Rdata = DataCSV(path, csv) #la classe data verrà divisa in due classi DataCSV e DataJson 
 #           CSV_Rdata2SQLite.Rdata2SQLite(CSV_Rdata, .getDbPath())
             with connect(self.getDbPath()) as con:
                 CSV_Rdata.Book_DF.to_sql("Book", con, if_exists="replace", index=False)
@@ -51,8 +52,8 @@ class RelationalDataProcessor(RelationalProcessor):
 
                 con.commit()
 
-        elif f_ext.upper() == "JSON":
-            JSN_Rdata = DataJSON(path)
+        elif f_ext.upper() == ".JSON":
+            JSN_Rdata = DataJSON(path, jsonf)
             with connect(self.getDbPath()) as con:
 #            JSN_Rdata2SQLite(JSN_Rdata, .getDbPath())
                 JSN_Rdata.Author_DF.to_sql("Authors", con, if_exists="replace", index=False)
