@@ -4,11 +4,17 @@ from posixpath import split
 import sqlite3
 from sqlite3 import * 
 from pandas import DataFrame, concat, read_sql
-import pandas
 from mimetypes import init
 from unicodedata import name
 import json
 from json import load
+from mainRel import RelationalDataProcessor, RelationalProcessor
+
+class QueryProcessor(object):
+    def __init__(self):
+        pass
+
+#object classes 
 
 class IdentifiableEntity(object):
     def __init__(self, id):  
@@ -144,6 +150,31 @@ class Proceedings(Venue):
     def getEvent(self):
         return self.event 
 
+class TriplestoreProcessor(object):
+    def __init__(self):
+        self.endpointUrl = ""
+        
+    def setEndpointUrl(self, url):
+        self.endpointUrl = url
+    
+    def getEndpointUrl(self):
+        return self.endpointUrl
+
+
+class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
+    def __init__(self):
+        super().__init__()
+
+    def getPublicationsPublishedInYear(self, publicationYear):
+       with connect(self.getDbPath()) as con:
+        publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+        SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
+        return concat([
+                read_sql(SQL.format(publications[0], str(publicationYear)), con),
+                read_sql(SQL.format(publications[1], str(publicationYear)), con),
+                read_sql(SQL.format(publications[2], str(publicationYear)), con)
+            ]) 
+
 from mimetypes import init
 from tokenize import String
 
@@ -161,13 +192,19 @@ class GenericQueryProcessor(object):
         return True
 
     def getPublicationsPublishedInYear(self, publicationYear):
-        rqp0 = RelationalQueryProcessor()
-        dfPY = rqp0.getPublicationsPublishedInYear(publicationYear)
-        for index, row in dfPY.iterrows():
-            row = list(row)
-            publicationObj = Publication(*row)
-            self.addQueryProcessor(publicationObj)
-        return self.queryProcessor
+        Processor = self.queryProcessor.append(RelationalQueryProcessor) #poi anche triple store query processor
+        res = []
+        for QP in Processor: 
+            re = QP.getPublicationsPublishedinYear(publicationYear)
+            res.append(re)
+            for el in res:
+                for index, row in el.iterrows():
+                    result = []
+                    row = list(row)
+                    publicationObj = Publication(*row)
+                    result.append(publicationObj)
+            return result
+
     
     def getPublicationsByAuthorId(self, orcid):
         rqp0 = RelationalQueryProcessor()
@@ -295,35 +332,6 @@ class GenericQueryProcessor(object):
             self.addQueryProcessor(OrganizationObj) 
         return self.queryProcessor
 
-
-class RelationalProcessor(object):
-    print("instance of relational processor ")
-    def __init__(self, dbPath = ""):
-        
-        self.dbPath = dbPath
-
-    def setDbPath(self, dbPath):
-        self.dbPath = dbPath
-        return True
-
-    def getDbPath(self):
-        return self.dbPath
-
-class TriplestoreProcessor(object):
-    def __init__(self):
-        self.endpointUrl = ""
-        
-    def setEndpointUrl(self, url):
-        self.endpointUrl = url
-    
-    def getEndpointUrl(self):
-        return self.endpointUrl
-        
-                  
-        
-class QueryProcessor(object):
-    def __init__(self):
-        pass
 
 
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):

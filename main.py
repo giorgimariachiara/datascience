@@ -14,7 +14,7 @@ import pandas as pd
 from pandas import read_csv, Series, read_json
 from pyrsistent import v
 
-from impl import ProceedingsPaper 
+
 
 
 """

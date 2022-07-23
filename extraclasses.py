@@ -6,12 +6,9 @@ from sqlite3 import connect
 from pandas import DataFrame, Series, merge
 import os.path
 
-from implRel import Publication
+#csv = "./graph_db/graph_publications.csv"
+#jsn = "./graph_db/graph_other_data.json"
 
-
-csv = "./graph_db/graph_publications.csv"
-jsn = "./graph_db/graph_other_data.json"
-#pth, 
 
 """
 class Data:
@@ -166,11 +163,13 @@ for column in oggetto.PublishersDF:
     nomi.append(column)
 print(nomi)
 """
-class Data:
-    def __init__(self, path, csv, jsn):
 
-        if os.path.exists(path + csv):
-            PublicationsDF = pd.read_csv(path + csv, keep_default_na= False,
+class DataCSV: #di chi è figlia? 
+    def __init__(self, path):
+        self.path = path
+
+        if os.path.exists(path):
+            PublicationsDF = pd.read_csv(path, keep_default_na= False,
                         dtype={
                                     "id": "string",
                                     "title": "string",
@@ -187,18 +186,9 @@ class Data:
                 .rename(columns={"publication_year" : "publicationYear"})
 
         else:
-            print("WARNING: CSV file '" + csv + "' does not exist!")
-        
-        if os.path.exists(path + jsn):
-        # read JSON 
-            with open(path + jsn, "r", encoding="utf-8") as f:
-                json_doc = load(f)
-        else:
-            print("WARNING: JSON file '" + jsn + "' does not exist!")
+            print("WARNING: CSV file '" + path + "' does not exist!")
 
-
-
-        # DATAFRAME FROM CSV
+            # DATAFRAME FROM CSV
 
         #PUBLICATION DATAFRAME 
         
@@ -227,12 +217,25 @@ class Data:
         #JOURNAL DATAFRAME
         journal_df = PublicationsDF.query("venue_type == 'journal'")
         self.Journal_DF= journal_df[["id", "publication_venue"]]
-        print(self.Journal_DF.head(7))
+    
         
         #PROCEEDINGS DATAFRAME
         proceedings_df= PublicationsDF.query("venue_type == 'proceedings'")
         self.Proceedings_DF = proceedings_df[["id", "publication_venue", "event"]]
         #print(self.Proceedings_DF)
+
+    
+    
+class DataJSON(object):
+    def __init__(self, path):
+        self.path = path 
+       
+        if os.path.exists(path):
+        # read JSON 
+            with open(path, "r", encoding="utf-8") as f:
+                json_doc = load(f)
+        else:
+            print("WARNING: JSON file '" + path + "' does not exist!")
 
         # DATAFRAME FROM JSON 
         
@@ -259,7 +262,6 @@ class Data:
         self.Cites_DF = cites_df   #qui è da vedere se siamo sicuri di voelr togliere quelli che non citano nulla (o dobbiamo scrivere che se non lo trovi non cito nulla)
         #print(self.Cites_DF)
 
-
         #PERSON DATAFRAME 
         author = json_doc["authors"]
         person_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
@@ -268,18 +270,13 @@ class Data:
         self.Person_DF = person_df
         #print(self.Person_DF)
 
-        
-        #PROCEEDINGS DATAFRAME
-        self.Proceedings_DF= PublicationsDF.query("venue_type == 'proceedings'")
-        self.Proceedings_DF = PublicationsDF[["id", "publication_venue", "event"]]
-
          #ORGANIZATION DATAFRAME 
         crossref = json_doc["publishers"]
         id_and_name = crossref.values()
         organization_df = pd.DataFrame(id_and_name)
         self.Organization_DF = organization_df 
 
- """       
+"""       
 print("this module is in name: '" + __name__ + "'")
 if __name__ == "__main__":
     csv = "relational_publication.csv"
@@ -289,4 +286,6 @@ if __name__ == "__main__":
     #print(Dataobject.Cites_DF.head(5))
 
 """
-
+path= "./relational_publication.csv"
+Dataobject = DataCSV(path)
+print(Dataobject.Publication_DF)
