@@ -15,8 +15,9 @@ rqp.setDbPath(dbpath0)
 #print(rqp.getVenuesByPublisherId("crossref:78"))
 gqp = GenericQueryProcessor()
 gqp.addQueryProcessor(rqp)
-#print(rqp.)
-print(rqp.getDistinctPublisherOfPublications(["doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035"]))
+#print(gqp.getVenuesByPublisherId("crossref:78"))
+#print(gqp.getMostCitedPublication())
+print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #for el in resultq1:
     #print(el.__str__())
 
