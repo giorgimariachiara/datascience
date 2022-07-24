@@ -431,6 +431,20 @@ class GenericQueryProcessor(object):
         return result
 
     def getDistinctPublisherOfPublications(self, lista):
+        res = []
+        for QP in self.queryProcessor: 
+            re = QP.getDistinctPublisherOfPublications(lista)
+            res.append(re)
+        result = []
+        for el in res:
+            for index, row in el.iterrows():
+                row = list(row)
+                OrganizationObj = Organization(*row)
+                result.append(OrganizationObj)
+        return result
+        
+        
+        
         rqp0 = RelationalQueryProcessor()
         dfPP = rqp0.getDistinctPublisherOfPublications(lista)
         for index, row in dfPP.iterrows():
@@ -545,11 +559,12 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         tempDF = pd.DataFrame()
         outputDF = pd.DataFrame()
         with connect(self.getDbPath()) as con:
-            li = []
+            publisherDF = pd.DataFrame()
+            sqlDF = pd.DataFrame()
             for doi in listOfDoi:
-                SQL = "SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'"
-                li.append(SQL)
-        return read_sql(li, con)
+                SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
+                publisherDF = concat([publisherDF, SQL]) 
+        return  publisherDF
 
     # def getDistinctPublisherOfPublications(self, listOfDoi):
     #     rp0= RelationalProcessor()
