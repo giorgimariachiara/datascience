@@ -13,9 +13,9 @@ obj.uploadData(csv)
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
 #print(rqp.getVenuesByPublisherId("crossref:78"))
-gqp = GenericQueryProcessor()
-gqp.addQueryProcessor(rqp)
-print(gqp.getVenuesByPublisherId("crossref:78"))
+#gqp = GenericQueryProcessor()
+#gqp.addQueryProcessor(rqp)
+print(rqp.getJournalArticlesInIssue(9, 17, "issn:2164-5515"))
 #for el in resultq1:
     #print(el.__str__())
 
