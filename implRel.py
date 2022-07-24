@@ -4,17 +4,13 @@ from posixpath import split
 import sqlite3
 from sqlite3 import * 
 from pandas import DataFrame, concat, read_sql
+import pandas
 from mimetypes import init
 from unicodedata import name
 import json
 from json import load
-from mainRel import RelationalDataProcessor, RelationalProcessor
-from mimetypes import init
-from tokenize import String
-import os
-from extraclasses import DataCSV, DataJSON
 
-#object classes -----------------------------------------------------------------------------------------------------------------------#
+
 
 
 class IdentifiableEntity(object):
@@ -151,107 +147,8 @@ class Proceedings(Venue):
     def getEvent(self):
         return self.event 
 
-
-
-    
-#---------------------------------------------------------------------------------------------------------------------------------------------#
-
-
-
-
-class QueryProcessor(object):
-    def __init__(self):
-        pass
-
-# CLASSES FOR RDF DATABASE---------------------------------------------------------------------------------------------------------------------#
-
-
-
-class TriplestoreProcessor(object):
-    def __init__(self):
-        self.endpointUrl = ""
-        
-    def setEndpointUrl(self, url):
-        self.endpointUrl = url
-    
-    def getEndpointUrl(self):
-        return self.endpointUrl
-
-
-    
-
-#  CLASSES FOR RELATIONAL DATABASE --------------------------------------------------------------------------------------------------------------#
-
-
-
-
-class RelationalProcessor(object):
-    def __init__(self, dbPath = ""):
-        
-        self.dbPath = dbPath
-
-    def setDbPath(self, dbPath):
-        self.dbPath = dbPath
-        return True
-
-    def getDbPath(self):
-        return self.dbPath
-
-
-class RelationalDataProcessor(RelationalProcessor):  
-    def __init__(self, dbPath=""):
-        super().__init__(dbPath)
-        
-    def uploadData(self, path): # path to input data file
-        print("dbpath =" + self.getDbPath())
-        f_ext = os.path.splitext(path)[1]
-        if f_ext.upper() == ".CSV":
-            CSV_Rdata = DataCSV(path) #la classe data verrà divisa in due classi DataCSV e DataJson 
-#           CSV_Rdata2SQLite.Rdata2SQLite(CSV_Rdata, .getDbPath())
-            with connect(self.getDbPath()) as con:
-                CSV_Rdata.Book_DF.to_sql("Book", con, if_exists="replace", index=False)
-                CSV_Rdata.Publication_DF.to_sql("Publications", con, if_exists="replace", index=False)  
-                CSV_Rdata.Journal_DF.to_sql("Journal", con, if_exists="replace", index=False) 
-                CSV_Rdata.Proceedings_DF.to_sql("Proceeding", con, if_exists="replace", index=False) 
-                CSV_Rdata.Proceedings_paper_DF.to_sql("ProceedingPaper", con, if_exists="replace", index=False) 
-                CSV_Rdata.Journal_article_DF.to_sql("JournalArticle", con, if_exists="replace", index=False)
-                CSV_Rdata.Book_chapter_DF.to_sql("BookChapter", con, if_exists="replace", index=False)
-
-                con.commit()
-
-        elif f_ext.upper() == ".JSON":
-            JSN_Rdata = DataJSON(path)
-            with connect(self.getDbPath()) as con:
-#            JSN_Rdata2SQLite(JSN_Rdata, .getDbPath())
-                JSN_Rdata.Author_DF.to_sql("Authors", con, if_exists="replace", index=False)
-                JSN_Rdata.Cites_DF.to_sql("Cites", con, if_exists="replace", index=False)
-                JSN_Rdata.Organization_DF.to_sql("Organization", con, if_exists="replace", index=False)
-                JSN_Rdata.VenuesId_DF.to_sql("Venue", con, if_exists="replace", index=False)
-                JSN_Rdata.Person_DF.to_sql("Person", con, if_exists="replace", index=False)
-
-                con.execute("DROP VIEW  IF EXISTS countCited") 
-                con.execute("CREATE VIEW countCited AS "
-                        "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
-                con.execute("DROP VIEW  IF EXISTS maxCited") 
-                con.execute("CREATE VIEW maxCited AS "
-                        "SELECT * FROM countCited WHERE N = (SELECT MAX(N) FROM countCited);")
-
-            con.commit()
-        else:
-            print("problem!!")
-            return False
-
-        return True
-
-
-
-
-
-#  GENERIC QUERY PROCESSOR ---------------------------------------------------------------------------------------------------------------#
-
-
-
-
+from mimetypes import init
+from tokenize import String
 
 class GenericQueryProcessor(object):
     def __init__(self):
@@ -266,20 +163,14 @@ class GenericQueryProcessor(object):
         self.queryProcessor.append(QueryProcessor)
         return True
 
-    def getPublicationsPublishedInYear(self, publicationYear): 
-        res = []
-        for QP in self.queryProcessor: 
-            re = QP.getPublicationsPublishedInYear(publicationYear)
-            res.append(re)
-        result = []
-        for el in res:
-            for index, row in el.iterrows():
-                row = list(row)
-                publicationObj = Publication(*row)
-                result.append(publicationObj)
-
-        return result
-
+    def getPublicationsPublishedInYear(self, publicationYear):
+        rqp0 = RelationalQueryProcessor()
+        dfPY = rqp0.getPublicationsPublishedInYear(publicationYear)
+        for index, row in dfPY.iterrows():
+            row = list(row)
+            publicationObj = Publication(*row)
+            self.addQueryProcessor(publicationObj)
+        return self.queryProcessor
     
     def getPublicationsByAuthorId(self, orcid):
         rqp0 = RelationalQueryProcessor()
@@ -304,6 +195,12 @@ class GenericQueryProcessor(object):
         return self.queryProcessor
     
 
+    # rp0 = RelationalProcessor()
+    #     rp0.setDbPath(dbPath)
+    #     with connect(rp0.getDbPath()) as con: 
+    
+    
+    
     def getMostCitedVenue(self):
         rqp0 = RelationalQueryProcessor()
         dfMCV = rqp0.getMostCitedVenue()
@@ -312,6 +209,8 @@ class GenericQueryProcessor(object):
             VenueObj = Venue(*row)
             self.addQueryProcessor(VenueObj)
         return self.queryProcessor
+
+    
 
     def getVenuesByPublisherId(self, publisher):
         rqp0 = RelationalQueryProcessor()
@@ -400,12 +299,34 @@ class GenericQueryProcessor(object):
         return self.queryProcessor
 
 
+class RelationalProcessor(object):
+    print("instance of relational processor ")
+    def __init__(self, dbPath = ""):
+        
+        self.dbPath = dbPath
 
+    def setDbPath(self, dbPath):
+        self.dbPath = dbPath
+        return True
 
+    def getDbPath(self):
+        return self.dbPath
 
-# RELATIONAL QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
-
-
+class TriplestoreProcessor(object):
+    def __init__(self):
+        self.endpointUrl = ""
+        
+    def setEndpointUrl(self, url):
+        self.endpointUrl = url
+    
+    def getEndpointUrl(self):
+        return self.endpointUrl
+        
+                  
+        
+class QueryProcessor(object):
+    def __init__(self):
+        pass
 
 
 class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
@@ -413,16 +334,30 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         super().__init__()
 
     def getPublicationsPublishedInYear(self, publicationYear):
-        with connect(self.getDbPath()) as con:
-        #SQL = "SELECT id, publication_year, title, publication_venue FROM Publications WHERE publicationYear = '{}'"
-            SQL = "SELECT id, publicationYear, title, publication_venue FROM Publications WHERE publicationYear = " + str(publicationYear) + ";"
-            return read_sql(SQL, con)
-                
-            
-    def getPublicationsByAuthorId(self, orcid):
-        with connect(self.getDbPath()) as con:   
-            SQL = "SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM Publications AS A JOIN Authors AS B ON A.doi == B.doi WHERE B.orc_id = " + orcid + ";"
-            return read_sql(SQL, con)
+       with connect(self.getDbPath()) as con:
+        publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+        SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
+        return concat([
+                read_sql(SQL.format(publications[0], str(publicationYear)), con),
+                read_sql(SQL.format(publications[1], str(publicationYear)), con),
+                read_sql(SQL.format(publications[2], str(publicationYear)), con)
+            ]) 
+
+
+    # def getPublicationsByAuthorId(self, orcid):
+    #     rp0 = RelationalProcessor()
+    #     rp0.setDbPath(dbPath)   
+    #     with connect(rp0.getDbPath()) as con:   
+    #         #JournalArticleDF = read_sql("SELECT A.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '" + orcid + "'", con)
+    #         #BookChapterDF = read_sql("SELECT * FROM BookChapter AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)  
+    #         #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)
+    #         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
+    #         SQL = "SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE B.orc_id = '{}'"
+    #         return concat([
+    #             read_sql(SQL.format(publications[0], orcid), con),
+    #             read_sql(SQL.format(publications[1], orcid), con),
+    #             read_sql(SQL.format(publications[2], orcid), con)
+    #         ])
     
     # def getMostCitedPublication(self):
     #     rp0 = RelationalProcessor()
@@ -572,10 +507,10 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 #testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-#rqp = RelationalQueryProcessor()
-#gqp = GenericQueryProcessor()
+rqp = RelationalQueryProcessor()
+gqp = GenericQueryProcessor()
 
-#print(rqp.getPublicationsPublishedInYear(2020))
+# print(rqp.getPublicationsPublishedInYear(2020))
 # print(gqp.getPublicationsPublishedInYear(2020))
 
 #print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
