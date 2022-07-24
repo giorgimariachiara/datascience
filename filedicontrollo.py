@@ -18,7 +18,7 @@ gqp.addQueryProcessor(rqp)
 #print(gqp.getVenuesByPublisherId("crossref:78"))
 #print(gqp.getMostCitedPublication())
 #print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
-print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
+print(gqp.getMostCitedVenue())
 #for el in resultq1:
     #print(el.__str__())
 
