@@ -10,7 +10,10 @@ from unicodedata import name
 import json
 from json import load
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 from mimetypes import init
 from tokenize import String
 import os
@@ -217,8 +220,11 @@ class GenericQueryProcessor(object):
             self.addQueryProcessor(VenueObj)
         return self.queryProcessor
 
+<<<<<<< Updated upstream
     
 
+=======
+>>>>>>> Stashed changes
     def getVenuesByPublisherId(self, publisher):
         res = []
         for QP in self.queryProcessor: 
