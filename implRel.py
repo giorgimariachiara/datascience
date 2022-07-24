@@ -9,6 +9,13 @@ from mimetypes import init
 from unicodedata import name
 import json
 from json import load
+<<<<<<< Updated upstream
+=======
+from mimetypes import init
+from tokenize import String
+import os
+from extraclasses import DataCSV, DataJSON
+>>>>>>> Stashed changes
 
 
 
@@ -213,15 +220,18 @@ class GenericQueryProcessor(object):
     
 
     def getVenuesByPublisherId(self, publisher):
-        rqp0 = RelationalQueryProcessor()
-        dfVP = rqp0.getVenuesByPublisherId(publisher)
+        res = []
+        for QP in self.queryProcessor: 
+            re = QP.getVenuesByPublisherId(publisher)
+            res.append(re)
+        result = []
+        for el in res:
+            for index, row in el.iterrows():
+                row = list(row)
+                Venueobj= Venue(*row)
+                result.append(Venueobj)
 
-        for index, row in dfVP.iterrows():
-            row = list(row)
-            venueObj = Venue(*row)
-            self.addQueryProcessor(venueObj)
-
-        return self.queryProcessor
+        return result
 
     def getPublicationInVenue(self, publication):
         rqp0 = RelationalQueryProcessor()
@@ -334,6 +344,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         super().__init__()
 
     def getPublicationsPublishedInYear(self, publicationYear):
+<<<<<<< Updated upstream
        with connect(self.getDbPath()) as con:
         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
         SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
@@ -358,19 +369,24 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     #             read_sql(SQL.format(publications[1], orcid), con),
     #             read_sql(SQL.format(publications[2], orcid), con)
     #         ])
+=======
+        with connect(self.getDbPath()) as con:
+        #SQL = "SELECT id, publication_year, title, publication_venue FROM Publications WHERE publicationYear = '{}'"
+            SQL = "SELECT id, publicationYear, title, publication_venue FROM Publications WHERE publicationYear = " + str(publicationYear) + ";"
+            return read_sql(SQL, con)
+                
+            
+    def getPublicationsByAuthorId(self, orcid): #non funziona 
+        with connect(self.getDbPath()) as con:   
+            SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Authors AS B ON A.id == B.doi WHERE B.orc_id = '" + orcid + "';"
+            return read_sql(SQL, con)
+>>>>>>> Stashed changes
     
-    # def getMostCitedPublication(self):
-    #     rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     with connect(rp0.getDbPath()) as con: 
-    #         publicationList = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-    #         sql = "SELECT doi, publication_year, title, publication_venue " \
-    #                 "FROM {} JOIN maxCited ON doi = cited"
-    #         return concat([
-    #             read_sql(sql.format(publicationList[0]), con),
-    #             read_sql(sql.format(publicationList[1]), con),
-    #             read_sql(sql.format(publicationList[2]), con)
-    #         ])
+    def getMostCitedPublication(self):
+        with connect(self.getDbPath()) as con: 
+            SQL= "SELECT id, publicationYear, title, publication_venue " \
+                     "FROM Publications JOIN maxCited ON id = cited"
+            return read_sql(SQL, con)
             
             
     # # def getMostCitedVenue(self):
@@ -397,12 +413,10 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     #     return mostCitedVenueDF        
             
             
-    # def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
-    #     rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     with connect(rp0.getDbPath()) as con: 
-    #         VenuesDF = read_sql("SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venueid AS A JOIN Organization AS B ON A.OrganizationId == B.OrganizationId WHERE B.id = '" + publisher + "'", con)
-    #     return VenuesDF.drop_duplicates(subset=['publication_venue'])
+    def getVenuesByPublisherId(self, publisher): #ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare 
+        with connect(self.getDbPath()) as con: 
+            SQL = read_sql("SELECT A.id, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
+        return SQL.drop_duplicates(subset=['publication_venue'])
 
     
     # def getPublicationInVenue(self, issn_isbn):
