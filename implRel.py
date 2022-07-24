@@ -446,16 +446,7 @@ class GenericQueryProcessor(object):
                 OrganizationObj = Organization(*row)
                 result.append(OrganizationObj)
         return result
-        
-        
-        
-        rqp0 = RelationalQueryProcessor()
-        dfPP = rqp0.getDistinctPublisherOfPublications(lista)
-        for index, row in dfPP.iterrows():
-            row = list(row)
-            OrganizationObj = Organization(*row)
-            self.addQueryProcessor(OrganizationObj)
-        return self.queryProcessor
+
 
 
 # RELATIONAL QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
