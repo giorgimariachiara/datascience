@@ -13,7 +13,8 @@ from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from json import load
 import pandas as pd 
 from implRel import TriplestoreProcessor
-from extraclasses import Data
+from extraclasses import DataCSV, DataJSON
+import os 
 
 """
 #Namespaces used
@@ -59,13 +60,16 @@ base_url = "https://github.com/giorgimariachiara/datascience/res/"
 """
 
 csv = "./graph_db/graph_publications.csv"
-jsn = "./graph_db/graph_other_data.json"
+jsonf = "./graph_db/graph_other_data.json"
 
 class TriplestoreDataProcessor(TriplestoreProcessor):
     def __init__(self):
         super().__init__()
      #bisogna aggiungere def init-- o no ? 
-    def uploadData(self, data_path):
+    def uploadData(self, path):
+        f_ext = os.path.splitext(path)[1]
+        if f_ext.upper() == ".CSV":
+            CSV_Rdata = DataCSV(path, csv)
 
         #Namespaces used
         SCHEMA = Namespace("https://schema.org/")
@@ -106,7 +110,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
         # This is the string defining the base URL used to defined
         # the URLs of all the resources created from the data
         base_url = "https://github.com/giorgimariachiara/datascience/res/"
-        Dataobject= Data(csv, jsn)
+        
 
         my_graph = Graph()
 
@@ -114,114 +118,130 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
         my_graph.bind('fabio', FABIO)
         my_graph.bind('bibo', BIBO)
 
-
-        for idx, row in Dataobject.Organization_DF.iterrows():
-            subj = URIRef(base_url + row["GOrganizationId"])
-    
-        my_graph.add((subj, RDF.type, organization))
-        my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
-        my_graph.add((subj, identifier, Literal(row["crossref"])))
-
-        for idx, row in Dataobject.Publication_DF.iterrows():  
+        for idx, row in CSV_Rdata.Publication_DF.iterrows():  
             subj = URIRef(base_url + row["id"])
 
-        # if row["publication_venue"] != "":
-        my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
-    
-        my_graph.add((subj, RDF.type, Publication))
-        my_graph.add((subj, title, Literal(row["title"])))
-        my_graph.add((subj, identifier, Literal(row["id"])))
-        my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
-        #print(row["id"] + " - " + row["issue"])
+            # if row["publication_venue"] != "":
+            my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
         
-
-        if row["type"] == "journal-article":
-            if row["type"] != "":
-                my_graph.add((subj, RDF.type, JournalArticle)) 
-            if row["issue"] != "":
-                my_graph.add((subj, issue, Literal(row["issue"])))
-            if row["volume"] != "":
-                my_graph.add((subj, volume, Literal(row["volume"])))
-
-        elif row["type"] == "book-chapter":
-            if row["type"] != "":
-                my_graph.add((subj, RDF.type, BookChapter))
-                my_graph.add((subj, chapter, Literal(row["chapter"])))
-        else: 
-            if row["type"] == "proceeding-paper":
-                my_graph.add((subj, RDF.type, Proceedingspaper))
-        
-        if row["venue_type_x"] == "book":
-            if row["venue_type_x"] != "":
-                my_graph.add((subj, RDF.type, Book))
-        elif row["venue_type_x"] == "journal":
-            if row["venue_type_x"] != "":
-                my_graph.add((subj, RDF.type, Journal))
-        else:
-            if row["venue_type_x"] == "proceeding":
-                my_graph.add((subj, RDF.type, Proceeding))
-    
-            if row["event"] != "":  
-                my_graph.add((subj, event, Literal(row["event"])))
-
-        for idx, row in Dataobject.Cites_DF.iterrows():
-            subj = URIRef(base_url + row["citing"])
-
-        if row["cited"] != None:
-            my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
-
-        for idx, row in Dataobject.VenuesExt_DF.iterrows():
-            subj = URIRef(base_url + row["VenueId"]) 
-
-        my_graph.add((subj, identifier, Literal(row["issn_isbn"]) ))
-
-        for idx, row in Dataobject.Person_DF.iterrows():
-            subj = URIRef(base_url + row["orcid"])
-
-        my_graph.add((subj, RDF.type, Person))
-        my_graph.add((subj, givenName, Literal(row["given"])))
-        my_graph.add((subj, familyName, Literal(row["family"])))
-        my_graph.add((subj, identifier, Literal(row["orcid"])))
-
-        for idx, row in Dataobject.Author_DF.iterrows(): 
-            subj = URIRef(base_url + row["orc_id"])
-
-        # my_graph.add((subj, RDF.type, author))
-        # my_graph.add((subj, identifier, Literal(row["orc_id"])))
-        my_graph.add((subj, author, URIRef(base_url + row["doi"])))
-
-    
-
-"""
-        data_path_string = str(data_path)
-        if data_path_string.endswith(".csv"):
-            csv_data = pd.read_csv(data_path, keep_default_na= False,
-                        dtype={
-                                    "id": "string",
-                                    "title": "string",
-                                    "type": "string",
-                                    "publication_year": "string",
-                                    "issue": "string",
-                                    "volume": "string",
-                                    "chapter": "string",
-                                    "publication_venue": "string",
-                                    "venue_type": "string",
-                                    "publisher": "string",
-                                    "event": "string"
-
-                        },encoding="utf-8")
-            return csv_data
-        elif  data_path_string.endswith(".json"):
-            with open(data_path, "r", encoding="utf-8") as f:
-                json_data = load(f)
-            return json_data
-        else:
-            print("The file format in input is not correct!")
+            my_graph.add((subj, RDF.type, Publication))
+            my_graph.add((subj, title, Literal(row["title"])))
+            my_graph.add((subj, identifier, Literal(row["id"])))
+            my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+            #print(row["id"] + " - " + row["issue"])
             
+
+            if row["type"] == "journal-article":
+                if row["type"] != "":
+                    my_graph.add((subj, RDF.type, JournalArticle)) 
+                if row["issue"] != "":
+                    my_graph.add((subj, issue, Literal(row["issue"])))
+                if row["volume"] != "":
+                    my_graph.add((subj, volume, Literal(row["volume"])))
+
+            elif row["type"] == "book-chapter":
+                if row["type"] != "":
+                    my_graph.add((subj, RDF.type, BookChapter))
+                    my_graph.add((subj, chapter, Literal(row["chapter"])))
+            else: 
+                if row["type"] == "proceeding-paper":
+                    my_graph.add((subj, RDF.type, Proceedingspaper))
+            
+            if row["venue_type_x"] == "book":
+                if row["venue_type_x"] != "":
+                    my_graph.add((subj, RDF.type, Book))
+            elif row["venue_type_x"] == "journal":
+                if row["venue_type_x"] != "":
+                    my_graph.add((subj, RDF.type, Journal))
+            else:
+                if row["venue_type_x"] == "proceeding":
+                    my_graph.add((subj, RDF.type, Proceeding))
+        
+                if row["event"] != "":  
+                    my_graph.add((subj, event, Literal(row["event"])))
+
+        
+        elif f_ext.upper() == ".JSON":
+
+            JSN_Rdata = DataJSON(path, jsonf)
+
+
+
+            for idx, row in JSN_Rdata.Organization_DF.iterrows():
+                subj = URIRef(base_url + row["GOrganizationId"])
+        
+            my_graph.add((subj, RDF.type, organization))
+            my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
+            my_graph.add((subj, identifier, Literal(row["crossref"])))
+
+
+            for idx, row in JSN_Rdata.Cites_DF.iterrows():
+                subj = URIRef(base_url + row["citing"])
+
+            if row["cited"] != None:
+                my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
+
+            for idx, row in JSN_Rdata.VenuesExt_DF.iterrows():
+                subj = URIRef(base_url + row["VenueId"]) 
+
+            my_graph.add((subj, identifier, Literal(row["issn_isbn"]) ))
+
+            for idx, row in JSN_Rdata.Person_DF.iterrows():
+                subj = URIRef(base_url + row["orcid"])
+
+            my_graph.add((subj, RDF.type, Person))
+            my_graph.add((subj, givenName, Literal(row["given"])))
+            my_graph.add((subj, familyName, Literal(row["family"])))
+            my_graph.add((subj, identifier, Literal(row["orcid"])))
+
+            for idx, row in JSN_Rdata.Author_DF.iterrows(): 
+                subj = URIRef(base_url + row["orc_id"])
+
+            # my_graph.add((subj, RDF.type, author))
+            # my_graph.add((subj, identifier, Literal(row["orc_id"])))
+            my_graph.add((subj, author, URIRef(base_url + row["doi"])))
+
+        else:
+            
+            print("problem!!")
+            return False
+
+        return True
+
+
+
+    
+"""
+data_path_string = str(data_path)
+    if data_path_string.endswith(".csv"):
+        csv_data = pd.read_csv(data_path, keep_default_na= False,
+                    dtype={
+                                "id": "string",
+                                "title": "string",
+                                "type": "string",
+                                "publication_year": "string",
+                                "issue": "string",
+                                "volume": "string",
+                                "chapter": "string",
+                                "publication_venue": "string",
+                                "venue_type": "string",
+                                "publisher": "string",
+                                "event": "string"
+
+                    },encoding="utf-8")
+        return csv_data
+    elif  data_path_string.endswith(".json"):
+        with open(data_path, "r", encoding="utf-8") as f:
+            json_data = load(f)
+        return json_data
+    else:
+        print("The file format in input is not correct!")
+        
 publications = TriplestoreDataProcessor.uploadData(csv_path)      
 json_doc = TriplestoreDataProcessor.uploadData(json_path)      
 
-
+"""
+"""
 
 publications = read_csv("graph_db/graph_publications.csv", 
                 keep_default_na= False,
@@ -313,8 +333,8 @@ person_df = pd.DataFrame({
     "given": Series(given_names_l, dtype="string", name="given_name"),
     "family": Series(family_names_l, dtype="string", name="family_name"),
 })
-"""
-"""
+
+
 for idx, row in person_df.iterrows():
     subj = URIRef(base_url + row["orcid"])
 
@@ -322,9 +342,7 @@ for idx, row in person_df.iterrows():
     my_graph.add((subj, givenName, Literal(row["given"])))
     my_graph.add((subj, familyName, Literal(row["family"])))
     my_graph.add((subj, identifier, Literal(row["orcid"])))
-""" 
 
-"""
 #creiamo il dataframe author con doi e orcid
 #author dovrebbe avere un internal id? nel relational non ce l'ha ma qual è quindi la sua primary key? 
 authors = json_doc["authors"]
@@ -333,8 +351,9 @@ author_df=pd.json_normalize(json.loads(author_df.to_json(orient="records")))
 author_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
 author_df.drop("family_name", axis=1, inplace = True)
 author_df.drop("given_name", axis =1, inplace = True)
-"""
-"""
+
+
+
 for idx, row in author_df.iterrows(): 
     subj = URIRef(base_url + row["orc_id"])
 
@@ -402,8 +421,8 @@ for idx, row in dfPublicationVenue.iterrows():
     
             if row["event"] != "":  
                 my_graph.add((subj, event, Literal(row["event"])))
-"""
-"""
+
+
 References = json_doc["references"]
 cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
 cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))

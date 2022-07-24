@@ -161,20 +161,6 @@ class TriplestoreProcessor(object):
         return self.endpointUrl
 
 
-class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
-    def __init__(self):
-        super().__init__()
-
-    def getPublicationsPublishedInYear(self, publicationYear):
-       with connect(self.getDbPath()) as con:
-        publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-        SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
-        return concat([
-                read_sql(SQL.format(publications[0], str(publicationYear)), con),
-                read_sql(SQL.format(publications[1], str(publicationYear)), con),
-                read_sql(SQL.format(publications[2], str(publicationYear)), con)
-            ]) 
-
 from mimetypes import init
 from tokenize import String
 
@@ -191,19 +177,19 @@ class GenericQueryProcessor(object):
         self.queryProcessor.append(QueryProcessor)
         return True
 
-    def getPublicationsPublishedInYear(self, publicationYear):
-        Processor = self.queryProcessor.append(RelationalQueryProcessor) #poi anche triple store query processor
+    def getPublicationsPublishedInYear(self, publicationYear): 
         res = []
-        for QP in Processor: 
-            re = QP.getPublicationsPublishedinYear(publicationYear)
+        for QP in self.queryProcessor: 
+            re = QP.getPublicationsPublishedInYear(publicationYear)
             res.append(re)
-            for el in res:
-                for index, row in el.iterrows():
-                    result = []
-                    row = list(row)
-                    publicationObj = Publication(*row)
-                    result.append(publicationObj)
-            return result
+        result = []
+        for el in res:
+            for index, row in el.iterrows():
+                row = list(row)
+                publicationObj = Publication(*row)
+                result.append(publicationObj)
+                
+        return result
 
     
     def getPublicationsByAuthorId(self, orcid):
@@ -339,14 +325,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         super().__init__()
 
     def getPublicationsPublishedInYear(self, publicationYear):
-       with connect(self.getDbPath()) as con:
-        publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-        SQL = "SELECT doi, publication_year, title, publication_venue FROM {} WHERE publication_year = '{}'"
-        return concat([
-                read_sql(SQL.format(publications[0], str(publicationYear)), con),
-                read_sql(SQL.format(publications[1], str(publicationYear)), con),
-                read_sql(SQL.format(publications[2], str(publicationYear)), con)
-            ]) 
+        print("dbpath del get" + self.getDbPath())
+        with connect(self.getDbPath()) as con:
+        #SQL = "SELECT id, publication_year, title, publication_venue FROM Publications WHERE publicationYear = '{}'"
+            SQL = "SELECT id, publicationYear, title, publication_venue FROM Publications WHERE publicationYear = " + str(publicationYear) + ";"
+            return read_sql(SQL, con)
+                
+             
 
 
     # def getPublicationsByAuthorId(self, orcid):
@@ -512,10 +497,10 @@ SQL = "SELECT A.* FROM {} A JOIN (SELECT * FROM Person C JOIN Authors B ON B.orc
 #testList = ["doi:10.1007/s11192-019-03217-6", "doi:10.1162/qss_a_00023"]
 
 
-rqp = RelationalQueryProcessor()
-gqp = GenericQueryProcessor()
+#rqp = RelationalQueryProcessor()
+#gqp = GenericQueryProcessor()
 
-print(rqp.getPublicationsPublishedInYear(2020))
+#print(rqp.getPublicationsPublishedInYear(2020))
 # print(gqp.getPublicationsPublishedInYear(2020))
 
 #print(rqp.getPublicationsByAuthorId("0000-0001-8686-0017"))
