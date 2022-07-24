@@ -12,10 +12,10 @@ obj.uploadData(csv)
 """
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
-print(rqp.getPublicationsByAuthorId("0000-0001-9857-1511"))
-#gqp = GenericQueryProcessor()
-#gqp.addQueryProcessor(rqp)
-#resultq1 = gqp.getPublicationsPublishedInYear(2020)
+#print(rqp.getVenuesByPublisherId("crossref:78"))
+gqp = GenericQueryProcessor()
+gqp.addQueryProcessor(rqp)
+print(gqp.getVenuesByPublisherId("crossref:78"))
 #for el in resultq1:
     #print(el.__str__())
 
