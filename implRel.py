@@ -316,13 +316,17 @@ class GenericQueryProcessor(object):
         
         
     def getMostCitedVenue(self):
-        rqp0 = RelationalQueryProcessor()
-        dfMCV = rqp0.getMostCitedVenue()
-        for index, row in dfMCV.iterrows():
-            row = list(row)
-            VenueObj = Venue(*row)
-            self.addQueryProcessor(VenueObj)
-        return self.queryProcessor
+        res = []
+        for QP in self.queryProcessor:
+            re = QP.getMostCitedVenue()
+            res.append(re)
+        result = []
+        for el in res:
+            for index, row in el.iterrows():
+                row = list(row)
+                VenueObj = Venue(*row)
+                result.append(VenueObj)
+        return result
 
     def getVenuesByPublisherId(self, publisher):
         res = []
@@ -468,21 +472,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 str(publicationYear) + ";"
             return read_sql(SQL, con)
 
-    # def getPublicationsByAuthorId(self, orcid):
-    #     rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     with connect(rp0.getDbPath()) as con:
-    #         #JournalArticleDF = read_sql("SELECT A.* FROM JournalArticle AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = '" + orcid + "'", con)
-    #         #BookChapterDF = read_sql("SELECT * FROM BookChapter AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)
-    #         #ProceedingsPaperDF = read_sql("SELECT * FROM ProceedingsPaper AS A JOIN Authors AS B ON A.doi == B.doi WHERE orc_id = " + str(orcid), con)
-    #         publications = ["JournalArticle", "BookChapter", "ProceedingsPaper"]
-    #         SQL = "SELECT A.doi, A.publication_year, A.title, A.publication_venue FROM {} AS A JOIN Authors AS B ON A.doi == B.doi WHERE B.orc_id = '{}'"
-    #         return concat([
-    #             read_sql(SQL.format(publications[0], orcid), con),
-    #             read_sql(SQL.format(publications[1], orcid), con),
-    #             read_sql(SQL.format(publications[2], orcid), con)
-    #         ])
-
     def getPublicationsByAuthorId(self, orcid):  
         with connect(self.getDbPath()) as con:
             SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Authors AS B ON A.id == B.doi WHERE B.orc_id = '" + orcid + "';"
@@ -494,29 +483,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 "FROM Publications JOIN maxCited ON id = cited"
             return read_sql(SQL, con)
 
-    # # def getMostCitedVenue(self):
-    # #     rp0 = RelationalProcessor()
-    # #     rp0.setDbPath(dbPath)
-    # #     with connect(rp0.getDbPath()) as con:
-    # #         venueDF = read_sql("SELECT issn_isbn, publication_venue, publisher FROM Venueid  \
-    # #                            JOIN maxCited ON id == cited", con)
-    # #         return venueDF
+    def getMostCitedVenue(self):
+        with connect(self.getDbPath()) as con:
+            SQL = "SELECT A.issn_isbn, B.publication_venue, B.publisher FROM Venue AS A JOIN Publications AS B ON A.doi == B.id \
+                                JOIN maxCited ON id == cited"
+        return read_sql(SQL, con) #CONTROLLO OGGETTO VENUE
 
-    # def getMostCitedVenue(self):
-    #     rp0 = RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     mostCitedPub = RelationalQueryProcessor.getMostCitedPublication()
-    #     mostCitedPubDOI = mostCitedPub["doi"].tolist()
-    #     mostCitedVenueDF = DataFrame()
-    #     for doi in mostCitedPubDOI:
-    #         with connect(rp0.getDbPath()) as con:
-    #             journalArticleDF = read_sql("SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venue AS A JOIN JournalArticle AS B ON A.VenueId == B.publication_venue WHERE B.doi =  '" + doi + "'", con)
-    #             bookChapterDF = read_sql("SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venue AS A JOIN BookChapter AS B ON A.VenueId == B.publication_venue WHERE B.doi =  '" + doi + "'", con)
-    #             proceedingsPaperDF = read_sql("SELECT A.VenueId, A.publication_venue, A.OrganizationId FROM Venue AS A JOIN ProceedingsPaper AS B ON A.VenueId == B.publication_venue WHERE B.doi =  '" + doi + "'", con)
-    #             mostCitedVenueDF = concat([mostCitedVenueDF, journalArticleDF, bookChapterDF, proceedingsPaperDF])
-    #     return mostCitedVenueDF
 
-    # ho messo drop duplicates così leva i duplicati ma secondo me non serve la colonna issn/isbn o forse serve ma ne dobbiamo parlare
     def getVenuesByPublisherId(self, publisher):
         with connect(self.getDbPath()) as con:
             SQL = read_sql("SELECT A.id, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
