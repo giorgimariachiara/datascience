@@ -538,18 +538,3 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
                 publisherDF = concat([publisherDF, SQL]) 
         return  publisherDF
-
-    # def getDistinctPublisherOfPublications(self, listOfDoi):
-    #     rp0= RelationalProcessor()
-    #     rp0.setDbPath(dbPath)
-    #     tempDF = pd.DataFrame()
-    #     outputDF = pd.DataFrame()
-    #     with connect(rp0.getDbPath()) as con:
-    #         for doi in listOfDoi:
-    #             JournalAsrticleDF = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN JournalArticle AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
-    #             ProceedingspaperDF = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN ProceedingsPaper AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
-    #             BookChapterDF = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Venueid AS B ON A.OrganizationId == B.OrganizationId JOIN BookChapter AS C ON B.VenueId == C.publication_venue WHERE C.doi = '" + doi + "'", con)
-    #             tempDF = concat([JournalAsrticleDF, ProceedingspaperDF, BookChapterDF])
-    #             outputDF = concat([outputDF, tempDF])
-
-    #     return outputDF
