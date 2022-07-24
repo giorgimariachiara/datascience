@@ -119,16 +119,6 @@ class DataJSON(object):
         else:
             print("WARNING: JSON file '" + jsn + "' does not exist!")
 
-"""       
-print("this module is in name: '" + __name__ + "'")
-if __name__ == "__main__":
-    csv = "relational_publication.csv"
-    jsn = "relational_other_data.json"
-    path = "./relational_db/"
-    Dataobject = Data(path, csv, jsn)
-    #print(Dataobject.Cites_DF.head(5))
-
-"""
 p = "./relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
 Dataobject = DataCSV(csv)
