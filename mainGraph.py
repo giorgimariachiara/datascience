@@ -160,10 +160,10 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 if row["event"] != "":  
                     my_graph.add((subj, event, Literal(row["event"])))
 
-        
-        elif f_ext.upper() == ".JSON":
 
-            JSN_Rdata = DataJSON(path, jsonf)
+elif f_ext.upper() == ".JSON":
+
+    JSN_Rdata = DataJSON(path, jsonf)
 
 
 
