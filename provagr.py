@@ -1,7 +1,21 @@
 from rdflib import Graph, URIRef, Namespace
 from rdflib.plugins.stores.sparqlstore import SPARQLStore
+from SPARQLWrapper import CSV, JSON, TSV, SPARQLWrapper
+
+from graph import TriplestoreDataProcessor
+from implRel import QueryProcessor, TriplestoreProcessor
+from sparql_dataframe import get
 
 
+"""
+sparql = SPARQLWrapper("http://localhost:9999/blazegraph/sparql") 
+sparql.setQuery("SELECT (COUNT(*) AS ?ntpls) WHERE {?s ?p ?o}")
+sparql.setReturnFormat(JSON)
+results = sparql.query().convert() 
+for result in results["results"]["bindings"]:
+    print(result["ntpls"]["value"])
+"""
+"""
 if __name__ == "__main__":
 
     dbo = Namespace("http://dbpedia.org/ontology/")
@@ -19,8 +33,25 @@ if __name__ == "__main__":
         print(f"\t- {s}")
         if count >= 3:
             break
+  """  
+
+class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
+    def __init__(self):
+        super().__init__()
     
-    
+    def getPublicationsPublishedInYear(self, publicationYear):
+        query = ('prefix schema:<https://schema.org/> \
+                        SELECT * WHERE { ?s rdf:type schema:CreativeWork.\
+                        ?s schema:datePublished "' + publicationYear + '". \
+                        ?s ?p ?o .}')
+        
+        results = get(self.getEndpointUrl(), query) 
+
+        return results
+
+
+
+
     
     
     
