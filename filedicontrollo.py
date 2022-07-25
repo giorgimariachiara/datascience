@@ -19,19 +19,14 @@ gqp.addQueryProcessor(rqp)
 #print(gqp.getMostCitedPublication())
 #print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
-print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
+#print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
 
+jsn1 = "./graph_db/graph_other_data.json"
+csv1 = "./graph_db/graph_publications.csv"
 
-#obj.uploadData(jsn)
-    # do the same for triplestore db
-#rqp = RelationalQueryProcessor()
-#rqp.setDbPath(path) # secondo setting del path al db per le queries
-#gqp = GenericQueryProcessor()
-#gqp.addQueryProcessor(rqp)
-    
-#print(gqp.getPublicationsPublishedInYear(2020))
+
 
 """       
 print("this module is in name: '" + __name__ + "'")

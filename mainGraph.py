@@ -122,7 +122,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             subj = URIRef(base_url + row["id"])
 
             # if row["publication_venue"] != "":
-            my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  
+            my_graph.add((subj, publicationVenue, URIRef(base_url + row["VenueId"])))  #questo non c'è più
         
             my_graph.add((subj, RDF.type, Publication))
             my_graph.add((subj, title, Literal(row["title"])))
