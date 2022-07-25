@@ -1,6 +1,6 @@
 from implRel import TriplestoreProcessor, DataCSV, DataJSON
 import os 
-from rdflib import Graph, URIRef, Literal, Namespace
+from rdflib import Graph, URIRef, Literal, Namespace, RDF
 
 
 #Namespaces used
@@ -58,3 +58,42 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 my_graph.add((subj, title, Literal(row["title"])))    
                 my_graph.add((subj, identifier, Literal(row["id"])))
                 my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+
+                if row["type"] == "journal-article":
+                    if row["type"] != "":
+                        my_graph.add((subj, RDF.type, JournalArticle)) 
+                    if row["issue"] != "":
+                        my_graph.add((subj, issue, Literal(row["issue"])))
+                    if row["volume"] != "":
+                        my_graph.add((subj, volume, Literal(row["volume"])))
+
+                elif row["type"] == "book-chapter":
+                    if row["type"] != "":
+                        my_graph.add((subj, RDF.type, BookChapter))
+                        my_graph.add((subj, chapter, Literal(row["chapter"])))
+                else: 
+                    if row["type"] == "proceeding-paper":
+                        my_graph.add((subj, RDF.type, Proceedingspaper))
+                
+                if row["venue_type_x"] == "book":
+                    if row["venue_type_x"] != "":
+                        my_graph.add((subj, RDF.type, Book))
+                elif row["venue_type_x"] == "journal":
+                    if row["venue_type_x"] != "":
+                        my_graph.add((subj, RDF.type, Journal))
+                else:
+                    if row["venue_type_x"] == "proceeding":
+                        my_graph.add((subj, RDF.type, Proceeding))
+            
+                    if row["event"] != "":  
+                        my_graph.add((subj, event, Literal(row["event"])))
+            
+        elif f_ext.upper() == ".JSON":
+            JSN_Rdata = DataJSON(path)
+
+            for idx, row in JSN_Rdata.Organization_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+            
+            my_graph.add((subj, RDF.type, organization))
+            my_graph.add((subj, name, Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
+            my_graph.add((subj, identifier, Literal(row["crossref"])))
