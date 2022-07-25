@@ -171,7 +171,7 @@ elif f_ext.upper() == ".JSON":
                 subj = URIRef(base_url + row["GOrganizationId"])
         
             my_graph.add((subj, RDF.type, organization))
-            my_graph.add((subj, SCHEMA["name"], Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
+            my_graph.add((subj, name, Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
             my_graph.add((subj, identifier, Literal(row["crossref"])))
 
 
