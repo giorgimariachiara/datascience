@@ -22,7 +22,7 @@ obj.uploadData(csv)
 #print(gqp.getVenuesByPublisherId("crossref:78"))
 #print(gqp.getMostCitedPublication())
 #print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
-print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
+#print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
@@ -32,7 +32,7 @@ csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(csv1)
+res.uploadData(jsn1)
 print(res.my_graph.serialize())
 
 """
@@ -43,7 +43,8 @@ print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
 
 
 
-"""       
+"""
+      
 print("this module is in name: '" + __name__ + "'")
 if __name__ == "__main__":
     csv = "relational_publication.csv"

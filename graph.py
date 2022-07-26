@@ -39,6 +39,7 @@ name = URIRef("https://schema.org/name")
 chapter = URIRef("https://schema.org/Chapter")
 event = URIRef("https://schema.org/Event")
 publisher = URIRef("https://schema.org/publisher")
+issn_isbn = URIRef("http://gbol.life/ontology/bibo/identifier/")
 
 # relations among classes
 publicationVenue = URIRef("https://schema.org/isPartOf")
@@ -143,7 +144,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             for idx, row in JSN_Rdata.VenuesId_DF.iterrows():
                 subj = URIRef(base_url + row["doi"]) 
 
-                my_graph.add((subj, identifier, Literal(row["issn_isbn"])))
+                my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))
 
             for idx, row in JSN_Rdata.Person_DF.iterrows():
                 subj = URIRef(base_url + row["orc_id"]) 
