@@ -40,14 +40,30 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         super().__init__()
     
     def getPublicationsPublishedInYear(self, publicationYear):
-        query = ('prefix schema:<https://schema.org/> \
-                        SELECT * WHERE { ?s rdf:type schema:CreativeWork.\
-                        ?s schema:datePublished "' + publicationYear + '". \
-                        ?s ?p ?o .}')
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+                    SELECT * WHERE {?s rdf:type schema:CreativeWork.\
+                    ?s schema:datePublished "' + publicationYear + '". \
+                    ?s ?p ?o .}')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
         
-        results = get(self.getEndpointUrl(), query) 
-
-        return results
+       
+        return results 
+    
+    def getPublicationsByAuthorId(self, orcid):
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+                  SELECT * where {?s rdf:type schema:CreativeWork.\
+                    ?s schema:identifier ?doi.\
+                    ?doi schema:author ?author. \
+                    ?author schema:identifier "'+ orcid + '". \
+                    ?s ?p ?o. }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+       
+        return results 
 
 
 

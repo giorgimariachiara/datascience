@@ -7,6 +7,7 @@ from SPARQLWrapper import SPARQLWrapper
 
 
 #Namespaces used
+RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 SCHEMA = Namespace("https://schema.org/")
 FABIO = Namespace("http://purl.org/spar/fabio/")
 BIBO = Namespace("https://bibliontology.com/")
