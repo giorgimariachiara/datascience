@@ -1,9 +1,13 @@
+import csv
 from implRel import TriplestoreProcessor, DataCSV, DataJSON
 import os 
 from rdflib import Graph, URIRef, Literal, Namespace, RDF
+from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+from SPARQLWrapper import SPARQLWrapper 
 
 
 #Namespaces used
+RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 SCHEMA = Namespace("https://schema.org/")
 FABIO = Namespace("http://purl.org/spar/fabio/")
 BIBO = Namespace("https://bibliontology.com/")
@@ -36,6 +40,9 @@ chapter = URIRef("https://schema.org/Chapter")
 event = URIRef("https://schema.org/Event")
 publisher = URIRef("https://schema.org/publisher")
 
+# relations among classes
+publicationVenue = URIRef("https://schema.org/isPartOf")
+
 
 
 class TriplestoreDataProcessor(TriplestoreProcessor):
@@ -57,43 +64,119 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 my_graph.add((subj, RDF.type, Publication))
                 my_graph.add((subj, title, Literal(row["title"])))    
                 my_graph.add((subj, identifier, Literal(row["id"])))
-                my_graph.add((subj, publicationYear, Literal(row["publication_year"])))
+                my_graph.add((subj, publicationYear, Literal(row["publicationYear"])))
+                my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
+                my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
 
                 if row["type"] == "journal-article":
                     if row["type"] != "":
                         my_graph.add((subj, RDF.type, JournalArticle)) 
-                    if row["issue"] != "":
-                        my_graph.add((subj, issue, Literal(row["issue"])))
-                    if row["volume"] != "":
-                        my_graph.add((subj, volume, Literal(row["volume"])))
-
                 elif row["type"] == "book-chapter":
                     if row["type"] != "":
                         my_graph.add((subj, RDF.type, BookChapter))
-                        my_graph.add((subj, chapter, Literal(row["chapter"])))
                 else: 
-                    if row["type"] == "proceeding-paper":
-                        my_graph.add((subj, RDF.type, Proceedingspaper))
+                    my_graph.add((subj, RDF.type, Proceedingspaper))
                 
-                if row["venue_type_x"] == "book":
-                    if row["venue_type_x"] != "":
-                        my_graph.add((subj, RDF.type, Book))
-                elif row["venue_type_x"] == "journal":
-                    if row["venue_type_x"] != "":
+                if row["venue_type"] == "journal":
+                    if row["type"] != "":
                         my_graph.add((subj, RDF.type, Journal))
-                else:
-                    if row["venue_type_x"] == "proceeding":
-                        my_graph.add((subj, RDF.type, Proceeding))
+                elif row["venue_type"] == "book":
+                    if row["type"] != "":
+                        my_graph.add((subj, RDF.type, Book))
+                else: 
+                    my_graph.add((subj, RDF.type, Proceeding))
+
+            for idx, row in CSV_Rdata.Journal_article_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+
+                if row["issue"] != "":
+                    my_graph.add((subj, issue, Literal(row["issue"])))
+                if row["volume"] != "":
+                    my_graph.add((subj, volume, Literal(row["volume"])))
             
-                    if row["event"] != "":  
+            for idx, row in CSV_Rdata.Book_chapter_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+                if row["chapter"] != "": 
+                    my_graph.add((subj, chapter, Literal(row["chapter"])))
+
+        
+            for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
+
+                if row["event"] != "":  
                         my_graph.add((subj, event, Literal(row["event"])))
+                
+            self.my_graph= my_graph
+
+            store = SPARQLUpdateStore()
+            # The URL of the SPARQL endpoint is the same URL of the Blazegraph
+            # instance + '/sparql'
+            endpointUrl = self.getEndpointUrl()
+
+            # It opens the connection with the SPARQL endpoint instance
+            store.open((endpointUrl, endpointUrl))
+
+            for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
+                store.add(triple)   
+            # Once finished, remeber to close the connection
+            store.close()
             
         elif f_ext.upper() == ".JSON":
             JSN_Rdata = DataJSON(path)
 
+            base_url = "https://github.com/giorgimariachiara/datascience/res/"
+
+            my_graph = Graph()
+
             for idx, row in JSN_Rdata.Organization_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
             
-            my_graph.add((subj, RDF.type, organization))
-            my_graph.add((subj, name, Literal(row["name"])))   #NON SAPPIAMO SE VA FATTO O NO 
-            my_graph.add((subj, identifier, Literal(row["crossref"])))
+                my_graph.add((subj, RDF.type, organization))
+                my_graph.add((subj, name, Literal(row["name"])))  
+                my_graph.add((subj, identifier, Literal(row["id"])))
+
+            for idx, row in JSN_Rdata.Cites_DF.iterrows():
+                subj = URIRef(base_url + row["citing"])
+
+                if row["cited"] != None:
+                    my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
+            
+            for idx, row in JSN_Rdata.VenuesId_DF.iterrows():
+                subj = URIRef(base_url + row["doi"]) 
+
+                my_graph.add((subj, identifier, Literal(row["issn_isbn"])))
+
+            for idx, row in JSN_Rdata.Person_DF.iterrows():
+                subj = URIRef(base_url + row["orc_id"]) 
+            
+                my_graph.add((subj, RDF.type, Person))
+                my_graph.add((subj, givenName, Literal(row["given_name"])))
+                my_graph.add((subj, familyName, Literal(row["family_name"])))
+                my_graph.add((subj, identifier, Literal(row["orc_id"])))
+
+            for idx, row in JSN_Rdata.Author_DF.iterrows(): 
+                subj = URIRef(base_url + row["doi"]) 
+            
+                my_graph.add((subj, author, URIRef(base_url + row["orc_id"])))
+
+            self.my_graph = my_graph
+
+            store = SPARQLUpdateStore()
+            # The URL of the SPARQL endpoint is the same URL of the Blazegraph
+            # instance + '/sparql'
+            #endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+            endpointUrl = self.getEndpointUrl()
+
+            # It opens the connection with the SPARQL endpoint instance
+            store.open((endpointUrl, endpointUrl))
+
+            for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
+                store.add(triple)   
+            # Once finished, remeber to close the connection
+            store.close()
+
+        else:
+            print("problem!!")
+            return False
+
+        return True
+

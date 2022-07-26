@@ -32,7 +32,7 @@ class DataCSV(object):
 
             #PUBLICATION DATAFRAME 
             
-            self.Publication_DF = PublicationsDF[["id", "title", "type", "publicationYear","publisher", "publication_venue"]]
+            self.Publication_DF = PublicationsDF[["id", "title", "type", "publicationYear","publisher", "venue_type", "publication_venue"]]
             
             #BOOK CHAPTER DATAFRAME
             book_chapter_df = PublicationsDF.query("type == 'book-chapter'")
@@ -107,6 +107,7 @@ class DataJSON(object):
             person_df=pd.DataFrame(author.items(),columns=['doi','author']).explode('author')
             person_df=pd.json_normalize(json.loads(person_df.to_json(orient="records")))
             person_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
+            person_df.drop("doi", axis =1, inplace = True)
             self.Person_DF = person_df
             #print(self.Person_DF)
 
@@ -119,7 +120,7 @@ class DataJSON(object):
         else:
             print("WARNING: JSON file '" + jsn + "' does not exist!")
 
-p = "./relational_other_data.json"
+p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
-Dataobject = DataCSV(csv)
-#print(Dataobject.Journal_article_DF)
+#Dataobject = DataJSON(p)
+#print(Dataobject.Person_DF)
