@@ -2,7 +2,7 @@ from graph import TriplestoreDataProcessor
 import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
-
+"""
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
@@ -13,7 +13,7 @@ obj = RelationalDataProcessor()
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn0)
 obj.uploadData(csv)
-
+"""
 """
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
@@ -30,7 +30,7 @@ print(rqp.getVenuesByPublisherId("crossref:78"))
 #for el in resultq1:
     #print(el.__str__())
     
-"""
+
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -39,7 +39,7 @@ res.setEndpointUrl(endpointUrl)
 res.uploadData(jsn1)
 print(res.my_graph.serialize())
 
-"""
+
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()
