@@ -3,9 +3,13 @@ import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 import extraclasses
 
+=======
+import extraclasses
+>>>>>>> Stashed changes
 =======
 import extraclasses
 >>>>>>> Stashed changes
@@ -22,6 +26,7 @@ obj.uploadData(jsn0)
 obj.uploadData(csv)
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 """
 """
 dbpath0 = "publication.db"
@@ -30,6 +35,8 @@ rqp.setDbPath(dbpath0)
 print(rqp.getVenuesByPublisherId("crossref:78"))
 """
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 #rqp = RelationalQueryProcessor()
@@ -46,8 +53,12 @@ print(rqp.getVenuesByPublisherId("crossref:78"))
 #for el in resultq1:
     #print(el.__str__())
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 
+=======
+    """
+>>>>>>> Stashed changes
 =======
     """
 >>>>>>> Stashed changes
@@ -66,6 +77,9 @@ print(res.my_graph.serialize())
 <<<<<<< Updated upstream
 """
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -74,6 +88,10 @@ obj.setEndpointUrl(endpointUrl)
 print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
 """
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 """
 """
 """  
@@ -87,13 +105,17 @@ if __name__ == "__main__":
 
 """
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 
 """
+=======
+>>>>>>> Stashed changes
 csv1 = "./graph_db/graph_publications.csv"
 
 
 #dataObj = extraclasses.DataCSV(csv1)
+<<<<<<< Updated upstream
 #print(dataObj.Publication_DF.info())
 
 =======
@@ -115,6 +137,9 @@ csv1 = "./graph_db/graph_publications.csv"
 <<<<<<< Updated upstream
 #print(dataObj.Publication_DF.info())
 """
+=======
+#print(dataObj.Publication_DF.info())
+>>>>>>> Stashed changes
 =======
 #print(dataObj.Publication_DF.info())
 >>>>>>> Stashed changes

@@ -90,6 +90,7 @@ class DataJSON(object):
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
               
             
             #VENUE EXT DATAFRAME  
@@ -98,6 +99,9 @@ class DataJSON(object):
             venues_df = venues_df[["issn_isbn"]].drop_duplicates(subset=["issn_isbn"])
             venues_df.rename(columns={"issn_isbn":"id"}, inplace = True)
             self.VenuesEXT_DF = venues_df
+=======
+                   
+>>>>>>> Stashed changes
 =======
                    
 >>>>>>> Stashed changes
@@ -152,8 +156,13 @@ csv= "./relational_db/relational_publication.csv"
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 Dataobject = DataJSON(p)
 #print(Dataobject.VenuesEXT_DF)
+=======
+#Dataobject = DataCSV(csv)
+#print(Dataobject.Journal_DF)
+>>>>>>> Stashed changes
 =======
 #Dataobject = DataCSV(csv)
 #print(Dataobject.Journal_DF)
