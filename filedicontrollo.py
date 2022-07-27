@@ -16,6 +16,7 @@ obj.uploadData(jsn0)
 obj.uploadData(csv)
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 """
 """
 dbpath0 = "publication.db"
@@ -24,6 +25,8 @@ rqp.setDbPath(dbpath0)
 print(rqp.getVenuesByPublisherId("crossref:78"))
 """
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 
@@ -42,7 +45,11 @@ print(rqp.getVenuesByPublisherId("crossref:78"))
     #print(el.__str__())
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     
+=======
+    """
+>>>>>>> Stashed changes
 =======
     """
 >>>>>>> Stashed changes
@@ -81,6 +88,15 @@ if __name__ == "__main__":
 """
 =======
 
+"""
+csv1 = "./graph_db/graph_publications.csv"
+
+
+<<<<<<< Updated upstream
+#dataObj = extraclasses.DataCSV(csv1)
+#print(dataObj.Publication_DF.info())
+>>>>>>> Stashed changes
+=======
 """
 csv1 = "./graph_db/graph_publications.csv"
 
