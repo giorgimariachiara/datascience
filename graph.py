@@ -76,7 +76,9 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                     if row["type"] != "":
                         my_graph.add((subj, RDF.type, BookChapter))
                 else: 
-                    my_graph.add((subj, RDF.type, Proceedingspaper))
+                    if row["type"]== "proceedings-paper":
+                        if row["type"] != "":
+                            my_graph.add((subj, RDF.type, Proceedingspaper)) #ho aggiunto anche il controllo e procpaper perchè sennò le avrebbe aggiunte alle caselle vuote 
                 
                 if row["venue_type"] == "journal":
                     if row["type"] != "":
@@ -85,11 +87,14 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                     if row["type"] != "":
                         my_graph.add((subj, RDF.type, Book))
                 else: 
-                    my_graph.add((subj, RDF.type, Proceeding))
+                    if row["type"]== "proceedings":
+                        if row["type"] != "":
+                            my_graph.add((subj, RDF.type, Proceeding))
 
             for idx, row in CSV_Rdata.Journal_article_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
-
+                
+                my_graph.add((subj, RDF.type, JournalArticle)) 
                 if row["issue"] != "":
                     my_graph.add((subj, issue, Literal(row["issue"])))
                 if row["volume"] != "":
@@ -97,12 +102,18 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             
             for idx, row in CSV_Rdata.Book_chapter_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
+                my_graph.add((subj, RDF.type, BookChapter))
                 if row["chapter"] != "": 
                     my_graph.add((subj, chapter, Literal(row["chapter"])))
+            
+            for idx, row in CSV_Rdata.Proceedings_paper_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+                my_graph.add((subj, RDF.type, Proceedingspaper))
 
         
             for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
-
+                
+                my_graph.add((subj, RDF.type, Proceeding))
                 if row["event"] != "":  
                         my_graph.add((subj, event, Literal(row["event"])))
                 
@@ -141,23 +152,30 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 if row["cited"] != None:
                     my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
             
+            for idx, row in JSN_Rdata.VenuesEXT_DF.iterrows():
+                subjvenuext = URIRef(base_url + row["id"])
+                
+                my_graph.add(subjvenuext, identifier, Literal(row["id"])) #questo va bene identifier? 
+            
             for idx, row in JSN_Rdata.VenuesId_DF.iterrows():
-                subj = URIRef(base_url + row["doi"]) 
-
-                my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))
+                subj = URIRef(base_url + row["doi"])
+                
+                my_graph.add(subj, publicationVenue, subjvenuext) #ma qui va bene ? si ripeterà o no? 
+                my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))    #QUESTO È STATO CAMBIATO 
 
             for idx, row in JSN_Rdata.Person_DF.iterrows():
-                subj = URIRef(base_url + row["orc_id"]) 
+                subjperson = URIRef(base_url + row["orc_id"]) 
             
-                my_graph.add((subj, RDF.type, Person))
-                my_graph.add((subj, givenName, Literal(row["given_name"])))
-                my_graph.add((subj, familyName, Literal(row["family_name"])))
-                my_graph.add((subj, identifier, Literal(row["orc_id"])))
+                my_graph.add((subjperson, RDF.type, Person))
+                my_graph.add((subjperson, givenName, Literal(row["given_name"])))
+                my_graph.add((subjperson, familyName, Literal(row["family_name"])))
+                my_graph.add((subjperson, identifier, Literal(row["orc_id"])))
 
             for idx, row in JSN_Rdata.Author_DF.iterrows(): 
-                subj = URIRef(base_url + row["doi"]) 
-            
-                my_graph.add((subj, author, URIRef(base_url + row["orc_id"])))
+                subj = URIRef(base_url + row["doi"])
+                 
+                my_graph.add(subj, author, subjperson) #ho aggiunto questa 
+                #my_graph.add((subj, author, URIRef(base_url + row["orc_id"])))
 
             self.my_graph = my_graph
 

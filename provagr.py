@@ -63,7 +63,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                  ?s schema:familyName ?surname . \
                  ?s schema:identifier ?orcid . \
                  ?doi schema:author ?orcid . \   
-                ?doi schema:identifier "doi:10.1016/j.websem.2021.100655".}')
+                 ?doi schema:identifier "' + publication + '".}')
     
     def getPublicationsByAuthorId(self, orcid):
         query = ('prefix schema:<https://schema.org/>  \
@@ -80,6 +80,20 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
        
         return results 
+        
+    def getJournalArticlesInJournal(self, issn):
+        query = ('prefix schema:<https://schema.org/>  
+                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                prefix bibo:<https://bibliontology.com/>
+                 SELECT ?id ?title ?pubyear ?pubvenue ?issue ?volume WHERE {?s rdf:type schema:ScholarlyArticle;
+                                                                               	schema:identifier ?id;
+                                                                             	schema:name ?title;
+                                                                             	schema:datePublished ?pubyear;
+                                                                             	schema:isPartOf ?pubvenue;
+                                                                                schema:issueNumber "1";
+                                                                                schema:volumeNumber "1".
+                                                                             	
+                                                                             }')
 
 """
 
