@@ -78,7 +78,6 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
-       
         return results 
         
     def getJournalArticlesInJournal(self, issn):

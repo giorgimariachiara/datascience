@@ -1,7 +1,8 @@
-from graph import TriplestoreDataProcessor
+from graph import Publication, TriplestoreDataProcessor
 import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
+import extraclasses
 """
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
@@ -13,6 +14,7 @@ obj = RelationalDataProcessor()
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn0)
 obj.uploadData(csv)
+<<<<<<< Updated upstream
 """
 """
 dbpath0 = "publication.db"
@@ -20,6 +22,12 @@ rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
 print(rqp.getVenuesByPublisherId("crossref:78"))
 """
+=======
+
+#rqp = RelationalQueryProcessor()
+#rqp.setDbPath(dbpath0)
+#print(rqp.getVenuesByPublisherId("crossref:78"))
+>>>>>>> Stashed changes
 #gqp = GenericQueryProcessor()
 #qp.addQueryProcessor(rqp)
 #print(gqp.getVenuesByPublisherId("crossref:78"))
@@ -29,23 +37,28 @@ print(rqp.getVenuesByPublisherId("crossref:78"))
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
+<<<<<<< Updated upstream
     
+=======
+    """
+>>>>>>> Stashed changes
 
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(jsn1)
+res.uploadData(csv1)
 print(res.my_graph.serialize())
 
 
 """
+
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()
 obj.setEndpointUrl(endpointUrl)
 print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
-
+"""
 
 
 """
@@ -57,4 +70,14 @@ if __name__ == "__main__":
     path = "./relational_db/"
     Dataobject = Data(path, csv, jsn)
     #print(Dataobject.Cites_DF.head(5))
+<<<<<<< Updated upstream
 """
+=======
+
+"""
+csv1 = "./graph_db/graph_publications.csv"
+
+
+#dataObj = extraclasses.DataCSV(csv1)
+#print(dataObj.Publication_DF.info())
+>>>>>>> Stashed changes
