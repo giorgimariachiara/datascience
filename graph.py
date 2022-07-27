@@ -155,12 +155,12 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             for idx, row in JSN_Rdata.VenuesEXT_DF.iterrows():
                 subjvenuext = URIRef(base_url + row["id"])
                 
-                my_graph.add(subjvenuext, identifier, Literal(row["id"])) #questo va bene identifier? 
+                my_graph.add((subjvenuext, identifier, Literal(row["id"]))) #questo va bene identifier? 
             
             for idx, row in JSN_Rdata.VenuesId_DF.iterrows():
                 subj = URIRef(base_url + row["doi"])
                 
-                my_graph.add(subj, publicationVenue, subjvenuext) #ma qui va bene ? si ripeterà o no? 
+                my_graph.add((subj, publicationVenue, subjvenuext)) #ma qui va bene ? si ripeterà o no? 
                 my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))    #QUESTO È STATO CAMBIATO 
 
             for idx, row in JSN_Rdata.Person_DF.iterrows():
@@ -174,7 +174,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             for idx, row in JSN_Rdata.Author_DF.iterrows(): 
                 subj = URIRef(base_url + row["doi"])
                  
-                my_graph.add(subj, author, subjperson) #ho aggiunto questa 
+                my_graph.add((subj, author, subjperson) ) #ho aggiunto questa 
                 #my_graph.add((subj, author, URIRef(base_url + row["orc_id"])))
 
             self.my_graph = my_graph
