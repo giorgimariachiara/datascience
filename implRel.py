@@ -482,13 +482,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(self.getDbPath()) as con:
             SQL = "SELECT A.issn_isbn, B.publication_venue, B.publisher FROM Venue AS A JOIN Publications AS B ON A.doi == B.id \
                                 JOIN maxCited ON id == cited"
-        return read_sql(SQL, con) #CONTROLLO OGGETTO VENUE
+        return read_sql(SQL, con) 
 
 
     def getVenuesByPublisherId(self, publisher):
         with connect(self.getDbPath()) as con:
-            SQL = read_sql("SELECT A.id, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
-        return SQL.drop_duplicates(subset=['publication_venue']) #da controllare perchè id non può essere crossref 
+            SQL = read_sql("SELECT C.issn_isbn, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
+        return SQL.drop_duplicates(subset=['publication_venue'])  
 
     
     def getPublicationInVenue(self, issn_isbn):

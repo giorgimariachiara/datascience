@@ -117,7 +117,7 @@ class DataJSON(object):
             person_df=pd.json_normalize(json.loads(person_df.to_json(orient="records")))
             person_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
             person_df.drop("doi", axis =1, inplace = True)
-            self.Person_DF = person_df
+            self.Person_DF = person_df.drop_duplicates(subset = ["orc_id"])
             
 
             #ORGANIZATION DATAFRAME 

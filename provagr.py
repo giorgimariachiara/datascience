@@ -99,6 +99,11 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
 
     
     
-    
-  
+""" 
+  prefix schema:<https://schema.org/>  
+prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+		SELECT DISTINCT ?surname WHERE {?s rdf:type schema:Person.
+                           ?s schema:givenName ?name.
+                            ?s schema:familyName ?surname}
 
+"""

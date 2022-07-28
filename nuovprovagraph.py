@@ -46,8 +46,7 @@ issn_isbn = URIRef("http://gbol.life/ontology/bibo/identifier/")
 publicationVenue = URIRef("https://schema.org/isPartOf")
 
 
-
-class TriplestoreDataProcessor(TriplestoreProcessor):
+class TriplestoreDataProcessors(TriplestoreProcessor):
     def __init__(self):
         super().__init__()
 
