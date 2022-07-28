@@ -1,6 +1,6 @@
 
 import os
-from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
+from implRel import  RelationalDataProcessor
 from provagr import TriplestoreQueryprocessor
 
 

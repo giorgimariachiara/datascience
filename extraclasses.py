@@ -130,10 +130,5 @@ class DataJSON(object):
 
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
-<<<<<<< Updated upstream
-Dataobject = DataJSON(p)
-#print(Dataobject.VenueExt_DF)
-=======
 #Dataobject = DataCSV(csv)
 #print(Dataobject.Journal_DF)
->>>>>>> Stashed changes
