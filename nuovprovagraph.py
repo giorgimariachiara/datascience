@@ -66,8 +66,7 @@ class TriplestoreDataProcessors(TriplestoreProcessor):
                 my_graph.add((subj, title, Literal(row["title"])))    
                 my_graph.add((subj, identifier, Literal(row["id"])))
                 my_graph.add((subj, publicationYear, Literal(row["publicationYear"])))
-                my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
-                my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
+                #my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
 
                 if row["type"] == "journal-article":
                     if row["type"] != "":
@@ -80,17 +79,38 @@ class TriplestoreDataProcessors(TriplestoreProcessor):
                         if row["type"] != "":
                             my_graph.add((subj, RDF.type, Proceedingspaper)) #ho aggiunto anche il controllo e procpaper perchè sennò le avrebbe aggiunte alle caselle vuote 
                 
-                my_graph.add(())
+
+                listapubvenue = []
+                for pubvenue in CSV_Rdata.Publication_DF[["publication_venue"]]:
+                    if pubvenue not in listapubvenue:
+                        listapubvenue.append(pubvenue)
+                
+                pubvenue_id = "venue-" + str(len(listapubvenue))
+                subjVenue = URIRef(base_url + pubvenue_id)
+                my_graph.add((subj, publicationVenue, subjVenue)) 
+                
                 if row["venue_type"] == "journal":
                     if row["type"] != "":
-                        my_graph.add((subj, RDF.type, Journal))
+                        my_graph.add((subjVenue, RDF.type, Journal))
                 elif row["venue_type"] == "book":
                     if row["type"] != "":
-                        my_graph.add((subj, RDF.type, Book))
+                        my_graph.add((subjVenue, RDF.type, Book))
                 else: 
                     if row["type"]== "proceedings":
                         if row["type"] != "":
-                            my_graph.add((subj, RDF.type, Proceeding))
+                            my_graph.add((subjVenue, RDF.type, Proceeding))
+                            if row["event"] != "":  
+                                my_graph.add((subj, event, Literal(row["event"])))
+
+                my_graph.add((subjVenue, title, Literal(listapubvenue)))
+
+                listapublishers = []
+                for publish in CSV_Rdata.Publication_DF[["publisher"]]:
+                    if publish not in listapublishers:
+                        listapublishers.append(publish)
+                
+                publisher_id = "publisher" + str(len(listapublishers))
+                subjpublisher = URIRef(base_url + publisher_id) #questo potrebbe essere sbagliato 
 
             for idx, row in CSV_Rdata.Journal_article_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
@@ -111,12 +131,6 @@ class TriplestoreDataProcessors(TriplestoreProcessor):
                 subj = URIRef(base_url + row["id"])
                 my_graph.add((subj, RDF.type, Proceedingspaper))
 
-        
-            for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
-                
-                my_graph.add((subj, RDF.type, Proceeding))
-                if row["event"] != "":  
-                        my_graph.add((subj, event, Literal(row["event"])))
                 
             self.my_graph= my_graph
 
