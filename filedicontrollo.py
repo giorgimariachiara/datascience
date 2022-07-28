@@ -51,18 +51,13 @@ obj.setEndpointUrl(endpointUrl)
 print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
 """
 
-"""  
-print("this module is in name: '" + __name__ + "'")
-if __name__ == "__main__":
-    csv = "relational_publication.csv"
-    jsn = "relational_other_data.json"
-    path = "./relational_db/"
-    Dataobject = Data(path, csv, jsn)
-    #print(Dataobject.Cites_DF.head(5))
 
 """
+
+
 csv1 = "./graph_db/graph_publications.csv"
 
 
 #dataObj = extraclasses.DataCSV(csv1)
 #print(dataObj.Publication_DF.info())
+"""
