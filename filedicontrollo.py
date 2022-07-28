@@ -2,7 +2,6 @@ from graph import Publication, TriplestoreDataProcessor
 import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
-
 """
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
@@ -57,7 +56,6 @@ obj = TriplestoreQueryprocessor()
 obj.setEndpointUrl(endpointUrl)
 print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
 """
-
 
 
 """  
