@@ -3,7 +3,11 @@ import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
 import extraclasses
+<<<<<<< Updated upstream
 
+=======
+"""
+>>>>>>> Stashed changes
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
@@ -28,22 +32,30 @@ obj.uploadData(csv)
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
+<<<<<<< Updated upstream
     
 """
+=======
+    """
+
+>>>>>>> Stashed changes
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(jsn1)
+res.uploadData(csv1)
 print(res.my_graph.serialize())
 
 """
 
+<<<<<<< Updated upstream
 
 
 """
 
+=======
+>>>>>>> Stashed changes
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()
 obj.setEndpointUrl(endpointUrl)
@@ -53,10 +65,18 @@ print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
 
 """
 
+<<<<<<< Updated upstream
 
+=======
+"""
+>>>>>>> Stashed changes
 csv1 = "./graph_db/graph_publications.csv"
 
 
 #dataObj = extraclasses.DataCSV(csv1)
+<<<<<<< Updated upstream
 #print(dataObj.Publication_DF.info())
 """
+=======
+#print(dataObj.Publication_DF.info())
+>>>>>>> Stashed changes
