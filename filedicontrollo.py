@@ -35,7 +35,7 @@ csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(csv1)
+res.uploadData(jsn1)
 print(res.my_graph.serialize())
 
 """
