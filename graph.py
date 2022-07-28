@@ -153,7 +153,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 if row["cited"] != None:
                     my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
             
-            for idx, row in JSN_Rdata.VenueExt_DF.iterrows():
+            for idx, row in JSN_Rdata.VenueEXT_DF.iterrows():
                 subjvenuext = URIRef(base_url + row["id"])
                 
                 my_graph.add((subjvenuext, identifier, Literal(row["id"]))) #questo va bene identifier? 

@@ -223,6 +223,7 @@ class RelationalDataProcessor(RelationalProcessor):
                     "JournalArticle", con, if_exists="replace", index=False)
                 CSV_Rdata.Book_chapter_DF.to_sql(
                     "BookChapter", con, if_exists="replace", index=False)
+                
 
                 con.commit()
 
@@ -240,7 +241,10 @@ class RelationalDataProcessor(RelationalProcessor):
                     "Venue", con, if_exists="replace", index=False)
                 JSN_Rdata.Person_DF.to_sql(
                     "Person", con, if_exists="replace", index=False)
+                JSN_Rdata.VenueEXT_DF.to_sql(
+                    "VenueEXT", con, if_exists="replace", index= False)
 
+                
                 con.execute("DROP VIEW  IF EXISTS countCited")
                 con.execute("CREATE VIEW countCited AS "
                             "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
