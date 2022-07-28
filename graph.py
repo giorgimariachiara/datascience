@@ -141,7 +141,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             for idx, row in JSN_Rdata.Organization_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
-            
+
                 my_graph.add((subj, RDF.type, organization))
                 my_graph.add((subj, name, Literal(row["name"])))  
                 my_graph.add((subj, identifier, Literal(row["id"])))
@@ -174,7 +174,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             for idx, row in JSN_Rdata.Author_DF.iterrows(): 
                 subj = URIRef(base_url + row["doi"])
                  
-                my_graph.add((subj, author, subjperson) ) #ho aggiunto questa 
+                my_graph.add((subjperson, author, subj) ) #ho aggiunto questa 
                 #my_graph.add((subj, author, URIRef(base_url + row["orc_id"])))
 
             self.my_graph = my_graph

@@ -3,7 +3,7 @@ import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
 import extraclasses
-"""
+
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
@@ -28,18 +28,17 @@ obj.uploadData(csv)
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
-    """
-
+    
+"""
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(csv1)
+res.uploadData(jsn1)
 print(res.my_graph.serialize())
 
-
-
+"""
 
 
 

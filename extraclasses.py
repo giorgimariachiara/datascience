@@ -86,7 +86,12 @@ class DataJSON(object):
             #VENUE DATAFRAME
             venues_df = json_doc["venues_id"]
             self.VenuesId_DF = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
-                   
+
+            #VENUE EXT DATAFRAME
+            venues_df = json_doc["venues_id"]
+            venues_df = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
+            venues_df = venues_df[["issn_isbn"]]
+            self.VenueExt_DF = venues_df.drop_duplicates(subset= ["issn_isbn"])
         
             #AUTHOR DATAFRAME
             author = json_doc["authors"]
@@ -125,5 +130,5 @@ class DataJSON(object):
 
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
-#Dataobject = DataCSV(csv)
-#print(Dataobject.Journal_DF)
+Dataobject = DataJSON(p)
+#print(Dataobject.VenueExt_DF)
