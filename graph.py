@@ -83,10 +83,10 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 
                 my_graph.add(())
                 if row["venue_type"] == "journal":
-                    if row["type"] != "":
+                    if row["venue_type"] != "":
                         my_graph.add((subj, RDF.type, Journal))
                 elif row["venue_type"] == "book":
-                    if row["type"] != "":
+                    if row["venue_type"] != "":
                         my_graph.add((subj, RDF.type, Book))
                 else: 
                     if row["type"]== "proceedings":

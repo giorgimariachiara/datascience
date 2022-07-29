@@ -90,10 +90,10 @@ class TriplestoreDataProcessors(TriplestoreProcessor):
                 my_graph.add((subj, publicationVenue, subjVenue)) 
                 
                 if row["venue_type"] == "journal":
-                    if row["type"] != "":
+                    if row["venue_type"] != "":
                         my_graph.add((subjVenue, RDF.type, Journal))
                 elif row["venue_type"] == "book":
-                    if row["type"] != "":
+                    if row["venue_type"] != "":
                         my_graph.add((subjVenue, RDF.type, Book))
                 else: 
                     if row["type"]== "proceedings":
@@ -104,6 +104,17 @@ class TriplestoreDataProcessors(TriplestoreProcessor):
 
                 my_graph.add((subjVenue, title, Literal(listapubvenue)))
 
+                venue_internal_id = {}
+for idx, row in venues.iterrows():
+    local_id = "venue-" + str(idx)
+    
+    # The shape of the new resources that are venues is
+    # 'https://comp-data.github.io/res/venue-<integer>'
+    subj = URIRef(base_url + local_id)
+    
+    # We put the new venue resources created here, to use them
+    # when creating publications
+    venue_internal_id[row["id"]] = subj
                 listapublishers = []
                 for publish in CSV_Rdata.Publication_DF[["publisher"]]:
                     if publish not in listapublishers:
