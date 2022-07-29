@@ -44,10 +44,11 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
                     SELECT DISTINCT ?doi ?title ?publicationyear ?publicationvenue WHERE {?s rdf:type schema:CreativeWork.\
                     ?s schema:datePublished "' + publicationYear + '". \
+                    ?s schema:datePublished ?publicationyear .\
                     ?s schema:name ?title . \
                     ?s schema:identifier ?doi.\
                     ?s schema:isPartOf ?publicationvenue .\
-                    ?s ?p ?o .}')  #controlla output serve drop duplicates 
+                    }')  
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
@@ -100,6 +101,20 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     
     
 """ 
+query per getproceedingsbyevent:
+prefix schema:<https://schema.org/>
+prefix bibo:<https://bibliontology.com/>
+
+SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {
+?s schema:event "web".
+?s schema:name ?publication_venue . 
+?doi schema:isPartOf ?publication_venue . 
+?doi schema:publisher ?publisher . 
+?doi bibo:identifier ?issn_isbn . #da controllare  
+
+   }
+
+
   prefix schema:<https://schema.org/>  
 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 		SELECT DISTINCT ?surname WHERE {?s rdf:type schema:Person.

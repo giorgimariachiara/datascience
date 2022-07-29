@@ -8,6 +8,7 @@ from graph import TriplestoreDataProcessor
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 """
+"""
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 jsn1 = "./graph_db/graph_other_data.json"
@@ -20,6 +21,7 @@ obj = RelationalDataProcessor()
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn0)
 obj.uploadData(csv)
+"""
 
 """
 dbpath0 = "publicationsgraph.db"
@@ -38,15 +40,15 @@ print(rqp.getMostCitedVenue())
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
-"""
+
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(jsn1)
-print(res.my_graph.serialize())
-"""
+res.uploadData(csv1)
+#print(res.my_graph.serialize())
+
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()

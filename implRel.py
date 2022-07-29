@@ -521,6 +521,12 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(self.getDbPath()) as con:
             SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Person AS B ON A.id == B.doi WHERE B.given_name LIKE '%" + name + "%'"
         return read_sql(SQL, con) 
+    """
+    def getProceedingsByEvent(self, eventPartialName): 
+        with connect(self.getDbPath()) as con:
+            eventPartialName.lower()
+            SQL = ""
+    """
             
     
     def getDistinctPublisherOfPublications(self, listOfDoi):
