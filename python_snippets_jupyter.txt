@@ -1,0 +1,32 @@
+from pandas import read_csv
+publicationDF = read_csv("./relational_publication.csv")
+publicationDF.info()
+
+Data columns (total 11 columns):
+ #   Column             Non-Null Count  Dtype 
+---  ------             --------------  ----- 
+ 0   id                 500 non-null    string
+ 1   title              500 non-null    string
+ 2   type               500 non-null    string
+ 3   publicationYear    500 non-null    string
+ 4   issue              500 non-null    string
+ 5   volume             500 non-null    string
+ 6   chapter            500 non-null    string
+ 7   publication_venue  500 non-null    string
+ 8   venue_type         500 non-null    string
+ 9   publisher          500 non-null    string
+ 10  event              500 non-null    string
+dtypes: string(11)
+memory usage: 43.1 KB
+
+
+publications.describe(include="all")
+
+                             id                                              title  ...     publisher event
+count                       500                                                500  ...           500   500
+unique                      500                                                500  ...            33     1
+top     doi:10.1162/qss_a_00023  Opencitations, An Infrastructure Organization ...  ...  crossref:297      
+freq                          1                                                  1  ...           145   500
+
+
+Since we have eleven columns, we are dealing with eleven conceptual categories:
