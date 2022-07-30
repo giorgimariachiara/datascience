@@ -2,6 +2,7 @@ from graph import TriplestoreDataProcessor
 import os
 from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
+import extraclasses
 """
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
@@ -30,14 +31,19 @@ print(rqp.getVenuesByPublisherId("crossref:78"))
 #for el in resultq1:
     #print(el.__str__())
     
+csv = "./relational_db/relational_publication.csv"
 
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
-res = TriplestoreDataProcessor()
-res.setEndpointUrl(endpointUrl)
-res.uploadData(jsn1)
-print(res.my_graph.serialize())
+# res = TriplestoreDataProcessor()
+# res.setEndpointUrl(endpointUrl)
+# res.uploadData(jsn1)
+#print(res.my_graph.serialize())
+dataCsvOBJ = extraclasses.DataCSV(csv)
+dataCsvOBJ.Publication_DF.info()
+print("ahane")
+print(dataCsvOBJ.Publication_DF.describe(include="all"))
 
 
 """
