@@ -82,20 +82,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 else: 
                     print("WARNING: Unrecognized publication type!")
                 
-                
-                if row["venue_type"] == "journal":
-                    if row["venue_type"] != "":
-                        my_graph.add((subj, publicationVenue, Journal))
-                elif row["venue_type"] == "book":
-                    if row["venue_type"] != "":
-                        my_graph.add((subj, publicationVenue, Book))
-                elif row["venue_type"]== "proceedings":
-                    if row["venue_type"] != "": #da controllare 
-                        my_graph.add((subj, publicationVenue, Proceeding))
-                else:
-                    if row["venue_type"].strip() != "":
-                        print("WARNING: Unrecognized venue type!")
-
+            #triple publications type
 
             for idx, row in CSV_Rdata.Journal_article_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
@@ -111,11 +98,27 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 if row["chapter"] != "": 
                     my_graph.add((subj, chapter, Literal(row["chapter"])))
             
+            #triple Venue type 
+            
+            for idx, row in CSV_Rdata.Book_DF.iterrows():
+                local_id = "book-" + str(idx)
+
+                subj = URIRef(base_url + local_id)
+                my_graph.add((subj, name, Literal(row["publication_venue"])))
+                my_graph.add((subj, RDF.type, Book))
+
+            for idx, row in CSV_Rdata.Journal_DF.iterrows():
+                local_id = "journal-" + str(idx)
+
+                my_graph.add((subj, name, Literal(row["publication_venue"])))
+                my_graph.add((subj, RDF.type, Journal))
+            
             for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
                 local_id = "proceeding-" + str(idx)
 
                 subj = URIRef(base_url + local_id) 
                 
+                my_graph.add((subj, RDF.type, Proceeding))
                 if row["publication_venue"] != "":
                     my_graph.add((subj, name, Literal(row["publication_venue"])))
                 if row["event"] != "":  
@@ -171,7 +174,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             for idx, row in JSN_Rdata.Author_DF.iterrows():     
                 
-                my_graph.add((URIRef(base_url + row["orc_id"], author, URIRef(base_url + row["doi"]))))
+                my_graph.add(((URIRef(base_url + row["orc_id"]), author, URIRef(base_url + row["doi"]))))
 
             self.my_graph = my_graph
 

@@ -67,15 +67,16 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                  ?doi schema:identifier "' + publication + '".}')
     
     def getPublicationsByAuthorId(self, orcid):
-        query = ('prefix schema:<https://schema.org/>  \
-                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
-                    SELECT ?doi ?title ?publicationyear ?publicationvenue WHERE {?s rdf:type schema:CreativeWork.\
-                    ?s schema:name ?title . \
-                    ?s schema:datePublished ?publicationyear . \
-                    ?s schema:isPartOf ?publicationvenue . \
-                    ?s schema:identifier ?doi . \                                          
-                    ?doi schema:author "' + orcid + '" .\
-                    ?s ?p ?o.}')
+        query = ('prefix schema:<https://schema.org/>  
+                    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                    SELECT ?doi ?title ?publicationyear ?publicationvenue 
+                    WHERE {                                     
+                        ?author schema:identifier "0000-0001-5208-3432"  .
+                        ?author schema:author ?doi . 
+                        ?doi schema:name ?title . 
+                        ?doi schema:datePublished ?publicationyear .
+                        ?doi schema:isPartOf ?publicationvenue .
+                    }')
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
@@ -96,9 +97,22 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                                                                              }')
 
 """
+"""
+query per mostcitedpublication
+prefix schema:<https://schema.org/>  
 
+SELECT ?doi ?title ?publicationyear ?publicationvenue 
+WHERE {?cited schema:identifier ?doi .
+       ?cited schema:name ?title .
+       ?cited schema:datePublished ?publicationyear .
+       ?cited schema:isPartOf ?publicationvenue .
+{SELECT ?cited WHERE {FILTER(?N = (MAX(?N)))
+{SELECT ?cited (COUNT(*) AS ?N) #?doi ?title ?publicationyear ?publicationvenue
+WHERE { ?citing schema:citation ?cited .
 
-    
+  } GROUP BY ?cited}}}}
+
+""" 
     
 """ 
 query per getproceedingsbyevent:
