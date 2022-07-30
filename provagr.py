@@ -119,10 +119,10 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
     
-    def getProceedingsByEvent(self, eventPartialName):  #qui devo aggiungere le percentuali 
+    def getProceedingsByEvent(self, eventPartialName):  #qui vanno bene le percentuali per il nome 
         query = ('prefix schema:<https://schema.org/>  \
                   prefix bibo:<https://bibliontology.com/> \
-                  SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event "' + eventPartialName + '" . \
+                  SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event "%' + eventPartialName + '%" . \
                   ?s schema:name ?publication_venue . \
                   ?doi schema:isPartOf ?publication_venue . \
                   ?doi schema:publisher ?publisher . \
