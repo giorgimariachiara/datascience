@@ -223,6 +223,7 @@ class RelationalDataProcessor(RelationalProcessor):
                     "JournalArticle", con, if_exists="replace", index=False)
                 CSV_Rdata.Book_chapter_DF.to_sql(
                     "BookChapter", con, if_exists="replace", index=False)
+                
 
                 con.commit()
 
@@ -240,7 +241,10 @@ class RelationalDataProcessor(RelationalProcessor):
                     "Venue", con, if_exists="replace", index=False)
                 JSN_Rdata.Person_DF.to_sql(
                     "Person", con, if_exists="replace", index=False)
+                JSN_Rdata.VenueEXT_DF.to_sql(
+                    "VenueEXT", con, if_exists="replace", index= False)
 
+                
                 con.execute("DROP VIEW  IF EXISTS countCited")
                 con.execute("CREATE VIEW countCited AS "
                             "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
@@ -478,13 +482,13 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(self.getDbPath()) as con:
             SQL = "SELECT A.issn_isbn, B.publication_venue, B.publisher FROM Venue AS A JOIN Publications AS B ON A.doi == B.id \
                                 JOIN maxCited ON id == cited"
-        return read_sql(SQL, con) #CONTROLLO OGGETTO VENUE
+        return read_sql(SQL, con) 
 
 
     def getVenuesByPublisherId(self, publisher):
         with connect(self.getDbPath()) as con:
-            SQL = read_sql("SELECT A.id, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
-        return SQL.drop_duplicates(subset=['publication_venue']) #da controllare perchè id non può essere crossref 
+            SQL = read_sql("SELECT C.issn_isbn, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
+        return SQL.drop_duplicates(subset=['publication_venue'])  
 
     
     def getPublicationInVenue(self, issn_isbn):
@@ -517,6 +521,12 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(self.getDbPath()) as con:
             SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Person AS B ON A.id == B.doi WHERE B.given_name LIKE '%" + name + "%'"
         return read_sql(SQL, con) 
+    """
+    def getProceedingsByEvent(self, eventPartialName): 
+        with connect(self.getDbPath()) as con:
+            eventPartialName.lower()
+            SQL = ""
+    """
             
     
     def getDistinctPublisherOfPublications(self, listOfDoi):

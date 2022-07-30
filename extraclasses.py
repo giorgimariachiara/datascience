@@ -39,6 +39,7 @@ class DataCSV(object):
             book_chapter_df = PublicationsDF.query("type == 'book-chapter'")
             book_chapter_df = book_chapter_df[["id", "chapter"]]
             self.Book_chapter_DF = book_chapter_df
+            
 
             #JOURNAL ARTICLE DATAFRAME
             journal_article_df = PublicationsDF.query("type == 'journal-article'")
@@ -52,17 +53,19 @@ class DataCSV(object):
             
             #BOOK DATAFRAME
             book_df = PublicationsDF.query("venue_type == 'book'")
-            self.Book_DF = book_df[["id", "publication_venue"]]
-            #print(self.Book_DF)     
+            book_df = book_df[["publication_venue"]]
+            self.Book_DF = book_df.drop_duplicates(subset=["publication_venue"])
+                
             
             #JOURNAL DATAFRAME
             journal_df = PublicationsDF.query("venue_type == 'journal'")
-            self.Journal_DF= journal_df[["id", "publication_venue"]]
+            journal_df= journal_df[["publication_venue"]]
+            self.Journal_DF = journal_df.drop_duplicates(subset=["publication_venue"])
            
             #PROCEEDINGS DATAFRAME
             proceedings_df= PublicationsDF.query("venue_type == 'proceedings'")
-            self.Proceedings_DF = proceedings_df[["id", "publication_venue", "event"]]
-            #print(self.Proceedings_DF)
+            proceedings_df = proceedings_df[["publication_venue", "event"]]
+            self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["publication_venue"])
 
         else:
             print("WARNING: CSV file '" + csv + "' does not exist!")
@@ -83,14 +86,13 @@ class DataJSON(object):
             #VENUE DATAFRAME
             venues_df = json_doc["venues_id"]
             self.VenuesId_DF = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
-              
-            
-            #VENUE EXT DATAFRAME  
+
+            #VENUE EXT DATAFRAME
             venues_df = json_doc["venues_id"]
-            venues_df = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')  
-            venues_df = venues_df[["issn_isbn"]].drop_duplicates(subset=["issn_isbn"])
-            venues_df.rename(columns={"issn_isbn":"id"}, inplace = True)
-            self.VenuesEXT_DF = venues_df
+            venues_df = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
+            venues_df = venues_df[["issn_isbn"]]      
+            venues_df = venues_df.drop_duplicates(subset= ["issn_isbn"])
+            self.VenueEXT_DF = venues_df.rename(columns={"issn_isbn":"id"})
         
             #AUTHOR DATAFRAME
             author = json_doc["authors"]
@@ -100,8 +102,7 @@ class DataJSON(object):
             author_df.drop("family_name", axis=1, inplace = True)
             author_df.drop("given_name", axis =1, inplace = True)
             self.Author_DF = author_df
-            #print(self.Author_DF)
-
+           
             #CITES DATAFRAME
             References = json_doc["references"]
             cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
@@ -116,8 +117,8 @@ class DataJSON(object):
             person_df=pd.json_normalize(json.loads(person_df.to_json(orient="records")))
             person_df.rename(columns={"author.family":"family_name","author.given":"given_name","author.orcid":"orc_id"}, inplace = True)
             person_df.drop("doi", axis =1, inplace = True)
-            self.Person_DF = person_df
-            #print(self.Person_DF)
+            self.Person_DF = person_df.drop_duplicates(subset = ["orc_id"])
+            
 
             #ORGANIZATION DATAFRAME 
             crossref = json_doc["publishers"]
@@ -130,5 +131,5 @@ class DataJSON(object):
 
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
-Dataobject = DataJSON(p)
-#print(Dataobject.VenuesEXT_DF)
+#Dataobject = DataCSV(csv)
+#print(Dataobject.Journal_DF)
