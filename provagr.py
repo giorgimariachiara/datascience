@@ -133,18 +133,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
     
-    """
-    def getPublicationAuthors(self, publication):
-        query = ('prefix schema:<https://schema.org/>  \
-                 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                 SELECT ?name ?surname ?orcid WHERE {?s rdf:type schema:Person . \
-                 ?s schema:givenName ?name . \
-                 ?s schema:familyName ?surname . \
-                 ?s schema:identifier ?orcid . \
-                 ?doi schema:author ?orcid . \   
-                 ?doi schema:identifier "' + publication + '".}')
-    
-    
+"""
         
     def getJournalArticlesInJournal(self, issn):
         query = ('prefix schema:<https://schema.org/>  
