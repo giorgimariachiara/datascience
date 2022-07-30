@@ -133,23 +133,79 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
     
-"""
+    def getJournalArticlesInVolume(self, volume, issn_isbn): #risolvere ontologia ho messo distinct perchè me li irpeteva non so se è un proboema 
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT DISTINCT ?doi ?publicationYear ?publicationVenue ?title ?issue ?volume  \
+                  WHERE { ?s rdf:type schema:ScholarlyArticle  . \
+                  ?s schema:name ?title . \
+                  ?s schema:identifier ?doi . \
+                  ?s <http://gbol.life/ontology/bibo/identifier/> "'  + issn_isbn + '" . \
+                 ?s schema:issueNumber ?issue . \
+                 ?s schema:volumeNumber "'+ volume +'" . \
+                 ?s schema:volumeNumber ?volume . \
+                 ?s schema:isPartOf ?publicationVenue .\
+                 ?s schema:datePublished ?publicationYear .  \
+                }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
         
-    def getJournalArticlesInJournal(self, issn):
-        query = ('prefix schema:<https://schema.org/>  
-                prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                prefix bibo:<https://bibliontology.com/>
-                 SELECT ?id ?title ?pubyear ?pubvenue ?issue ?volume WHERE {?s rdf:type schema:ScholarlyArticle;
-                                                                               	schema:identifier ?id;
-                                                                             	schema:name ?title;
-                                                                             	schema:datePublished ?pubyear;
-                                                                             	schema:isPartOf ?pubvenue;
-                                                                                schema:issueNumber "1";
-                                                                                schema:volumeNumber "1".
-                                                                             	
-                                                                             }')
+        return results 
 
-"""  
+    def getJournalArticlesInIssue(self, issue, volume, issn_isbn): #risolvere ontologia 
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT DISTINCT ?doi ?publicationYear ?publicationVenue ?title ?issue ?volume  \
+                  WHERE { ?s rdf:type schema:ScholarlyArticle  . \
+                  ?s schema:name ?title . \
+                  ?s schema:identifier ?doi . \
+                  ?s <http://gbol.life/ontology/bibo/identifier/> "'  + issn_isbn + '" . \
+                 ?s schema:issueNumber "' + issue + '". \
+                 ?s schema:volumeNumber "'+ volume +'" . \
+                 ?s schema:volumeNumber ?volume . \
+                 ?s schema:isPartOf ?publicationVenue .\
+                 ?s schema:datePublished ?publicationYear .  \
+                }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+
+    def getJournalArticlesInJournal(self, issn_isbn): #risolvere ontologia 
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT DISTINCT ?doi ?publicationYear ?publicationVenue ?title ?issue ?volume  \
+                  WHERE { ?s rdf:type schema:ScholarlyArticle  . \
+                  ?s schema:name ?title . \
+                  ?s schema:identifier ?doi . \
+                  ?s <http://gbol.life/ontology/bibo/identifier/> "'  + issn_isbn + '" . \
+                 ?s schema:issueNumber ?issue . \
+                 ?s schema:volumeNumber ?volume . \
+                 ?s schema:volumeNumber ?volume . \
+                 ?s schema:isPartOf ?publicationVenue .\
+                 ?s schema:datePublished ?publicationYear .  \
+                }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+
+    def getPublicationAuthors(self, publication):
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT ?name ?surname ?orcid WHERE {?s rdf:type schema:Person . \
+                  ?s schema:author ?doi . \
+                  ?doi schema:identifier "' + publication + '" . \
+                   ?s schema:familyName ?surname . \
+                   ?s schema:givenName ?name . \
+                   ?s schema:identifier ?orcid . \
+                   }')                                                             
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+                
+        return results
+    
+
 
 """
 prefix schema:<https://schema.org/>
@@ -165,9 +221,9 @@ WHERE { ?doi schema:isPartOf ?publication_venue .
 #?doi schema:isPartOf ?publication_venue . 
 #?venueid schema:name ?publication_venue . 
 } ORDER BY ?publication_venue
-"""
 
-"""
+
+
 getmostcitedvenue da controllare 
 prefix schema:<https://schema.org/>  
 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -183,4 +239,5 @@ WHERE {
 {SELECT ?cited (COUNT(*) AS ?N) 
 WHERE { ?citing schema:citation ?cited .
   } GROUP BY ?cited }}}}
+
 """
