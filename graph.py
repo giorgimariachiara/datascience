@@ -64,11 +64,16 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 subj = URIRef(base_url + row["id"]) 
 
                 my_graph.add((subj, RDF.type, Publication))
-                my_graph.add((subj, title, Literal(row["title"])))    
-                my_graph.add((subj, identifier, Literal(row["id"])))
-                my_graph.add((subj, publicationYear, Literal(row["publicationYear"])))
-                my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
-                my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
+                if row["title"] != "":
+                    my_graph.add((subj, title, Literal(row["title"])))
+                if row["id"] != "":    
+                    my_graph.add((subj, identifier, Literal(row["id"])))
+                if row["publicationYear"] != "":
+                    my_graph.add((subj, publicationYear, Literal(row["publicationYear"])))
+                if row["publication_venue"] != "":
+                    my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
+                if row["publisher"] != "":
+                    my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
 
                 if row["type"] == "journal-article":
                     if row["type"] != "":
@@ -102,22 +107,19 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             
             for idx, row in CSV_Rdata.Book_DF.iterrows():
                 local_id = "book-" + str(idx)
-
                 subj = URIRef(base_url + local_id)
                 my_graph.add((subj, name, Literal(row["publication_venue"])))
                 my_graph.add((subj, RDF.type, Book))
 
             for idx, row in CSV_Rdata.Journal_DF.iterrows():
                 local_id = "journal-" + str(idx)
-
+                subj = URIRef(base_url + local_id)
                 my_graph.add((subj, name, Literal(row["publication_venue"])))
                 my_graph.add((subj, RDF.type, Journal))
             
             for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
                 local_id = "proceeding-" + str(idx)
-
                 subj = URIRef(base_url + local_id) 
-                
                 my_graph.add((subj, RDF.type, Proceeding))
                 if row["publication_venue"] != "":
                     my_graph.add((subj, name, Literal(row["publication_venue"])))

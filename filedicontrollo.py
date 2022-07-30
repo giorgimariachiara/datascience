@@ -3,6 +3,7 @@ import os
 from implRel import  RelationalDataProcessor, RelationalQueryProcessor
 from provagr import TriplestoreQueryprocessor 
 from graph import TriplestoreDataProcessor
+from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
 """
 jsn0 = "./relational_db/relational_other_data.json"
@@ -27,7 +28,7 @@ obj.uploadData(csv)
 dbpath0 = "publicationsgraph.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
-print(rqp.getMostCitedVenue())
+print(rqp.getVenuesByPublisherId("crossref:78"))
 """
 #print(rqp.getVenuesByPublisherId("crossref:78"))
 
@@ -44,6 +45,11 @@ print(rqp.getMostCitedVenue())
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+store = SPARQLUpdateStore()
+store.open((endpointUrl, endpointUrl))
+store.remove((None, None, None), context=None)
+store.close()
+
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
 res.uploadData(csv1)

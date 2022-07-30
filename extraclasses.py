@@ -32,8 +32,7 @@ class DataCSV(object):
 
             #PUBLICATION DATAFRAME 
             
-            self.Publication_DF = PublicationsDF
-            #[["id", "title", "type", "publicationYear","publisher", "venue_type", "publication_venue"]]
+            self.Publication_DF = PublicationsDF[["id", "title", "type", "publicationYear","publisher", "venue_type", "publication_venue"]]
             
             #BOOK CHAPTER DATAFRAME
             book_chapter_df = PublicationsDF.query("type == 'book-chapter'")

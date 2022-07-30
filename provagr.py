@@ -52,7 +52,85 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
-       
+        return results 
+
+    
+    def getPublicationsByAuthorId(self, orcid):
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT ?doiLiteral ?title ?publicationyear ?publicationvenue WHERE {?author schema:identifier "' + orcid +'" . \
+                  ?author schema:author ?doi . \
+                  ?doi schema:identifier ?doiLiteral . \
+                  ?doi schema:name ?title . \
+                  ?doi schema:datePublished ?publicationyear . \
+                  ?doi schema:isPartOf ?publicationvenue . \
+                    }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+
+    def getMostCitedPublication(self):
+        query = ('prefix schema:<https://schema.org/> \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT ?doi ?title ?publicationyear ?publicationvenue WHERE { \
+                  ?cited rdf:type schema:CreativeWork . \
+                  ?cited schema:identifier ?doi . \
+                  ?cited schema:name ?title . \
+                  ?cited schema:datePublished ?publicationyear . \
+                  ?cited schema:isPartOf ?publicationvenue . \
+                    {SELECT ?cited WHERE {FILTER(?N = (MAX(?N))) \
+                  {SELECT ?cited (COUNT(*) AS ?N) \
+                  WHERE { ?citing schema:citation ?cited . \
+                    } GROUP BY ?cited }}}} \
+                    ')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+
+    def getVenuesByPublisherId(self, publisher):
+        query = ('prefix schema:<https://schema.org/> \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                 SELECT DISTINCT ?venueid ?publication_venue ?crossref WHERE {?publisher schema:identifier "' + publisher '" . \
+                 ?publisher schema:identifier ?crossref . \
+                 ?doi schema:publisher ?publisher . \
+                 ?doi rdf:type schema:CreativeWork . \
+                 ?doi schema:isPartOf ?publication_venue .  \
+                 ?venueid schema:name ?publication_venue . \
+                  } \
+                    ')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+
+    def getPublicationInVenue(self, issn_isbn):
+        query = ('prefix schema:<https://schema.org/> \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT ?doiLiteral ?title ?publicationyear ?publicationvenue WHERE {?doi <http://gbol.life/ontology/bibo/identifier/> "' + issn_isbn +'" . \
+                    ?doi schema:identifier ?doiLiteral . \
+                    ?doi schema:name ?title . \
+                    ?doi schema:datePublished ?publicationyear  .\
+                    ?doi schema:isPartOf ?publicationvenue . \
+                    }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+    
+    def getProceedingsByEvent(self, eventPartialName):  #qui devo aggiungere le percentuali 
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix bibo:<https://bibliontology.com/> \
+                  SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event "' + eventPartialName + '" . \
+                  ?s schema:name ?publication_venue . \
+                  ?doi schema:isPartOf ?publication_venue . \
+                  ?doi schema:publisher ?publisher . \
+                  ?doi bibo:identifier ?issn_isbn . \
+                 }')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
         return results 
     
     """
@@ -66,21 +144,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                  ?doi schema:author ?orcid . \   
                  ?doi schema:identifier "' + publication + '".}')
     
-    def getPublicationsByAuthorId(self, orcid):
-        query = ('prefix schema:<https://schema.org/>  
-                    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                    SELECT ?doi ?title ?publicationyear ?publicationvenue 
-                    WHERE {                                     
-                        ?author schema:identifier "0000-0001-5208-3432"  .
-                        ?author schema:author ?doi . 
-                        ?doi schema:name ?title . 
-                        ?doi schema:datePublished ?publicationyear .
-                        ?doi schema:isPartOf ?publicationvenue .
-                    }')
-        endpoint = self.getEndpointUrl()
-        results = get(endpoint, query, post = True)
-        
-        return results 
+    
         
     def getJournalArticlesInJournal(self, issn):
         query = ('prefix schema:<https://schema.org/>  
@@ -96,43 +160,38 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                                                                              	
                                                                              }')
 
+"""  
+
 """
-"""
-query per mostcitedpublication
-prefix schema:<https://schema.org/>  
-
-SELECT ?doi ?title ?publicationyear ?publicationvenue 
-WHERE {?cited schema:identifier ?doi .
-       ?cited schema:name ?title .
-       ?cited schema:datePublished ?publicationyear .
-       ?cited schema:isPartOf ?publicationvenue .
-{SELECT ?cited WHERE {FILTER(?N = (MAX(?N)))
-{SELECT ?cited (COUNT(*) AS ?N) #?doi ?title ?publicationyear ?publicationvenue
-WHERE { ?citing schema:citation ?cited .
-
-  } GROUP BY ?cited}}}}
-
-""" 
-    
-""" 
-query per getproceedingsbyevent:
 prefix schema:<https://schema.org/>
-prefix bibo:<https://bibliontology.com/>
+prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+SELECT DISTINCT * #?venueid ?publication_venue ?crossref 
+WHERE { ?doi schema:isPartOf ?publication_venue . 
+?doi rdf:type schema:CreativeWork . 
+?doi schema:publisher ?crossref . 
+#?publisher rdf:type schema:Organization .
+#?publisher schema:identifier "crossref:140" .
+#?publisher schema:identifier ?crossref . 
+#?doi schema:publisher ?publisher . 
+#?doi schema:isPartOf ?publication_venue . 
+#?venueid schema:name ?publication_venue . 
+} ORDER BY ?publication_venue
+"""
 
-SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {
-?s schema:event "web".
-?s schema:name ?publication_venue . 
-?doi schema:isPartOf ?publication_venue . 
-?doi schema:publisher ?publisher . 
-?doi bibo:identifier ?issn_isbn . #da controllare  
-
-   }
-
-
-  prefix schema:<https://schema.org/>  
+"""
+getmostcitedvenue da controllare 
+prefix schema:<https://schema.org/>  
 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-		SELECT DISTINCT ?surname WHERE {?s rdf:type schema:Person.
-                           ?s schema:givenName ?name.
-                            ?s schema:familyName ?surname}
 
+SELECT ?venueid ?publicationvenue ?publisher 
+WHERE {
+  ?cited rdf:type schema:CreativeWork .
+  ?cited schema:identifier ?doi .
+  ?cited schema:publisher ?publisher .
+  ?cited schema:isPartOf ?publicationvenue .
+  ?venueid schema:name ?publicationvenue . 
+{SELECT ?cited WHERE {FILTER(?N = (MAX(?N)))
+{SELECT ?cited (COUNT(*) AS ?N) 
+WHERE { ?citing schema:citation ?cited .
+  } GROUP BY ?cited }}}}
 """
