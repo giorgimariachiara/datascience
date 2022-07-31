@@ -16,7 +16,7 @@ obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn0)
 obj.uploadData(csv)
 """
-
+"""
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
@@ -37,6 +37,7 @@ print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #for el in resultq1:
     #print(el.__str__())
 """
+
 csv = "./relational_db/relational_publication.csv"
 
 jsn1 = "./graph_db/graph_other_data.json"
@@ -59,7 +60,7 @@ res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
 
-"""
+
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()
