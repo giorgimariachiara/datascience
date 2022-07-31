@@ -16,17 +16,22 @@ obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn0)
 obj.uploadData(csv)
 """
-"""
+
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
-print(rqp.getVenuesByPublisherId("crossref:78"))
-"""
-#gqp = GenericQueryProcessor()
-#qp.addQueryProcessor(rqp)
+endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+tqp = TriplestoreQueryprocessor()
+tqp.setEndpointUrl(endpointUrl)
+#print(rqp.getVenuesByPublisherId("crossref:78"))
+
+gqp = GenericQueryProcessor()
+gqp.addQueryProcessor(rqp)
+#gqp.addQueryProcessor(tqp)
+
 #print(gqp.getVenuesByPublisherId("crossref:78"))
 #print(gqp.getMostCitedPublication())
-#print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
+print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
@@ -59,11 +64,11 @@ res.uploadData(jsn1)
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()
 obj.setEndpointUrl(endpointUrl)
-print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
-
-
-
+#print(obj.getPublicationsPublishedInYear("2020")) #da gestire le virgolette
+print(obj.getPublicationsByAuthorId("0000-0002-3938-2064"))
 """
+
+
 """  
 print("this module is in name: '" + __name__ + "'")
 if __name__ == "__main__":

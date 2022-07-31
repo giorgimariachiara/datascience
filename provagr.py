@@ -6,42 +6,13 @@ from graph import TriplestoreDataProcessor
 from implRel import QueryProcessor, TriplestoreProcessor
 from sparql_dataframe import get
 
-#doi e issn hanno lo stesso schema e quindi prende sempre tutti e due secondo me non va bene 
-"""
-sparql = SPARQLWrapper("http://localhost:9999/blazegraph/sparql") 
-sparql.setQuery("SELECT (COUNT(*) AS ?ntpls) WHERE {?s ?p ?o}")
-sparql.setReturnFormat(JSON)
-results = sparql.query().convert() 
-for result in results["results"]["bindings"]:
-    print(result["ntpls"]["value"])
-"""
-"""
-if __name__ == "__main__":
-
-    dbo = Namespace("http://dbpedia.org/ontology/")
-
-    # EXAMPLE 3: doing RDFlib triple navigation using SPARQLStore as a Graph()
-    print("Triple navigation using SPARQLStore as a Graph():")
-    graph = Graph("SPARQLStore", identifier="http://dbpedia.org")
-    graph.open("http://dbpedia.org/sparql")
-    # we are asking DBPedia for 3 skos:Concept instances
-    count = 0
-    from rdflib.namespace import RDF, SKOS
-
-    for s in graph.subjects(predicate=RDF.type, object=SKOS.Concept):
-        count += 1
-        print(f"\t- {s}")
-        if count >= 3:
-            break
-  """  
-
 class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     def __init__(self):
         super().__init__()
     
     def getPublicationsPublishedInYear(self, publicationYear):
         query = ('prefix schema:<https://schema.org/>  \
-                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
                     SELECT DISTINCT ?doi ?title ?publicationyear ?publicationvenue WHERE {?s rdf:type schema:CreativeWork.\
                     ?s schema:datePublished "' + publicationYear + '". \
                     ?s schema:datePublished ?publicationyear .\
@@ -88,7 +59,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         results = get(endpoint, query, post = True)
         
         return results 
-
+    """
     def getVenuesByPublisherId(self, publisher):
         query = ('prefix schema:<https://schema.org/> \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
@@ -97,14 +68,10 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                  ?doi schema:publisher ?publisher . \
                  ?doi rdf:type schema:CreativeWork . \
                  ?doi schema:isPartOf ?publication_venue .  \
-                 ?venueid schema:name ?publication_venue . \
-                  } \
-                    ')
-        endpoint = self.getEndpointUrl()
-        results = get(endpoint, query, post = True)
-        
-        return results 
-
+                 ?venueid schema:name ?publication_venue .  \
+                  }')
+       
+"""
     def getPublicationInVenue(self, issn_isbn):
         query = ('prefix schema:<https://schema.org/> \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
@@ -122,12 +89,13 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     def getProceedingsByEvent(self, eventPartialName):  #qui vanno bene le percentuali per il nome 
         query = ('prefix schema:<https://schema.org/>  \
                   prefix bibo:<https://bibliontology.com/> \
-                  SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event "%' + eventPartialName + '%" . \
+                  SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event ?event. \
                   ?s schema:name ?publication_venue . \
                   ?doi schema:isPartOf ?publication_venue . \
                   ?doi schema:publisher ?publisher . \
                   ?doi bibo:identifier ?issn_isbn . \
-                 }')
+                  filter contains(?event,"' + eventPartialName +'") \
+                   }')
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
@@ -204,6 +172,22 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         results = get(endpoint, query, post = True)
                 
         return results
+    
+    def getPublicationsByAuthorName(self, name):
+        query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT ?doiLiteral ?title ?publicationyear ?publicationvenue WHERE {?author schema:author ?doi . \
+                  ?author schema:givenName ?name. \
+                  ?doi schema:identifier ?doiLiteral . \
+                  ?doi schema:name ?title .  \
+                  ?doi schema:datePublished ?publicationyear .  \
+                  ?doi schema:isPartOf ?publicationvenue . \
+                  filter contains(?name,"' + name +'") ')
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+                
+        return results
+    
     
 
 
