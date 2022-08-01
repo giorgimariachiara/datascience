@@ -1,7 +1,8 @@
 from rdflib import Graph, URIRef, Namespace
 from rdflib.plugins.stores.sparqlstore import SPARQLStore
 from SPARQLWrapper import CSV, JSON, TSV, SPARQLWrapper
-
+import pandas as pd
+from pandas import DataFrame, concat
 from graph import TriplestoreDataProcessor
 from implRel import QueryProcessor, TriplestoreProcessor
 from sparql_dataframe import get
@@ -187,7 +188,22 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         results = get(endpoint, query, post = True)
                 
         return results
-    
+
+    def getDistinctPublisherOfPublications(self, lista):
+        publisher = pd.DataFrame()
+        for el in lista:
+            query = ('prefix schema:<https://schema.org/>  \
+                    prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                    SELECT DISTINCT ?name ?id WHERE {?doi rdf:type schema:CreativeWork . \
+                    ?doi schema:identifier "'+ el +'". \
+                    ?doi schema:publisher ?publisher . \
+                    ?publisher schema:name ?name . \
+                    ?publisher schema:identifier ?id . \
+                    }')
+            endpoint = self.getEndpointUrl()
+            results = get(endpoint, query, post= True)
+            publisher = concat([publisher, results])
+        return publisher
     
 
 

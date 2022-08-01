@@ -530,11 +530,8 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             
     
     def getDistinctPublisherOfPublications(self, listOfDoi):
-        tempDF = pd.DataFrame()
-        outputDF = pd.DataFrame()
         with connect(self.getDbPath()) as con:
             publisherDF = pd.DataFrame()
-            sqlDF = pd.DataFrame()
             for doi in listOfDoi:
                 SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
                 publisherDF = concat([publisherDF, SQL]) 
