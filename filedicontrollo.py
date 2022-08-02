@@ -1,6 +1,6 @@
 from graph import TriplestoreDataProcessor
 import os
-from implRel import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
+from impl import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
 import extraclasses
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
@@ -21,20 +21,22 @@ rqp = RelationalQueryProcessor()
 rqp.getDbPath()
 print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 """
-"""
+
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
-"""
-endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
-tqp = TriplestoreQueryprocessor()
-tqp.setEndpointUrl(endpointUrl)
 
-print(tqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
+#endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+#tqp = TriplestoreQueryprocessor()
+#tqp.setEndpointUrl(endpointUrl)
 
-#gqp = GenericQueryProcessor()
-#gqp.addQueryProcessor(tqp)
+#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
+#print(rqp.getProceedingsByEvent("we"))
+gqp = GenericQueryProcessor()
+gqp.addQueryProcessor(rqp)
 #gqp.addQueryProcessor(rqp)
+
+print(gqp.getProceedingsByEvent("name"))
 
 #print(gqp.getVenuesByPublisherId("crossref:78"))
 #print(gqp.getMostCitedPublication())

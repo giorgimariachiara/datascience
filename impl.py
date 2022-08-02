@@ -16,7 +16,6 @@ from extraclasses import DataCSV, DataJSON
 
 #object classes -----------------------------------------------------------------------------------------------------------------------#
 
-
 class IdentifiableEntity(object):
     def __init__(self, id):
         self.id = id
@@ -317,8 +316,7 @@ class GenericQueryProcessor(object):
                 result.append(publicationObj)
 
         return result
-        
-        
+           
     def getMostCitedVenue(self):
         res = []
         for QP in self.queryProcessor:
@@ -367,8 +365,7 @@ class GenericQueryProcessor(object):
                 JournalarticleObj = JournalArticle(*row)
                 result.append(JournalarticleObj)
         return result
-    
-    
+      
     def getJournalArticlesInVolume(self, volume, issn_isbn):
         res = []
         for QP in self.queryProcessor: 
@@ -395,8 +392,7 @@ class GenericQueryProcessor(object):
                 result.append(JournalArticleOBJ)
 
         return result
-        
-        
+              
     def getProceedingsByEvent(self, name):
         res = []
         for QP in self.queryProcessor: 
@@ -424,7 +420,6 @@ class GenericQueryProcessor(object):
 
         return result
     
-
     def getPublicationsByAuthorName(self, name):
         res = []
         for QP in self.queryProcessor: 
@@ -484,13 +479,11 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                                 JOIN maxCited ON id == cited"
         return read_sql(SQL, con) 
 
-
     def getVenuesByPublisherId(self, publisher):
         with connect(self.getDbPath()) as con:
             SQL = read_sql("SELECT C.issn_isbn, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
         return SQL.drop_duplicates(subset=['publication_venue'])  
-
-    
+ 
     def getPublicationInVenue(self, issn_isbn):
         with connect(self.getDbPath()) as con:
             SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Venue AS B ON A.id == B.doi WHERE B.issn_isbn = '" + issn_isbn + "'"
@@ -511,7 +504,6 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
             SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi  WHERE C.issn_isbn = '" + issn + "'"
         return read_sql(SQL, con)
 
-
     def getPublicationAuthors(self, publication):
         with connect(self.getDbPath()) as con: 
             SQL = "SELECT orc_id, family_name, given_name FROM Person WHERE doi = '" + publication + "';"
@@ -521,13 +513,12 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         with connect(self.getDbPath()) as con:
             SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Person AS B ON A.id == B.doi WHERE B.given_name LIKE '%" + name + "%'"
         return read_sql(SQL, con) 
-    """
+    
     def getProceedingsByEvent(self, eventPartialName): 
         with connect(self.getDbPath()) as con:
             eventPartialName.lower()
-            SQL = ""
-    """
-            
+            SQL = "SELECT A.publication_venue, B.publisher, A.event FROM Proceeding AS A JOIN Publications AS B ON A.publication_venue == B.publication_venue WHERE A.event == '%" + eventPartialName + "%'"
+        return read_sql(SQL, con)
     
     def getDistinctPublisherOfPublications(self, listOfDoi):
         with connect(self.getDbPath()) as con:

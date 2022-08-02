@@ -4,7 +4,7 @@ from SPARQLWrapper import CSV, JSON, TSV, SPARQLWrapper
 import pandas as pd
 from pandas import DataFrame, concat
 from graph import TriplestoreDataProcessor
-from implRel import QueryProcessor, TriplestoreProcessor
+from impl import QueryProcessor, TriplestoreProcessor
 from sparql_dataframe import get
 
 class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
@@ -26,7 +26,6 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
 
-    
     def getPublicationsByAuthorId(self, orcid):
         query = ('prefix schema:<https://schema.org/>  \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
