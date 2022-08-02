@@ -4,6 +4,7 @@ from impl import GenericQueryProcessor, RelationalQueryProcessor, RelationalData
 from provagr import TriplestoreQueryprocessor
 import extraclasses
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+ 
 
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
@@ -21,7 +22,7 @@ rqp = RelationalQueryProcessor()
 rqp.getDbPath()
 print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 """
-
+"""
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
@@ -45,7 +46,7 @@ print(gqp.getProceedingsByEvent("name"))
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
-
+"""
 
 """
 
@@ -83,3 +84,42 @@ print(obj.getDistinctPublisherOfPublications(["doi:10.1016/j.websem.2021.100655"
 
 """
 
+rel_path = "relational.db"
+rel_dp = RelationalDataProcessor()
+rel_dp.setDbPath(rel_path)
+rel_dp.uploadData("testData/relational_publications.csv")
+rel_dp.uploadData("testData/relational_other_data.json")
+
+# In the next passage, create the query processors for both
+# the databases, using the related classes
+rel_qp = RelationalQueryProcessor()
+rel_qp.setDbPath(rel_path)
+"""
+# Then, create the RDF triplestore (remember first to run the
+# Blazegraph instance) using the related source data
+grp_endpoint = "http://127.0.0.1:9999/blazegraph/sparql"
+grp_dp = TriplestoreDataProcessor()
+grp_dp.setEndpointUrl(grp_endpoint)
+grp_dp.uploadData("testData/graph_publications.csv")
+grp_dp.uploadData("testData/graph_other_data.json")
+"""
+
+# Finally, create a generic query processor for asking
+# about data
+generic = GenericQueryProcessor()
+generic.addQueryProcessor(rel_qp)
+
+# QUERIES AND METHODS
+q1 = generic.getPublicationsPublishedInYear(2020)
+#print("getPublicationsPublishedInYear Query\n",q1)
+
+print("Methods for the objects of class Publication:\n")
+for item in q1:
+    print("ITEM")
+
+    print("Method getIds()\n",item.getIds())
+    print("Method getPublicationYear()\n",item.getPublicationYear())
+    print("Method getTitle()\n",item.getTitle())
+    print("Method getCitedPublications()\n",item.getCitedPublications())
+    print("Method getPublicationVenue()\n",item.getPublicationVenue())
+    print("Method getAuthors()\n",item.getAuthors())

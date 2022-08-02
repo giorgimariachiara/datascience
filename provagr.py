@@ -59,6 +59,23 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         results = get(endpoint, query, post = True)
         
         return results 
+
+    def getVenuesByPublisherId(self, publisher):
+        query = ('prefix schema:<https://schema.org/> \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                  SELECT DISTINCT ?venueid ?publication_venue ?crossref WHERE {?publisher schema:identifier "' + publisher '" . \
+                  ?publisher schema:identifier ?crossref . \
+                  ?doi schema:publisher ?publisher . \
+                  ?doi rdf:type schema:CreativeWork . \
+                  ?doi schema:isPartOf ?publication_venue .  \
+                  ?venueid schema:name ?publication_venue .  \
+                    }')
+
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results
+    
     """
     def getVenuesByPublisherId(self, publisher):
         query = ('prefix schema:<https://schema.org/> \
@@ -204,7 +221,6 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             publisher = concat([publisher, results])
         return publisher
     
-
 
 """
 prefix schema:<https://schema.org/>
