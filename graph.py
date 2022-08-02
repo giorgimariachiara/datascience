@@ -4,7 +4,7 @@ import os
 from rdflib import Graph, URIRef, Literal, Namespace, RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from SPARQLWrapper import SPARQLWrapper 
-from implRel import TriplestoreProcessor
+from impl import TriplestoreProcessor
 
 
 #Namespaces used

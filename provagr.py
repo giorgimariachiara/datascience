@@ -59,6 +59,8 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         results = get(endpoint, query, post = True)
         
         return results 
+    
+    """
 
     def getVenuesByPublisherId(self, publisher):
         query = ('prefix schema:<https://schema.org/> \
@@ -75,7 +77,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         results = get(endpoint, query, post = True)
         
         return results
-    
+    """
     """
     def getVenuesByPublisherId(self, publisher):
         query = ('prefix schema:<https://schema.org/> \

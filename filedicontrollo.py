@@ -1,6 +1,6 @@
 from graph import TriplestoreDataProcessor
 import os
-from impl import GenericQueryProcessor, RelationalQueryProcessor, RelationalDataProcessor, TriplestoreProcessor
+from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
 import extraclasses
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
@@ -87,8 +87,8 @@ print(obj.getDistinctPublisherOfPublications(["doi:10.1016/j.websem.2021.100655"
 rel_path = "relational.db"
 rel_dp = RelationalDataProcessor()
 rel_dp.setDbPath(rel_path)
-rel_dp.uploadData("testData/relational_publications.csv")
-rel_dp.uploadData("testData/relational_other_data.json")
+rel_dp.uploadData(jsn0)
+rel_dp.uploadData(csv)
 
 # In the next passage, create the query processors for both
 # the databases, using the related classes
@@ -103,7 +103,7 @@ grp_dp.setEndpointUrl(grp_endpoint)
 grp_dp.uploadData("testData/graph_publications.csv")
 grp_dp.uploadData("testData/graph_other_data.json")
 """
-
+"""
 # Finally, create a generic query processor for asking
 # about data
 generic = GenericQueryProcessor()
@@ -117,9 +117,7 @@ print("Methods for the objects of class Publication:\n")
 for item in q1:
     print("ITEM")
 
-    print("Method getIds()\n",item.getIds())
     print("Method getPublicationYear()\n",item.getPublicationYear())
     print("Method getTitle()\n",item.getTitle())
-    print("Method getCitedPublications()\n",item.getCitedPublications())
     print("Method getPublicationVenue()\n",item.getPublicationVenue())
-    print("Method getAuthors()\n",item.getAuthors())
+"""
