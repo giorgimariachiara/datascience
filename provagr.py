@@ -257,4 +257,6 @@ WHERE {
 WHERE { ?citing schema:citation ?cited .
   } GROUP BY ?cited }}}}
 
+bibo:http://purl.org/ontology/bibo/
+
 """

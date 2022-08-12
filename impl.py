@@ -9,7 +9,6 @@ from unicodedata import name
 import json
 from json import load
 from mimetypes import init
-from tokenize import String
 import os
 from extraclasses import DataCSV, DataJSON
 

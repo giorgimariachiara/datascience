@@ -48,7 +48,7 @@ print(gqp.getProceedingsByEvent("name"))
     #print(el.__str__())
 """
 
-"""
+
 
 csv = "./relational_db/relational_publication.csv"
 
@@ -72,7 +72,7 @@ res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
 
-"""
+
 
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
@@ -83,7 +83,7 @@ obj.setEndpointUrl(endpointUrl)
 print(obj.getDistinctPublisherOfPublications(["doi:10.1016/j.websem.2021.100655", "doi:10.3390/ijfs9030035", "doi:10.1177/01655515211022185"]))
 
 """
-
+"""
 rel_path = "relational.db"
 rel_dp = RelationalDataProcessor()
 rel_dp.setDbPath(rel_path)
@@ -94,6 +94,7 @@ rel_dp.uploadData(csv)
 # the databases, using the related classes
 rel_qp = RelationalQueryProcessor()
 rel_qp.setDbPath(rel_path)
+"""
 """
 # Then, create the RDF triplestore (remember first to run the
 # Blazegraph instance) using the related source data

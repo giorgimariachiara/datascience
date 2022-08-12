@@ -1,18 +1,10 @@
-import csv
 from extraclasses import  DataCSV, DataJSON
 import os 
-from rdflib import Graph, URIRef, Literal, Namespace, RDF
+from rdflib import Graph, URIRef, Literal, RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
-from SPARQLWrapper import SPARQLWrapper 
 from impl import TriplestoreProcessor
 
-
-#Namespaces used
-RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-SCHEMA = Namespace("https://schema.org/")
-FABIO = Namespace("http://purl.org/spar/fabio/")
-BIBO = Namespace("https://bibliontology.com/")
-
+"""
 #dobbiamo definire ogni resource e property con la class URIRef creando URIRef objects 
 #CLASSES OF RESOURCES
 JournalArticle = URIRef("https://schema.org/ScholarlyArticle")
@@ -22,7 +14,7 @@ Journal = URIRef("https://schema.org/Periodical")
 Book = URIRef("https://schema.org/Book")
 Proceeding = URIRef("http://purl.org/ontology/bibo/Proceedings") #sbagliato
 Person = URIRef("https://schema.org/Person")
-organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
+Organization = URIRef("https://schema.org/Organization") #qui non so se va bene publisher così perchè il dato che ci da è il crossref 
 Publication = URIRef("https://schema.org/CreativeWork")
 # attributes related to classes
 citing = URIRef("http://purl.org/ontology/bibo/cites")
@@ -44,7 +36,7 @@ issn_isbn = URIRef("http://gbol.life/ontology/bibo/identifier/")
 
 # relations among classes
 publicationVenue = URIRef("https://schema.org/isPartOf")
-
+"""
 
 
 class TriplestoreDataProcessor(TriplestoreProcessor):
@@ -57,6 +49,27 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             CSV_Rdata = DataCSV(path)
 
             base_url = "https://github.com/giorgimariachiara/datascience/res/"
+
+            JournalArticle = URIRef("https://schema.org/ScholarlyArticle")
+            BookChapter = URIRef("https://schema.org/Chapter")
+            Proceedingspaper = URIRef("http://purl.org/spar/fabio/ProceedingsPaper")
+            Journal = URIRef("https://schema.org/Periodical")
+            Book = URIRef("https://schema.org/Book")
+            Proceeding = URIRef("http://purl.org/ontology/bibo/Proceedings") 
+            Publication = URIRef("https://schema.org/CreativeWork")
+
+
+            publicationYear = URIRef("https://schema.org/datePublished")
+            title = URIRef("https://schema.org/name")
+            issue = URIRef("https://schema.org/issueNumber")
+            volume = URIRef("https://schema.org/volumeNumber")
+            identifier = URIRef("https://schema.org/identifier")
+            chapter = URIRef("https://schema.org/Chapter")
+            event = URIRef("https://schema.org/event") 
+            publisher = URIRef("https://schema.org/publisher")
+            name = URIRef("https://schema.org/name")
+
+            publicationVenue = URIRef("https://schema.org/isPartOf")
 
             my_graph = Graph()
 
@@ -146,12 +159,24 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             base_url = "https://github.com/giorgimariachiara/datascience/res/"
 
+            Person = URIRef("https://schema.org/Person")
+            Organization = URIRef("https://schema.org/Organization")
+
+            identifier = URIRef("https://schema.org/identifier")
+            familyName = URIRef("https://schema.org/familyName")
+            givenName = URIRef("https://schema.org/givenName") 
+            name = URIRef("https://schema.org/name")
+            citation = URIRef("https://schema.org/citation")
+            author = URIRef("https://schema.org/author")
+            issn_isbn = URIRef("http://gbol.life/ontology/bibo/identifier/")
+
+
             my_graph = Graph()
 
             for idx, row in JSN_Rdata.Organization_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
 
-                my_graph.add((subj, RDF.type, organization))
+                my_graph.add((subj, RDF.type, Organization))
                 my_graph.add((subj, name, Literal(row["name"])))  
                 my_graph.add((subj, identifier, Literal(row["id"])))
 
