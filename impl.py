@@ -121,17 +121,17 @@ class JournalArticle(Publication):
 
 
 class BookChapter(Publication):
-    def __init__(self, id, publication_year, title, publicationVenue, cites, author, chapterNumber):
+    def __init__(self, id, publication_year, title, publicationVenue, chapterNumber):
         self.chapterNumber = chapterNumber
-        super().__init__(id, publication_year, title, publicationVenue, cites, author)
+        super().__init__(id, publication_year, title, publicationVenue)
 
     def getChapterNumber(self):
         return self.chapterNumber
 
 
 class ProceedingsPaper(Publication):
-    def __init__(self, id, publication_year, title, publicationVenue, cites, author):
-        super().__init__(id, publication_year, title, publicationVenue, cites, author)
+    def __init__(self, id, publication_year, title, publicationVenue):
+        super().__init__(id, publication_year, title, publicationVenue)
 
 
 class Journal(Venue):
