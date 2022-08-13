@@ -60,41 +60,26 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
     
-    """
-
     def getVenuesByPublisherId(self, publisher):
         query = ('prefix schema:<https://schema.org/> \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                  SELECT DISTINCT ?venueid ?publication_venue ?crossref WHERE {?publisher schema:identifier "' + publisher '" . \
-                  ?publisher schema:identifier ?crossref . \
-                  ?doi schema:publisher ?publisher . \
-                  ?doi rdf:type schema:CreativeWork . \
-                  ?doi schema:isPartOf ?publication_venue .  \
-                  ?venueid schema:name ?publication_venue .  \
-                    }')
-
-        endpoint = self.getEndpointUrl()
-        results = get(endpoint, query, post = True)
-        
-        return results
-    """
-    """
-    def getVenuesByPublisherId(self, publisher):
-        query = ('prefix schema:<https://schema.org/> \
-                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                 SELECT DISTINCT ?venueid ?publication_venue ?crossref WHERE {?publisher schema:identifier "' + publisher '" . \
+                 SELECT DISTINCT ?venueid ?publication_venue ?crossref WHERE {?publisher schema:identifier "' + publisher + '" . \
                  ?publisher schema:identifier ?crossref . \
                  ?doi schema:publisher ?publisher . \
                  ?doi rdf:type schema:CreativeWork . \
                  ?doi schema:isPartOf ?publication_venue .  \
                  ?venueid schema:name ?publication_venue .  \
                   }')
-       
-"""
+        endpoint = self.getEndpointUrl()
+        results = get(endpoint, query, post = True)
+        
+        return results 
+
     def getPublicationInVenue(self, issn_isbn):
-        query = ('prefix schema:<https://schema.org/> \
+        query = ('prefix dcterms:<http://purl.org/dc/terms/> \
+                  prefix schema:<https://schema.org/> \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                  SELECT ?doiLiteral ?title ?publicationyear ?publicationvenue WHERE {?doi <http://gbol.life/ontology/bibo/identifier/> "' + issn_isbn +'" . \
+                  SELECT ?doiLiteral ?title ?publicationyear ?publicationvenue WHERE {?doi dcterms:identifier "' + issn_isbn +'" . \
                     ?doi schema:identifier ?doiLiteral . \
                     ?doi schema:name ?title . \
                     ?doi schema:datePublished ?publicationyear  .\
@@ -105,14 +90,14 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
     
-    def getProceedingsByEvent(self, eventPartialName):  #qui vanno bene le percentuali per il nome 
-        query = ('prefix schema:<https://schema.org/>  \
-                  prefix bibo:<https://bibliontology.com/> \
+    def getProceedingsByEvent(self, eventPartialName): 
+        query = ('prefix dcterms:<http://purl.org/dc/terms/> \
+                  prefix schema:<https://schema.org/>  \
                   SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event ?event. \
                   ?s schema:name ?publication_venue . \
                   ?doi schema:isPartOf ?publication_venue . \
                   ?doi schema:publisher ?publisher . \
-                  ?doi bibo:identifier ?issn_isbn . \
+                  ?doi dcterms:identifier ?issn_isbn . \
                   filter contains(?event,"' + eventPartialName +'") \
                    }')
         endpoint = self.getEndpointUrl()
@@ -120,36 +105,37 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
     
-    def getJournalArticlesInVolume(self, volume, issn_isbn): #risolvere ontologia ho messo distinct perchè me li irpeteva non so se è un proboema 
-        query = ('prefix schema:<https://schema.org/>  \
-                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+    def getJournalArticlesInVolume(self, volume, issn_isbn): 
+        query = ('prefix dcterms:<http://purl.org/dc/terms/> \
+                  prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \
                   SELECT DISTINCT ?doi ?publicationYear ?publicationVenue ?title ?issue ?volume  \
                   WHERE { ?s rdf:type schema:ScholarlyArticle  . \
-                  ?s schema:name ?title . \
-                  ?s schema:identifier ?doi . \
-                  ?s <http://gbol.life/ontology/bibo/identifier/> "'  + issn_isbn + '" . \
-                 ?s schema:issueNumber ?issue . \
-                 ?s schema:volumeNumber "'+ volume +'" . \
-                 ?s schema:volumeNumber ?volume . \
-                 ?s schema:isPartOf ?publicationVenue .\
-                 ?s schema:datePublished ?publicationYear .  \
-                }')
+                 ?s schema:name ?title . \
+                 ?s schema:identifier ?doi .  \
+                 ?s schema:volumeNumber "'+ volume +'" .  \
+                 ?s schema:isPartOf ?publicationVenue . \
+                 ?s schema:datePublished ?publicationYear . \
+                 ?s dcterms:identifier "'  + issn_isbn + '". \
+                 OPTIONAL {  \
+                 ?s schema:issueNumber ?issue } \
+                         }')
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
         return results 
 
-    def getJournalArticlesInIssue(self, issue, volume, issn_isbn): #risolvere ontologia 
-        query = ('prefix schema:<https://schema.org/>  \
+    def getJournalArticlesInIssue(self, issue, volume, issn_isbn):
+        query = ('prefix dcterms:<http://purl.org/dc/terms/> \
+                  prefix schema:<https://schema.org/>  \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
                   SELECT DISTINCT ?doi ?publicationYear ?publicationVenue ?title ?issue ?volume  \
                   WHERE { ?s rdf:type schema:ScholarlyArticle  . \
                   ?s schema:name ?title . \
                   ?s schema:identifier ?doi . \
-                  ?s <http://gbol.life/ontology/bibo/identifier/> "'  + issn_isbn + '" . \
+                  ?s dcterms:identifier "'  + issn_isbn + '" . \
                  ?s schema:issueNumber "' + issue + '". \
                  ?s schema:volumeNumber "'+ volume +'" . \
-                 ?s schema:volumeNumber ?volume . \
                  ?s schema:isPartOf ?publicationVenue .\
                  ?s schema:datePublished ?publicationYear .  \
                 }')
@@ -158,19 +144,20 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
 
-    def getJournalArticlesInJournal(self, issn_isbn): #risolvere ontologia 
-        query = ('prefix schema:<https://schema.org/>  \
+    def getJournalArticlesInJournal(self, issn_isbn): 
+        query = ('prefix dcterms:<http://purl.org/dc/terms/> \
+                 prefix schema:<https://schema.org/>  \
                   prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
                   SELECT DISTINCT ?doi ?publicationYear ?publicationVenue ?title ?issue ?volume  \
                   WHERE { ?s rdf:type schema:ScholarlyArticle  . \
                   ?s schema:name ?title . \
                   ?s schema:identifier ?doi . \
-                  ?s <http://gbol.life/ontology/bibo/identifier/> "'  + issn_isbn + '" . \
-                 ?s schema:issueNumber ?issue . \
-                 ?s schema:volumeNumber ?volume . \
-                 ?s schema:volumeNumber ?volume . \
+                  ?s dcterms:identifier "'  + issn_isbn + '". \
                  ?s schema:isPartOf ?publicationVenue .\
                  ?s schema:datePublished ?publicationYear .  \
+				 OPTIONAL { \
+                 ?s schema:issueNumber ?issue }.\
+          	    OPTIONAL {?s schema:volumeNumber ?volume  \
                 }')
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
@@ -225,22 +212,6 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     
 
 """
-prefix schema:<https://schema.org/>
-prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
-SELECT DISTINCT * #?venueid ?publication_venue ?crossref 
-WHERE { ?doi schema:isPartOf ?publication_venue . 
-?doi rdf:type schema:CreativeWork . 
-?doi schema:publisher ?crossref . 
-#?publisher rdf:type schema:Organization .
-#?publisher schema:identifier "crossref:140" .
-#?publisher schema:identifier ?crossref . 
-#?doi schema:publisher ?publisher . 
-#?doi schema:isPartOf ?publication_venue . 
-#?venueid schema:name ?publication_venue . 
-} ORDER BY ?publication_venue
-
-
-
 getmostcitedvenue da controllare 
 prefix schema:<https://schema.org/>  
 prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -257,6 +228,5 @@ WHERE {
 WHERE { ?citing schema:citation ?cited .
   } GROUP BY ?cited }}}}
 
-bibo:http://purl.org/ontology/bibo/
 
 """

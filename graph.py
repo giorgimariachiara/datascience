@@ -168,7 +168,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             name = URIRef("https://schema.org/name")
             citation = URIRef("https://schema.org/citation")
             author = URIRef("https://schema.org/author")
-            issn_isbn = URIRef("http://gbol.life/ontology/bibo/identifier/")
+            issn_isbn = URIRef("http://purl.org/dc/terms/identifier")
 
 
             my_graph = Graph()

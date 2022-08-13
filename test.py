@@ -142,7 +142,7 @@ id = IdentifiableEntity(["id1", "id2"])
 print("The ids of id are:", id.getIds())
 
 publication1 = Publication(["id1", "id2"], 2020, "Title", "venue") #dobbiamo capire cosa mettiamo come venue 
-print("The ids of id are:" , publication1.getIds())
+print("The ids of publication1 are:" , publication1.getIds())
 print("The year of publication of publication1 is:", publication1.getPublicationYear())
 print("The title of publication1 is:", publication1.getTitle())
 
