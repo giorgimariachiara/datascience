@@ -9,19 +9,19 @@ from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
-"""
+
 if os.path.exists(dbpath0):
     os.remove(dbpath0)
-"""
-"""
+
+
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn0)
 obj.uploadData(csv)
 rqp = RelationalQueryProcessor()
 rqp.getDbPath()
-print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
-"""
+#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
+
 
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
@@ -36,11 +36,11 @@ tqp.setEndpointUrl(endpointUrl)
 #gqp = GenericQueryProcessor()
 #gqp.addQueryProcessor(rqp)
 #gqp.addQueryProcessor(rqp)
-print(tqp.getPublicationsPublishedInYear(2020))
+#print(rqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getProceedingsByEvent("name"))
-
-#print(tqp.getVenuesByPublisherId("crossref:78"))
-#print(gqp.getMostCitedPublication())
+print(rqp.getMostCitedVenue())
+#print(rqp.getVenuesByPublisherId("crossref:78"))
+#print(rqp.getMostCitedPublication())
 #print(rqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
@@ -84,6 +84,7 @@ print(obj.getDistinctPublisherOfPublications(["doi:10.1016/j.websem.2021.100655"
 
 """
 """
+
 rel_path = "relational.db"
 rel_dp = RelationalDataProcessor()
 rel_dp.setDbPath(rel_path)
@@ -94,6 +95,7 @@ rel_dp.uploadData(csv)
 # the databases, using the related classes
 rel_qp = RelationalQueryProcessor()
 rel_qp.setDbPath(rel_path)
+s
 """
 """
 # Then, create the RDF triplestore (remember first to run the

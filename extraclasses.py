@@ -29,12 +29,42 @@ class DataCSV(object):
                         },encoding="utf-8")\
                 .rename(columns={"publication_year" : "publicationYear"})
 
+
+            not_unq = PublicationsDF.filter(items=['publication_venue', 'venue_type', 'publisher'])\
+            .drop_duplicates()\
+            .groupby("publication_venue")\
+            .count()\
+            .query('venue_type >1 or publisher >1')
+            if len(not_unq) > 0:
+                print(" *** WARNING - 'venue_type' or 'publisher' are not unique for each 'publication_venue'")
+                print(not_unq)
+            else:
+                print(" --- OK: 'publication_venue's have unique 'venue_type's and 'publisher'")
+
             # DATAFRAME FROM CSV
+
+            #VENUE DATAFRAME FROM CSV
+            VenueDF =  PublicationsDF[["publication_venue", 'venue_type', 'publisher']]\
+                .drop_duplicates()\
+                .dropna()
+            VenueDF.insert(0, 'id', range(0, VenueDF.shape[0]))
+            VenueDF['id'] = VenueDF['id'].apply(lambda x: 'venue-' + str(int(x)))
+            self.Venue_DF = VenueDF\
+                .rename(columns={"publication_venue" : "title", "publisher" : "publisherId"})\
+                .reindex(["id", "title", "venue_type", "publisherId"], axis = "columns")
 
             #PUBLICATION DATAFRAME 
             
-            self.Publication_DF = PublicationsDF[["id", "title", "type", "publicationYear","publisher", "venue_type", "publication_venue"]]
-            
+            Publication_DF = pd.merge(
+            PublicationsDF[["id", "publicationYear", "title", "type", "event", "publication_venue"]],
+            self.Venue_DF.rename(columns={"id" : "publicationVenueId", 
+                                    "title" : "publication_venue"}), 
+            on="publication_venue")\
+            .drop(columns=["publication_venue", "publisherId"])
+            Publication_DF = Publication_DF.drop(columns=["event"])
+
+            self.Publications_DF = Publication_DF[["id", "title", "type", "publicationYear", "venue_type", "publicationVenueId"]]
+
             #BOOK CHAPTER DATAFRAME
             book_chapter_df = PublicationsDF.query("type == 'book-chapter'")
             book_chapter_df = book_chapter_df[["id", "chapter"]]
@@ -85,13 +115,6 @@ class DataJSON(object):
             #VENUE DATAFRAME
             venues_df = json_doc["venues_id"]
             self.VenuesId_DF = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
-
-            #VENUE EXT DATAFRAME
-            venues_df = json_doc["venues_id"]
-            venues_df = pd.DataFrame(venues_df.items(), columns=['doi', 'issn_isbn']).explode('issn_isbn')
-            venues_df = venues_df[["issn_isbn"]]      
-            venues_df = venues_df.drop_duplicates(subset= ["issn_isbn"])
-            self.VenueEXT_DF = venues_df.rename(columns={"issn_isbn":"id"})
         
             #AUTHOR DATAFRAME
             author = json_doc["authors"]
@@ -130,5 +153,4 @@ class DataJSON(object):
 
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
-#Dataobject = DataCSV(csv)
-#print(Dataobject.Journal_DF)
+Dataobject = DataCSV(csv)

@@ -221,7 +221,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             store.close()
 
         else:
-            raiseExceptions("problem!!")
+            raiseExceptions("Problem: the input file has not neither a .csv nor a .json extension!")
             return False
 
         return True

@@ -363,7 +363,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             store.close()
 
         else:
-            print("problem!!")
+            print("Problem: the input file has not neither a .csv nor a .json extension!")
             return False
 
         return True
@@ -397,9 +397,11 @@ class RelationalDataProcessor(RelationalProcessor):
             CSV_Rdata = DataCSV(path)
 #           CSV_Rdata2SQLite.Rdata2SQLite(CSV_Rdata, .getDbPath())
             with connect(self.getDbPath()) as con:
+                CSV_Rdata.Venue_DF.to_sql(
+                    "VenueId", con, if_exists="replace", index=False)
                 CSV_Rdata.Book_DF.to_sql(
                     "Book", con, if_exists="replace", index=False)
-                CSV_Rdata.Publication_DF.to_sql(
+                CSV_Rdata.Publications_DF.to_sql(
                     "Publications", con, if_exists="replace", index=False)
                 CSV_Rdata.Journal_DF.to_sql(
                     "Journal", con, if_exists="replace", index=False)
@@ -429,9 +431,6 @@ class RelationalDataProcessor(RelationalProcessor):
                     "Venue", con, if_exists="replace", index=False)
                 JSN_Rdata.Person_DF.to_sql(
                     "Person", con, if_exists="replace", index=False)
-                JSN_Rdata.VenueEXT_DF.to_sql(
-                    "VenueEXT", con, if_exists="replace", index= False)
-
                 
                 con.execute("DROP VIEW  IF EXISTS countCited")
                 con.execute("CREATE VIEW countCited AS "
@@ -458,7 +457,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsPublishedInYear(self, publicationYear):
         if type(publicationYear) == int:
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT id, publicationYear, title, publication_venue FROM Publications WHERE publicationYear = " + \
+                SQL = "SELECT A.id, A.publicationYear, A.title, B.title FROM Publications AS A LEFT JOIN VenueId AS B ON A.PublicationVenueId == B.id WHERE publicationYear = " + \
                     str(publicationYear) + ";"
                 return read_sql(SQL, con)
         else:
@@ -467,21 +466,19 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsByAuthorId(self, orcid):
         if type(orcid) == str:
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Authors AS B ON A.id == B.doi WHERE B.orc_id = '" + orcid + "';"
+                SQL = "SELECT A.id, A.publicationYear, A.title, C.title FROM Publications AS A JOIN Authors AS B ON A.id == B.doi JOIN VenueId AS C ON A.PublicationVenueId == C.id WHERE B.orc_id = '" + orcid + "';"
                 return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter orcid is not a string!")
 
     def getMostCitedPublication(self):
         with connect(self.getDbPath()) as con:
-            SQL = "SELECT id, publicationYear, title, publication_venue " \
-                "FROM Publications JOIN maxCited ON id = cited"
+            SQL = "SELECT A.id, A.publicationYear, A.title, B.title FROM Publications AS A JOIN maxCited AS C ON A.id = C.cited JOIN VenueId AS B ON A.PublicationVenueId == B.id"
             return read_sql(SQL, con)
 
     def getMostCitedVenue(self):
         with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.issn_isbn, B.publication_venue, B.publisher FROM Venue AS A JOIN Publications AS B ON A.doi == B.id \
-                                JOIN maxCited ON id == cited"
+            SQL = "SELECT A.id, A.title, A.publisherId FROM VenueId AS A JOIN Publications AS B ON B.publicationVenueId == A.id JOIN maxCited ON B.id == cited"
         return read_sql(SQL, con) 
 
     def getVenuesByPublisherId(self, publisher):
