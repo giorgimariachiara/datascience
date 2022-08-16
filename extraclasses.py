@@ -1,5 +1,6 @@
 from importlib.resources import path
 import json
+from logging import raiseExceptions
 from numpy import cross
 import pandas as pd
 from json import load, loads
@@ -39,7 +40,6 @@ class DataCSV(object):
             book_chapter_df = book_chapter_df[["id", "chapter"]]
             self.Book_chapter_DF = book_chapter_df
             
-
             #JOURNAL ARTICLE DATAFRAME
             journal_article_df = PublicationsDF.query("type == 'journal-article'")
             journal_article_df = journal_article_df[["id", "issue", "volume"]]
@@ -67,7 +67,7 @@ class DataCSV(object):
             self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["publication_venue"])
 
         else:
-            print("WARNING: CSV file '" + csv + "' does not exist!")
+            raiseExceptions("CSV file '" + csv + "' does not exist!")
 
     
     
@@ -108,7 +108,7 @@ class DataJSON(object):
             cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
             cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
             self.Cites_DF = cites_df   #qui è da vedere se siamo sicuri di voelr togliere quelli che non citano nulla (o dobbiamo scrivere che se non lo trovi non cito nulla)
-            #print(self.Cites_DF)
+            
 
             #PERSON DATAFRAME 
             author = json_doc["authors"]
@@ -126,7 +126,7 @@ class DataJSON(object):
             self.Organization_DF = organization_df 
 
         else:
-            print("WARNING: JSON file '" + jsn + "' does not exist!")
+            raiseExceptions("JSON file '" + jsn + "' does not exist!")
 
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"

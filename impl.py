@@ -1,4 +1,5 @@
 from importlib.resources import path
+from logging import raiseExceptions
 import pandas as pd
 from posixpath import split
 import sqlite3
@@ -11,9 +12,11 @@ from json import load
 from mimetypes import init
 import os
 from extraclasses import DataCSV, DataJSON
+from rdflib import Graph, URIRef, Literal, RDF
+from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
 
-#object classes -----------------------------------------------------------------------------------------------------------------------#
+# OBJECT CLASSES -----------------------------------------------------------------------------------------------------------------------#
 
 class IdentifiableEntity(object):
     def __init__(self, id):
@@ -67,7 +70,7 @@ class Person(IdentifiableEntity):
 
 
 class Venue(IdentifiableEntity):  # issn_isbn is id
-    def __init__(self, id, publication_venue, publisher):  # issn_isbn self.issn_isbn = issn_isbn
+    def __init__(self, id, publication_venue, publisher): 
         self.publisher = publisher
         self.publication_venue = publication_venue
         super().__init__(id)
@@ -156,7 +159,7 @@ class Proceedings(Venue):
         return self.event
 
 
-#---------------------------------------------------------------------------------------------------------------------------------------------#
+# QUERY PROCESSOR----------------------------------------------------------------------------------------------------------------------------#
 
 
 class QueryProcessor(object):
@@ -177,6 +180,193 @@ class TriplestoreProcessor(object):
 
     def getEndpointUrl(self):
         return self.endpointUrl
+
+
+class TriplestoreDataProcessor(TriplestoreProcessor):
+    def __init__(self):
+        super().__init__()
+
+    def uploadData(self, path):
+        f_ext = os.path.splitext(path)[1]
+        if f_ext.upper() == ".CSV":
+            CSV_Rdata = DataCSV(path)
+
+            base_url = "https://github.com/giorgimariachiara/datascience/res/"
+
+            JournalArticle = URIRef("https://schema.org/ScholarlyArticle")
+            BookChapter = URIRef("https://schema.org/Chapter")
+            Proceedingspaper = URIRef("http://purl.org/spar/fabio/ProceedingsPaper")
+            Journal = URIRef("https://schema.org/Periodical")
+            Book = URIRef("https://schema.org/Book")
+            Proceeding = URIRef("http://purl.org/ontology/bibo/Proceedings") 
+            Publication = URIRef("https://schema.org/CreativeWork")
+
+
+            publicationYear = URIRef("https://schema.org/datePublished")
+            title = URIRef("https://schema.org/name")
+            issue = URIRef("https://schema.org/issueNumber")
+            volume = URIRef("https://schema.org/volumeNumber")
+            identifier = URIRef("https://schema.org/identifier")
+            chapter = URIRef("https://schema.org/Chapter")
+            event = URIRef("https://schema.org/event") 
+            publisher = URIRef("https://schema.org/publisher")
+            name = URIRef("https://schema.org/name")
+
+            publicationVenue = URIRef("https://schema.org/isPartOf")
+
+            my_graph = Graph()
+
+            for idx, row in CSV_Rdata.Publication_DF.iterrows():  
+                subj = URIRef(base_url + row["id"]) 
+
+                my_graph.add((subj, RDF.type, Publication))
+                if row["title"] != "":
+                    my_graph.add((subj, title, Literal(row["title"])))
+                if row["id"] != "":    
+                    my_graph.add((subj, identifier, Literal(row["id"])))
+                if row["publicationYear"] != "":
+                    my_graph.add((subj, publicationYear, Literal(row["publicationYear"])))
+                if row["publication_venue"] != "":
+                    my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
+                if row["publisher"] != "":
+                    my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
+
+                if row["type"] == "journal-article":
+                    if row["type"] != "":
+                        my_graph.add((subj, RDF.type, JournalArticle)) 
+                elif row["type"] == "book-chapter":
+                    if row["type"] != "":
+                        my_graph.add((subj, RDF.type, BookChapter))
+                elif row["type"]== "proceedings-paper":
+                    if row["type"] != "":
+                        my_graph.add((subj, RDF.type, Proceedingspaper)) 
+                else: 
+                    print("WARNING: Unrecognized publication type!")
+                
+            #triple publications type
+
+            for idx, row in CSV_Rdata.Journal_article_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+ 
+                if row["issue"] != "":
+                    my_graph.add((subj, issue, Literal(row["issue"])))
+                if row["volume"] != "":
+                    my_graph.add((subj, volume, Literal(row["volume"])))
+            
+            for idx, row in CSV_Rdata.Book_chapter_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+                
+                if row["chapter"] != "": 
+                    my_graph.add((subj, chapter, Literal(row["chapter"])))
+            
+            #triple Venue type 
+            
+            for idx, row in CSV_Rdata.Book_DF.iterrows():
+                local_id = "book-" + str(idx)
+                subj = URIRef(base_url + local_id)
+                my_graph.add((subj, name, Literal(row["publication_venue"])))
+                my_graph.add((subj, RDF.type, Book))
+
+            for idx, row in CSV_Rdata.Journal_DF.iterrows():
+                local_id = "journal-" + str(idx)
+                subj = URIRef(base_url + local_id)
+                my_graph.add((subj, name, Literal(row["publication_venue"])))
+                my_graph.add((subj, RDF.type, Journal))
+            
+            for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
+                local_id = "proceeding-" + str(idx)
+                subj = URIRef(base_url + local_id) 
+                my_graph.add((subj, RDF.type, Proceeding))
+                if row["publication_venue"] != "":
+                    my_graph.add((subj, name, Literal(row["publication_venue"])))
+                if row["event"] != "":  
+                    my_graph.add((subj, event, Literal(row["event"])))
+                
+            self.my_graph= my_graph
+
+            store = SPARQLUpdateStore()
+            # The URL of the SPARQL endpoint is the same URL of the Blazegraph
+            # instance + '/sparql'
+            endpointUrl = self.getEndpointUrl()
+
+            # It opens the connection with the SPARQL endpoint instance
+            store.open((endpointUrl, endpointUrl))
+
+            for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
+                store.add(triple)   
+            # Once finished, remeber to close the connection
+            store.close()
+            
+        elif f_ext.upper() == ".JSON":
+            JSN_Rdata = DataJSON(path)
+
+            base_url = "https://github.com/giorgimariachiara/datascience/res/"
+
+            Person = URIRef("https://schema.org/Person")
+            Organization = URIRef("https://schema.org/Organization")
+
+            identifier = URIRef("https://schema.org/identifier")
+            familyName = URIRef("https://schema.org/familyName")
+            givenName = URIRef("https://schema.org/givenName") 
+            name = URIRef("https://schema.org/name")
+            citation = URIRef("https://schema.org/citation")
+            author = URIRef("https://schema.org/author")
+            issn_isbn = URIRef("http://purl.org/dc/terms/identifier")
+
+
+            my_graph = Graph()
+
+            for idx, row in JSN_Rdata.Organization_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+
+                my_graph.add((subj, RDF.type, Organization))
+                my_graph.add((subj, name, Literal(row["name"])))  
+                my_graph.add((subj, identifier, Literal(row["id"])))
+
+            for idx, row in JSN_Rdata.Cites_DF.iterrows():
+                subj = URIRef(base_url + row["citing"])
+
+                if row["cited"] != None:
+                    my_graph.add((subj, citation, URIRef(base_url + str(row["cited"]))))
+            
+            for idx, row in JSN_Rdata.VenuesId_DF.iterrows():
+                subj = URIRef(base_url + row["doi"])
+                
+                my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))    
+
+            for idx, row in JSN_Rdata.Person_DF.iterrows():
+                subjperson = URIRef(base_url + row["orc_id"]) 
+            
+                my_graph.add((subjperson, RDF.type, Person))
+                my_graph.add((subjperson, givenName, Literal(row["given_name"])))
+                my_graph.add((subjperson, familyName, Literal(row["family_name"])))
+                my_graph.add((subjperson, identifier, Literal(row["orc_id"])))
+
+            for idx, row in JSN_Rdata.Author_DF.iterrows():     
+                
+                my_graph.add(((URIRef(base_url + row["orc_id"]), author, URIRef(base_url + row["doi"]))))
+
+            self.my_graph = my_graph
+
+            store = SPARQLUpdateStore()
+            # The URL of the SPARQL endpoint is the same URL of the Blazegraph
+            # instance + '/sparql'
+            #endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+            endpointUrl = self.getEndpointUrl()
+
+            # It opens the connection with the SPARQL endpoint instance
+            store.open((endpointUrl, endpointUrl))
+
+            for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
+                store.add(triple)   
+            # Once finished, remeber to close the connection
+            store.close()
+
+        else:
+            print("problem!!")
+            return False
+
+        return True
 
 
 #  CLASSES FOR RELATIONAL DATABASE --------------------------------------------------------------------------------------------------------------#
@@ -256,6 +446,124 @@ class RelationalDataProcessor(RelationalProcessor):
             return False
 
         return True
+
+
+# RELATIONAL QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
+
+
+class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
+    def __init__(self):
+        super().__init__()
+
+    def getPublicationsPublishedInYear(self, publicationYear):
+        if type(publicationYear) == int:
+            with connect(self.getDbPath()) as con:
+                SQL = "SELECT id, publicationYear, title, publication_venue FROM Publications WHERE publicationYear = " + \
+                    str(publicationYear) + ";"
+                return read_sql(SQL, con)
+        else:
+            raiseExceptions("The input parameter publicationYear is not an integer!")
+
+    def getPublicationsByAuthorId(self, orcid):
+        if type(orcid) == str:
+            with connect(self.getDbPath()) as con:
+                SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Authors AS B ON A.id == B.doi WHERE B.orc_id = '" + orcid + "';"
+                return read_sql(SQL, con)
+        else: 
+            raiseExceptions("The input parameter orcid is not a string!")
+
+    def getMostCitedPublication(self):
+        with connect(self.getDbPath()) as con:
+            SQL = "SELECT id, publicationYear, title, publication_venue " \
+                "FROM Publications JOIN maxCited ON id = cited"
+            return read_sql(SQL, con)
+
+    def getMostCitedVenue(self):
+        with connect(self.getDbPath()) as con:
+            SQL = "SELECT A.issn_isbn, B.publication_venue, B.publisher FROM Venue AS A JOIN Publications AS B ON A.doi == B.id \
+                                JOIN maxCited ON id == cited"
+        return read_sql(SQL, con) 
+
+    def getVenuesByPublisherId(self, publisher):
+        if type(publisher) == str:
+            with connect(self.getDbPath()) as con:
+                SQL = read_sql("SELECT C.issn_isbn, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
+            return SQL.drop_duplicates(subset=['publication_venue'])
+        else: 
+            raiseExceptions("The input parameter publisher is not a string!")  
+ 
+    def getPublicationInVenue(self, issn_isbn):
+        if type(issn_isbn) == str:
+            with connect(self.getDbPath()) as con:
+                SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Venue AS B ON A.id == B.doi WHERE B.issn_isbn = '" + issn_isbn + "'"
+                return read_sql(SQL, con)
+        else: 
+            raiseExceptions("The input parameter issn_isbn is not a string!")
+
+    def getJournalArticlesInIssue(self, issue, volume, issn_isbn): 
+        if type(issue) == str and type(volume) == str and type(issn_isbn) == str:
+            with connect(self.getDbPath()) as con: 
+                SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
+            return read_sql(SQL, con)
+        else: 
+            raiseExceptions("All or one of the input parameters issue, volume and issn_isbn is not a string!") 
+        
+
+    def getJournalArticlesInVolume(self, volume, issn_isbn): 
+        if type(volume) == str and type(issn_isbn) == str:
+            with connect(self.getDbPath()) as con: 
+                SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
+            return read_sql(SQL, con) 
+        else: 
+            raiseExceptions("All or one of the input parameters volume and issn_isbn is not a string!") 
+
+    def getJournalArticlesInJournal(self, issn):
+        if type(issn) == str:
+            with connect(self.getDbPath()) as con:
+                SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi  WHERE C.issn_isbn = '" + issn + "'"
+            return read_sql(SQL, con)
+        else: 
+            raiseExceptions("The input parameter issn is not a string!") 
+
+    def getPublicationAuthors(self, publication):
+        if type(publication) == str:
+            with connect(self.getDbPath()) as con: 
+                SQL = "SELECT orc_id, family_name, given_name FROM Person WHERE doi = '" + publication + "';"
+            return read_sql(SQL, con)
+        else: 
+            raiseExceptions("The input parameter publication is not a string!") 
+
+    def getPublicationsByAuthorName(self, name):
+        if type(name) == str: 
+            with connect(self.getDbPath()) as con:
+                SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Person AS B ON A.id == B.doi WHERE B.given_name LIKE '%" + name + "%'"
+            return read_sql(SQL, con)
+        else: 
+            raiseExceptions("The input parameter name is not a string!")
+        
+    
+    def getProceedingsByEvent(self, eventPartialName): 
+        if type(eventPartialName) == str: 
+            with connect(self.getDbPath()) as con:
+                eventPartialName.lower()
+                SQL = "SELECT A.publication_venue, B.publisher, A.event FROM Proceeding AS A JOIN Publications AS B ON A.publication_venue == B.publication_venue WHERE A.event == '%" + eventPartialName + "%'"
+            return read_sql(SQL, con)
+        else: 
+            raiseExceptions("The input parameter eventPartialName is not a string!")
+
+
+    def getDistinctPublisherOfPublications(self, listOfDoi):
+        for el in listOfDoi:
+            if type(el) == str and type(listOfDoi) == list:
+                with connect(self.getDbPath()) as con:
+                    publisherDF = pd.DataFrame()
+                    for doi in listOfDoi:
+                        SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
+                        publisherDF = concat([publisherDF, SQL]) 
+                return  publisherDF
+            else: 
+                raiseExceptions("The input parameter listOfDoi is not a list or one of its elements is not a string!")
+            
 
 
 #  GENERIC QUERY PROCESSOR ---------------------------------------------------------------------------------------------------------------#
@@ -444,85 +752,3 @@ class GenericQueryProcessor(object):
                 OrganizationObj = Organization(*row)
                 result.append(OrganizationObj)
         return result
-
-
-
-# RELATIONAL QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
-
-
-class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
-    def __init__(self):
-        super().__init__()
-
-    def getPublicationsPublishedInYear(self, publicationYear):
-        with connect(self.getDbPath()) as con:
-            #SQL = "SELECT id, publication_year, title, publication_venue FROM Publications WHERE publicationYear = '{}'"
-            SQL = "SELECT id, publicationYear, title, publication_venue FROM Publications WHERE publicationYear = " + \
-                str(publicationYear) + ";"
-            return read_sql(SQL, con)
-
-    def getPublicationsByAuthorId(self, orcid):  
-        with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Authors AS B ON A.id == B.doi WHERE B.orc_id = '" + orcid + "';"
-            return read_sql(SQL, con)
-
-    def getMostCitedPublication(self):
-        with connect(self.getDbPath()) as con:
-            SQL = "SELECT id, publicationYear, title, publication_venue " \
-                "FROM Publications JOIN maxCited ON id = cited"
-            return read_sql(SQL, con)
-
-    def getMostCitedVenue(self):
-        with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.issn_isbn, B.publication_venue, B.publisher FROM Venue AS A JOIN Publications AS B ON A.doi == B.id \
-                                JOIN maxCited ON id == cited"
-        return read_sql(SQL, con) 
-
-    def getVenuesByPublisherId(self, publisher):
-        with connect(self.getDbPath()) as con:
-            SQL = read_sql("SELECT C.issn_isbn, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
-        return SQL.drop_duplicates(subset=['publication_venue'])  
- 
-    def getPublicationInVenue(self, issn_isbn):
-        with connect(self.getDbPath()) as con:
-            SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Venue AS B ON A.id == B.doi WHERE B.issn_isbn = '" + issn_isbn + "'"
-            return read_sql(SQL, con)
-
-    def getJournalArticlesInIssue(self, issue, volume, issn_isbn): 
-        with connect(self.getDbPath()) as con: 
-            SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
-        return read_sql(SQL, con) 
-
-    def getJournalArticlesInVolume(self, volume, issn_isbn): 
-        with connect(self.getDbPath()) as con: 
-            SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
-        return read_sql(SQL, con) 
-
-    def getJournalArticlesInJournal(self, issn):
-        with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi  WHERE C.issn_isbn = '" + issn + "'"
-        return read_sql(SQL, con)
-
-    def getPublicationAuthors(self, publication):
-        with connect(self.getDbPath()) as con: 
-            SQL = "SELECT orc_id, family_name, given_name FROM Person WHERE doi = '" + publication + "';"
-        return read_sql(SQL, con)
-
-    def getPublicationsByAuthorName(self, name): 
-        with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Person AS B ON A.id == B.doi WHERE B.given_name LIKE '%" + name + "%'"
-        return read_sql(SQL, con) 
-    
-    def getProceedingsByEvent(self, eventPartialName): 
-        with connect(self.getDbPath()) as con:
-            eventPartialName.lower()
-            SQL = "SELECT A.publication_venue, B.publisher, A.event FROM Proceeding AS A JOIN Publications AS B ON A.publication_venue == B.publication_venue WHERE A.event == '%" + eventPartialName + "%'"
-        return read_sql(SQL, con)
-    
-    def getDistinctPublisherOfPublications(self, listOfDoi):
-        with connect(self.getDbPath()) as con:
-            publisherDF = pd.DataFrame()
-            for doi in listOfDoi:
-                SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
-                publisherDF = concat([publisherDF, SQL]) 
-        return  publisherDF

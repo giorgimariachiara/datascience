@@ -22,33 +22,33 @@ rqp = RelationalQueryProcessor()
 rqp.getDbPath()
 print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 """
-"""
+
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
 
-#endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
-#tqp = TriplestoreQueryprocessor()
-#tqp.setEndpointUrl(endpointUrl)
+endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+tqp = TriplestoreQueryprocessor()
+tqp.setEndpointUrl(endpointUrl)
 
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
 #print(rqp.getProceedingsByEvent("we"))
-gqp = GenericQueryProcessor()
-gqp.addQueryProcessor(rqp)
+#gqp = GenericQueryProcessor()
 #gqp.addQueryProcessor(rqp)
+#gqp.addQueryProcessor(rqp)
+print(tqp.getPublicationsPublishedInYear(2020))
+#print(rqp.getProceedingsByEvent("name"))
 
-print(gqp.getProceedingsByEvent("name"))
-
-#print(gqp.getVenuesByPublisherId("crossref:78"))
+#print(tqp.getVenuesByPublisherId("crossref:78"))
 #print(gqp.getMostCitedPublication())
-#print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
+#print(rqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
+
+
 """
-
-
 
 csv = "./relational_db/relational_publication.csv"
 
@@ -71,7 +71,7 @@ res.uploadData(jsn1)
 # res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
-
+"""
 
 
 """

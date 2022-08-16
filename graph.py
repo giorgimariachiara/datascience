@@ -1,3 +1,4 @@
+from logging import raiseExceptions
 from extraclasses import  DataCSV, DataJSON
 import os 
 from rdflib import Graph, URIRef, Literal, RDF
@@ -220,7 +221,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             store.close()
 
         else:
-            print("problem!!")
+            raiseExceptions("problem!!")
             return False
 
         return True
