@@ -69,7 +69,7 @@ class Person(IdentifiableEntity):
         return self.familyName
 
 
-class Venue(IdentifiableEntity):  # issn_isbn is id
+class Venue(IdentifiableEntity):
     def __init__(self, id, publication_venue, publisher): 
         self.publisher = publisher
         self.publication_venue = publication_venue
@@ -484,15 +484,15 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getVenuesByPublisherId(self, publisher):
         if type(publisher) == str:
             with connect(self.getDbPath()) as con:
-                SQL = read_sql("SELECT C.issn_isbn, A.name, B.publication_venue FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher LEFT JOIN Venue AS C ON B.id == C.doi WHERE A.id = '" + publisher + "'", con)
-            return SQL.drop_duplicates(subset=['publication_venue'])
+                SQL = read_sql("SELECT B.id, B.title, B.publisherId FROM Organization AS A JOIN VenueId AS B ON B.publisherId == A.id WHERE A.id = '" + publisher + "'", con)
+            return SQL.drop_duplicates(subset=['title', 'publisherId'])
         else: 
             raiseExceptions("The input parameter publisher is not a string!")  
  
     def getPublicationInVenue(self, issn_isbn):
         if type(issn_isbn) == str:
             with connect(self.getDbPath()) as con:
-                SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Venue AS B ON A.id == B.doi WHERE B.issn_isbn = '" + issn_isbn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, C.title FROM Publications AS A JOIN Venue AS B ON A.id == B.doi JOIN VenueId AS C ON C.id == A.publicationVenueId WHERE B.issn_isbn = '" + issn_isbn + "'"
                 return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter issn_isbn is not a string!")
@@ -500,7 +500,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getJournalArticlesInIssue(self, issue, volume, issn_isbn): 
         if type(issue) == str and type(volume) == str and type(issn_isbn) == str:
             with connect(self.getDbPath()) as con: 
-                SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("All or one of the input parameters issue, volume and issn_isbn is not a string!") 
@@ -509,7 +509,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getJournalArticlesInVolume(self, volume, issn_isbn): 
         if type(volume) == str and type(issn_isbn) == str:
             with connect(self.getDbPath()) as con: 
-                SQL ="SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
             return read_sql(SQL, con) 
         else: 
             raiseExceptions("All or one of the input parameters volume and issn_isbn is not a string!") 
@@ -517,7 +517,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getJournalArticlesInJournal(self, issn):
         if type(issn) == str:
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi  WHERE C.issn_isbn = '" + issn + "'"
+                SQL = "SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE C.issn_isbn = '" + issn + "'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter issn is not a string!") 
@@ -533,7 +533,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsByAuthorName(self, name):
         if type(name) == str: 
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, A.publication_venue FROM Publications AS A JOIN Person AS B ON A.id == B.doi WHERE B.given_name LIKE '%" + name + "%'"
+                SQL = "SELECT A.id, A.publicationYear, A.title, D.title FROM Publications AS A JOIN Authors AS B ON A.id == B.doi JOIN Person AS C ON C.orc_id == B.orc_id JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE C.given_name LIKE '%" + name + "%'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter name is not a string!")
@@ -543,7 +543,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         if type(eventPartialName) == str: 
             with connect(self.getDbPath()) as con:
                 eventPartialName.lower()
-                SQL = "SELECT A.publication_venue, B.publisher, A.event FROM Proceeding AS A JOIN Publications AS B ON A.publication_venue == B.publication_venue WHERE A.event == '%" + eventPartialName + "%'"
+                SQL = "SELECT A.id, B.title, B.publisherId, C.event FROM Publications AS A JOIN VenueId AS B ON A.publicationVenueId == B.id JOIN Proceeding AS C ON B.title == C.publication_venue WHERE C.event == '%" + eventPartialName + "%'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter eventPartialName is not a string!")
@@ -555,7 +555,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
                 with connect(self.getDbPath()) as con:
                     publisherDF = pd.DataFrame()
                     for doi in listOfDoi:
-                        SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN Publications AS B ON A.id == B.publisher WHERE B.id = '" + doi + "'", con)
+                        SQL = read_sql("SELECT A.id, A.name FROM Organization AS A JOIN VenueId AS B ON A.id == B.publisherId JOIN Publications AS C ON B.id == C.publicationVenueId WHERE C.id = '" + doi + "'", con)
                         publisherDF = concat([publisherDF, SQL]) 
                 return  publisherDF
             else: 

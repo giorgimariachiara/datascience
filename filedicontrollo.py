@@ -4,11 +4,12 @@ from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQuery
 from provagr import TriplestoreQueryprocessor
 import extraclasses
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
- 
-
+""" 
+jsn = "./graph_db/graph_other_data.json"
+csv0 = "./graph_db/graph_publications.csv"
 jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
-dbpath0 = "publication.db"
+dbpath0 = "publicationsgraph.db"
 
 if os.path.exists(dbpath0):
     os.remove(dbpath0)
@@ -16,12 +17,12 @@ if os.path.exists(dbpath0):
 
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
-obj.uploadData(jsn0)
-obj.uploadData(csv)
+obj.uploadData(jsn)
+obj.uploadData(csv0)
 rqp = RelationalQueryProcessor()
 rqp.getDbPath()
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
-
+"""
 
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
@@ -29,8 +30,10 @@ rqp.setDbPath(dbpath0)
 
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 tqp = TriplestoreQueryprocessor()
+
 tqp.setEndpointUrl(endpointUrl)
 
+#print(rqp.getPublicationInVenue("issn:0138-9130"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
 #print(rqp.getProceedingsByEvent("we"))
 #gqp = GenericQueryProcessor()
@@ -38,12 +41,15 @@ tqp.setEndpointUrl(endpointUrl)
 #gqp.addQueryProcessor(rqp)
 #print(rqp.getPublicationsPublishedInYear(2020))
 #print(rqp.getProceedingsByEvent("name"))
-print(rqp.getMostCitedVenue())
+#print(rqp.getMostCitedVenue())
 #print(rqp.getVenuesByPublisherId("crossref:78"))
 #print(rqp.getMostCitedPublication())
+#print(rqp.getPublicationsByAuthorName("Pe"))
 #print(rqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
-#print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
-#print(gqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
+print(rqp.getJournalArticlesInJournal("issn:0138-9130"))
+#print(rqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
+#print(rqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
 
@@ -71,8 +77,8 @@ res.uploadData(jsn1)
 # res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
-"""
 
+"""
 
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
