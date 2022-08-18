@@ -542,7 +542,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         if type(eventPartialName) == str: 
             with connect(self.getDbPath()) as con:
                 eventPartialName.lower()
-                SQL = "SELECT A.id, B.title, B.publisherId, C.event FROM Publications AS A JOIN VenueId AS B ON A.publicationVenueId == B.id JOIN Proceeding AS C ON B.title == C.publication_venue WHERE C.event == '%" + eventPartialName + "%'"
+                SQL = "SELECT A.id, B.title, B.publisherId, C.event FROM Publications AS A JOIN VenueId AS B ON A.publicationVenueId == B.id JOIN Proceeding AS C ON B.title == C.publicationVenueId WHERE C.event == '%" + eventPartialName + "%'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter eventPartialName is not a string!")

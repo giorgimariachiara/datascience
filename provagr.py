@@ -70,8 +70,8 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         
         return results 
 
-    def getMostCitedVenue(self):
-        
+    #def getMostCitedVenue(self):
+
     
     def getVenuesByPublisherId(self, publisher):
         if type(publisher) == str:

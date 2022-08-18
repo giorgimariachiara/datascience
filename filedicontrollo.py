@@ -23,7 +23,7 @@ rqp = RelationalQueryProcessor()
 rqp.getDbPath()
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 
-"""
+
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
@@ -33,23 +33,25 @@ tqp = TriplestoreQueryprocessor()
 
 tqp.setEndpointUrl(endpointUrl)
 
-"""
-#print(rqp.getPublicationInVenue("issn:0138-9130"))
+gqp = GenericQueryProcessor() 
+gqp.addQueryProcessor(rqp)
+gqp.addQueryProcessor(tqp)
+#print(gqp.getPublicationInVenue("issn:0138-9130"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
 #print(rqp.getProceedingsByEvent("we"))
 #gqp = GenericQueryProcessor()
 #gqp.addQueryProcessor(rqp)
 #gqp.addQueryProcessor(rqp)
-#print(rqp.getPublicationsPublishedInYear(2020))
-#print(rqp.getProceedingsByEvent("name"))
+#print(gqp.getPublicationsPublishedInYear(2020))
+#print(gqp.getProceedingsByEvent("name"))
 #print(rqp.getMostCitedVenue())
-#print(rqp.getVenuesByPublisherId("crossref:78"))
+#print(gqp.getVenuesByPublisherId("crossref:78"))
 #print(rqp.getMostCitedPublication())
 #print(rqp.getPublicationsByAuthorName("Pe"))
-#print(rqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
+#print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #print(rqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(rqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
-#print(rqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())
