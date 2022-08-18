@@ -55,13 +55,13 @@ class DataCSV(object):
 
             #PUBLICATION DATAFRAME 
             
-            Publication_DF = pd.merge(
+            Publication_df = pd.merge(
             PublicationsDF[["id", "publicationYear", "title", "type", "event", "publication_venue"]],
             self.Venue_DF.rename(columns={"id" : "publicationVenueId", 
                                     "title" : "publication_venue"}), 
             on="publication_venue")\
             .drop(columns=["publication_venue", "publisherId"])
-            Publication_DF = Publication_DF.drop(columns=["event"])
+            Publication_DF = Publication_df.drop(columns=["event"])
 
             self.Publications_DF = Publication_DF[["id", "title", "type", "publicationYear", "venue_type", "publicationVenueId"]]
 
@@ -81,20 +81,20 @@ class DataCSV(object):
             self.Proceedings_paper_DF = proceedings_paper_df
             
             #BOOK DATAFRAME
-            book_df = PublicationsDF.query("venue_type == 'book'")
-            book_df = book_df[["publication_venue"]]
-            self.Book_DF = book_df.drop_duplicates(subset=["publication_venue"])
+            book_df = self.Publications_DF.query("venue_type == 'book'")
+            book_df = book_df[["publicationVenueId"]]
+            self.Book_DF = book_df.drop_duplicates(subset=["publicationVenueId"])
                 
             
             #JOURNAL DATAFRAME
-            journal_df = PublicationsDF.query("venue_type == 'journal'")
-            journal_df= journal_df[["publication_venue"]]
-            self.Journal_DF = journal_df.drop_duplicates(subset=["publication_venue"])
+            journal_df = self.Publications_DF.query("venue_type == 'journal'")
+            journal_df= journal_df[["publicationVenueId"]]
+            self.Journal_DF = journal_df.drop_duplicates(subset=["publicationVenueId"])
            
             #PROCEEDINGS DATAFRAME
-            proceedings_df= PublicationsDF.query("venue_type == 'proceedings'")
-            proceedings_df = proceedings_df[["publication_venue", "event"]]
-            self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["publication_venue"])
+            proceedings_df= Publication_df.query("venue_type == 'proceedings'")
+            proceedings_df = proceedings_df[["publicationVenueId", "event"]]
+            self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["publicationVenueId"])
 
         else:
             raiseExceptions("CSV file '" + csv + "' does not exist!")
@@ -154,3 +154,4 @@ class DataJSON(object):
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
 Dataobject = DataCSV(csv)
+print(Dataobject.Journal_DF.head(3))
