@@ -393,7 +393,6 @@ class RelationalDataProcessor(RelationalProcessor):
         print("dbpath =" + self.getDbPath())
         f_ext = os.path.splitext(path)[1]
         if f_ext.upper() == ".CSV":
-            # la classe data verrà divisa in due classi DataCSV e DataJson
             CSV_Rdata = DataCSV(path)
 #           CSV_Rdata2SQLite.Rdata2SQLite(CSV_Rdata, .getDbPath())
             with connect(self.getDbPath()) as con:
