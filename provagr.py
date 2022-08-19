@@ -73,14 +73,11 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                     ?citing schema:isPartOf ?venueid . \
                     ?venueid schema:name ?venuename . \
                     ?venueid schema:publisher ?publisher.  \
-                    SELECT ?citing WHERE { \
-                    { SELECT ?citing (COUNT(?x) as ?count) WHERE {   ?citing schema:citation ?x . } \
-                    GROUP BY ?citing } \
+                    {SELECT ?citing WHERE { \
+                    { SELECT ?citing (COUNT(?x) as ?count) WHERE {   ?citing schema:citation ?x . } GROUP BY ?citing } \
                     { SELECT (MAX(?cited) AS ?count) WHERE { \
     	            { SELECT ?citing (COUNT(?x) as ?cited) WHERE {  ?citing schema:citation ?x . }  GROUP BY ?citing }  \
-                        }  \
-                            } \
-                                }}}')
+                        }}}}}')
          endpoint = self.getEndpointUrl()
          results = get(endpoint, query, post = True)
          
