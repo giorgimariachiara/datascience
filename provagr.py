@@ -51,26 +51,65 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             raiseExceptions("The input parameter orcid is not a string!")
 
     def getMostCitedPublication(self):
-        query = ('prefix schema:<https://schema.org/> \
-                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                  SELECT ?doi ?title ?publicationyear ?publicationvenue WHERE { \
-                  ?cited rdf:type schema:CreativeWork . \
-                  ?cited schema:identifier ?doi . \
-                  ?cited schema:name ?title . \
-                  ?cited schema:datePublished ?publicationyear . \
-                  ?cited schema:isPartOf ?publicationvenue . \
-                  ?cited schema:name ?venue . \
-                    {SELECT ?cited WHERE {FILTER(?N = (MAX(?N))) \
-                  {SELECT ?cited (COUNT(*) AS ?N) \
-                  WHERE { ?citing schema:citation ?cited . \
-                    } GROUP BY ?cited }}}} \
-                    ')
+        query = ('PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \
+                  PREFIX schema: <https://schema.org/> \
+                 SELECT ?doi ?publicationyear ?title ?venuename WHERE {?citing schema:identifier ?doi . \
+                ?citing schema:name ?title . \
+                ?citing schema:datePublished ?publicationyear . \
+                ?citing schema:isPartOf ?venueid . \
+                ?venueid schema:name ?venuename .{ \
+                SELECT ?citing WHERE { \
+                { SELECT ?citing (COUNT(?x) as ?count) WHERE {   ?citing schema:citation ?x . } GROUP BY ?citing } \
+                { SELECT (MAX(?cited) AS ?count) WHERE { \
+    	        { SELECT ?citing (COUNT(?x) as ?cited) WHERE {  ?citing schema:citation ?x . }  GROUP BY ?citing }  \
+                    }}}}}')
         endpoint = self.getEndpointUrl()
         results = get(endpoint, query, post = True)
         
         return results 
 
-    #def getMostCitedVenue(self):
+    def getMostCitedVenue(self):
+
+         query1 = ('prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                    prefix schema: <https://schema.org/> \
+                    SELECT ?venueid ?venuename ?publisher  WHERE {?citing schema:identifier ?doi . \
+                    ?citing schema:isPartOf ?venueid . \
+                    ?venueid schema:name ?venuename . \
+                    ?venueid schema:publisher ?publisher.  \
+                    SELECT ?citing WHERE { \
+                    { SELECT ?citing (COUNT(?x) as ?count) WHERE {   ?citing schema:citation ?x . } \
+                    GROUP BY ?citing } \
+                    { SELECT (MAX(?cited) AS ?count) WHERE { \
+    	            { SELECT ?citing (COUNT(?x) as ?cited) WHERE {  ?citing schema:citation ?x . }  GROUP BY ?citing }  \
+                        }  \
+                            } \
+                                }}}')
+         endpoint = self.getEndpointUrl()
+         results = get(endpoint, query1, post = True)
+         
+         return results
+
+         
+         #print(results)
+
+    def getMostCited(self):
+        tqp = TriplestoreQueryprocessor()
+        tr = tqp.getMostCitedVenue()
+        for el in tr:
+            query = ('prefix schema:<https://schema.org/>  \
+                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \
+                 SELECT ?doi ?title ?publicationyear ?publicationvenue { \
+                    ?doi schema:identifier "' + el + '" . \
+                    ?doi schema:name ?title .  \
+                    ?doi schema:datePublished ?publicationyear .  \
+                    ?doi schema:isPartOf ?venueid . \
+                    ?venueid schema:name ?publicationvenue . \
+                    } ')   
+            endpoint = self.getEndpointUrl()
+            result = get(endpoint, query, post = True)
+        
+        return result 
+        
 
     
     def getVenuesByPublisherId(self, publisher):
@@ -255,20 +294,3 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             else: 
                 raiseExceptions("The input parameter listOfDoi is not a list or one of its elements is not a string!")
     
-
-"""
-getmostcitedvenue da controllare 
-SELECT ?venueid ?publicationvenue ?publisher 
-WHERE {
-  ?cited rdf:type schema:CreativeWork .
-  ?cited schema:identifier ?doi .
-  ?cited schema:publisher ?publisher .
-  ?cited schema:isPartOf ?publicationvenue .
-  ?venueid schema:name ?publicationvenue . 
-{SELECT ?cited WHERE {FILTER(?N = (MAX(?N)))
-{SELECT ?cited (COUNT(*) AS ?N) 
-WHERE { ?citing schema:citation ?cited .
-  } GROUP BY ?cited }}}}
-
-
-"""

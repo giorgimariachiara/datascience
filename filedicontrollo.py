@@ -14,7 +14,6 @@ dbpath0 = "publication.db"
 if os.path.exists(dbpath0):
     os.remove(dbpath0)
 
-
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn)
@@ -44,14 +43,15 @@ gqp.addQueryProcessor(tqp)
 #gqp.addQueryProcessor(rqp)
 #print(gqp.getPublicationsPublishedInYear(2020))
 #print(gqp.getProceedingsByEvent("name"))
-#print(rqp.getMostCitedVenue())
+print(tqp.getMostCitedVenue())
+#print(tqp.getMostCited())
 #print(gqp.getVenuesByPublisherId("crossref:78"))
-#print(rqp.getMostCitedPublication())
+#print(tqp.getMostCitedPublication())
 #print(rqp.getPublicationsByAuthorName("Pe"))
 #print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
 #print(rqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(rqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
-print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+#print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
 #for el in resultq1:
     #print(el.__str__())

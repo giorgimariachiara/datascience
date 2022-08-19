@@ -216,7 +216,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             my_graph = Graph()
 
-            for idx, row in CSV_Rdata.Publication_DF.iterrows():  
+            for idx, row in CSV_Rdata.Publications_DF.iterrows():  
                 subj = URIRef(base_url + row["id"]) 
 
                 my_graph.add((subj, RDF.type, Publication))
@@ -226,10 +226,8 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                     my_graph.add((subj, identifier, Literal(row["id"])))
                 if row["publicationYear"] != "":
                     my_graph.add((subj, publicationYear, Literal(row["publicationYear"])))
-                if row["publication_venue"] != "":
-                    my_graph.add((subj, publicationVenue, Literal(row["publication_venue"])))
-                if row["publisher"] != "":
-                    my_graph.add((subj, publisher, URIRef(base_url + row["publisher"]))) 
+                if row["publicationVenueId"] != "":
+                    my_graph.add((subj, publicationVenue, URIRef(base_url + row["publicationVenueId"])))
 
                 if row["type"] == "journal-article":
                     if row["type"] != "":
@@ -242,7 +240,18 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                         my_graph.add((subj, RDF.type, Proceedingspaper)) 
                 else: 
                     print("WARNING: Unrecognized publication type!")
-                
+            
+            for idx, row in CSV_Rdata.Venue_DF.iterrows():
+                subj = URIRef(base_url + row["id"])
+
+                if row["title"] != "":
+                    my_graph.add((subj, name, Literal(row["title"])))
+                if row["id"] != "":
+                    my_graph.add((subj, identifier, Literal(row["id"])))
+                if row["publisherId"] != "":
+                    my_graph.add((subj, publisher, Literal(row["publisherId"])))
+
+                     
             #triple publications type
 
             for idx, row in CSV_Rdata.Journal_article_DF.iterrows():
@@ -281,6 +290,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                     my_graph.add((subj, name, Literal(row["publication_venue"])))
                 if row["event"] != "":  
                     my_graph.add((subj, event, Literal(row["event"])))
+                
                 
             self.my_graph= my_graph
 
@@ -363,11 +373,11 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             store.close()
 
         else:
-            print("Problem: the input file has not neither a .csv nor a .json extension!")
+            raiseExceptions("Problem: the input file has not neither a .csv nor a .json extension!")
             return False
 
         return True
-
+        
 
 #  CLASSES FOR RELATIONAL DATABASE --------------------------------------------------------------------------------------------------------------#
 
@@ -394,7 +404,6 @@ class RelationalDataProcessor(RelationalProcessor):
         f_ext = os.path.splitext(path)[1]
         if f_ext.upper() == ".CSV":
             CSV_Rdata = DataCSV(path)
-#           CSV_Rdata2SQLite.Rdata2SQLite(CSV_Rdata, .getDbPath())
             with connect(self.getDbPath()) as con:
                 CSV_Rdata.Venue_DF.to_sql(
                     "VenueId", con, if_exists="replace", index=False)
@@ -419,7 +428,6 @@ class RelationalDataProcessor(RelationalProcessor):
         elif f_ext.upper() == ".JSON":
             JSN_Rdata = DataJSON(path)
             with connect(self.getDbPath()) as con:
-                #            JSN_Rdata2SQLite(JSN_Rdata, .getDbPath())
                 JSN_Rdata.Author_DF.to_sql(
                     "Authors", con, if_exists="replace", index=False)
                 JSN_Rdata.Cites_DF.to_sql(
@@ -567,7 +575,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
 
 class GenericQueryProcessor(object):
     def __init__(self):
-        self.queryProcessor = []  # : QueryProcessor[0..*]
+        self.queryProcessor = []  
 
     def cleanQueryProcessors(self):
         if len(self.queryProcessor) != 0:
