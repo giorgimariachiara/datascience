@@ -34,7 +34,6 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     def getPublicationsByAuthorId(self, orcid):
         if type(orcid) == str:
             query = ('prefix schema:<https://schema.org/>  \
-                     prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
                      SELECT ?doiLiteral ?title ?publicationyear ?venue WHERE {?author schema:identifier "' + orcid + '" . \
                      ?author schema:author ?doi . \
                      ?doi schema:identifier ?doiLiteral . \
@@ -69,8 +68,9 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
 
     def getMostCitedVenue(self):
          query= (' prefix schema: <https://schema.org/> \
-                    SELECT ?venueid ?venuename ?publisher  WHERE {?citing schema:identifier ?doi . \
+                    SELECT ?id ?venuename ?publisher  WHERE {?citing schema:identifier ?doi . \
                     ?citing schema:isPartOf ?venueid . \
+                    ?venueid schema:identifier ?id . \
                     ?venueid schema:name ?venuename . \
                     ?venueid schema:publisher ?publisher.  \
                     {SELECT ?citing WHERE { \
