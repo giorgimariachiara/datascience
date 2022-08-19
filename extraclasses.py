@@ -7,6 +7,7 @@ from json import load, loads
 from sqlite3 import connect
 from pandas import DataFrame, Series, merge
 import os.path
+from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
 class DataCSV(object): 
     def __init__(self, csv):
@@ -83,18 +84,20 @@ class DataCSV(object):
             #BOOK DATAFRAME
             book_df = self.Publications_DF.query("venue_type == 'book'")
             book_df = book_df[["publicationVenueId"]]
-            self.Book_DF = book_df.drop_duplicates(subset=["publicationVenueId"])
-                
-            
+            book_df = book_df.rename(columns={"publicationVenueId":"bookId"})
+            self.Book_DF = book_df.drop_duplicates(subset=["bookId"])
+
             #JOURNAL DATAFRAME
             journal_df = self.Publications_DF.query("venue_type == 'journal'")
             journal_df= journal_df[["publicationVenueId"]]
-            self.Journal_DF = journal_df.drop_duplicates(subset=["publicationVenueId"])
+            journal_df = journal_df.rename(columns={"publicationVenueId":"journalId"})
+            self.Journal_DF = journal_df.drop_duplicates(subset=["journalId"])
            
             #PROCEEDINGS DATAFRAME
             proceedings_df= Publication_df.query("venue_type == 'proceedings'")
             proceedings_df = proceedings_df[["publicationVenueId", "event"]]
-            self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["publicationVenueId"])
+            proceedings_df = proceedings_df.rename(columns={"publicationVenueId":"proceedingId"})
+            self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["proceedingId"])
 
         else:
             raiseExceptions("CSV file '" + csv + "' does not exist!")
@@ -154,4 +157,31 @@ class DataJSON(object):
 p = "./relational_db/relational_other_data.json"
 csv= "./relational_db/relational_publication.csv"
 Dataobject = DataCSV(csv)
-print(Dataobject.Journal_DF.head(3))
+
+def CleanSparqlStore(endpoint):
+    store = SPARQLUpdateStore()
+    store.open((endpoint, endpoint))
+    store.remove((None, None, None), context=None)
+    store.close()
+    print("*** Store at: '" + endpoint + "' has been cleaned!")
+
+def CleanRelationaldatabase(dbpath):
+    if os.path.exists(dbpath):
+        os.remove(dbpath)
+    print("Database at: '" + dbpath + "' has been cleaned!")
+
+
+def AddToSparqlStore(endpoint, graph):
+    store = SPARQLUpdateStore()
+    # The URL of the SPARQL endpoint is the same URL of the Blazegraph
+    # instance + '/sparql'
+    # endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
+    # It opens the connection with the SPARQL endpoint instance
+    store.open((endpoint, endpoint))
+    for triple in graph.triples((None, None, None)):
+        store.add(triple)
+    # Once finished, remeber to close the connection
+    store.close()        
+    return graph.__len__()
+
+

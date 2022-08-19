@@ -4,6 +4,9 @@ from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQuery
 from provagr import TriplestoreQueryprocessor
 import extraclasses
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+from extraclasses import AddToSparqlStore,  CleanSparqlStore
+from extraclasses import CleanRelationaldatabase
+
 
 jsn = "./graph_db/graph_other_data.json"
 csv0 = "./graph_db/graph_publications.csv"
@@ -11,9 +14,10 @@ jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
 
-if os.path.exists(dbpath0):
-    os.remove(dbpath0)
+cleanRelational = CleanRelationaldatabase(dbpath0)
 
+
+"""
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
 obj.uploadData(jsn)
@@ -31,10 +35,14 @@ endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 tqp = TriplestoreQueryprocessor()
 
 tqp.setEndpointUrl(endpointUrl)
+t = TriplestoreDataProcessor()
+clean = CleanSparqlStore(endpointUrl)
+
 
 gqp = GenericQueryProcessor() 
 gqp.addQueryProcessor(rqp)
 gqp.addQueryProcessor(tqp)
+"""
 #print(gqp.getPublicationInVenue("issn:0138-9130"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
 #print(rqp.getProceedingsByEvent("we"))
@@ -43,7 +51,7 @@ gqp.addQueryProcessor(tqp)
 #gqp.addQueryProcessor(rqp)
 #print(gqp.getPublicationsPublishedInYear(2020))
 #print(gqp.getProceedingsByEvent("name"))
-print(gqp.getMostCitedVenue())
+#print(gqp.getMostCitedVenue())
 #print(gqp.getVenuesByPublisherId("crossref:78"))
 #print(tqp.getMostCitedPublication())
 #print(rqp.getPublicationsByAuthorName("Pe"))
@@ -56,7 +64,7 @@ print(gqp.getMostCitedVenue())
     #print(el.__str__())
 
 
-"""
+
 
 csv = "./relational_db/relational_publication.csv"
 
@@ -64,10 +72,6 @@ jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 
-store = SPARQLUpdateStore()
-store.open((endpointUrl, endpointUrl))
-store.remove((None, None, None), context=None)
-store.close()
 
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
@@ -80,7 +84,7 @@ res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
 
-"""
+
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()

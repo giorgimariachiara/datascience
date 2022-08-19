@@ -14,6 +14,8 @@ import os
 from extraclasses import DataCSV, DataJSON
 from rdflib import Graph, URIRef, Literal, RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+from extraclasses import AddToSparqlStore
+
 
 
 # OBJECT CLASSES -----------------------------------------------------------------------------------------------------------------------#
@@ -273,21 +275,23 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             for idx, row in CSV_Rdata.Book_DF.iterrows():
                 local_id = "book-" + str(idx)
                 subj = URIRef(base_url + local_id)
-                my_graph.add((subj, name, Literal(row["publication_venue"])))
+                if row["bookId"] != "":
+                    my_graph.add((subj, name, Literal(row["bookId"])))
                 my_graph.add((subj, RDF.type, Book))
 
             for idx, row in CSV_Rdata.Journal_DF.iterrows():
                 local_id = "journal-" + str(idx)
                 subj = URIRef(base_url + local_id)
-                my_graph.add((subj, name, Literal(row["publication_venue"])))
+                if row["journalId"] != "":
+                    my_graph.add((subj, name, Literal(row["journalId"])))
                 my_graph.add((subj, RDF.type, Journal))
             
             for idx, row in CSV_Rdata.Proceedings_DF.iterrows():
                 local_id = "proceeding-" + str(idx)
                 subj = URIRef(base_url + local_id) 
                 my_graph.add((subj, RDF.type, Proceeding))
-                if row["publication_venue"] != "":
-                    my_graph.add((subj, name, Literal(row["publication_venue"])))
+                if row["proceedingId"] != "":
+                    my_graph.add((subj, name, Literal(row["proceedingId"])))
                 if row["event"] != "":  
                     my_graph.add((subj, event, Literal(row["event"])))
                 
@@ -358,19 +362,12 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             self.my_graph = my_graph
 
-            store = SPARQLUpdateStore()
             # The URL of the SPARQL endpoint is the same URL of the Blazegraph
             # instance + '/sparql'
             #endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
             endpointUrl = self.getEndpointUrl()
-
-            # It opens the connection with the SPARQL endpoint instance
-            store.open((endpointUrl, endpointUrl))
-
-            for triple in my_graph.triples((None, None, None)): #none none none means that it should consider all the triples of the graph 
-                store.add(triple)   
-            # Once finished, remeber to close the connection
-            store.close()
+            ob = AddToSparqlStore()
+            ob(endpointUrl, my_graph)
 
         else:
             raiseExceptions("Problem: the input file has not neither a .csv nor a .json extension!")
