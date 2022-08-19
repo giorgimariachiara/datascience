@@ -70,7 +70,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
 
     def getMostCitedVenue(self):
 
-         query1 = ('prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+         query= ('prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
                     prefix schema: <https://schema.org/> \
                     SELECT ?venueid ?venuename ?publisher  WHERE {?citing schema:identifier ?doi . \
                     ?citing schema:isPartOf ?venueid . \
@@ -85,32 +85,9 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                             } \
                                 }}}')
          endpoint = self.getEndpointUrl()
-         results = get(endpoint, query1, post = True)
+         results = get(endpoint, query, post = True)
          
          return results
-
-         
-         #print(results)
-
-    def getMostCited(self):
-        tqp = TriplestoreQueryprocessor()
-        tr = tqp.getMostCitedVenue()
-        for el in tr:
-            query = ('prefix schema:<https://schema.org/>  \
-                  prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \
-                 SELECT ?doi ?title ?publicationyear ?publicationvenue { \
-                    ?doi schema:identifier "' + el + '" . \
-                    ?doi schema:name ?title .  \
-                    ?doi schema:datePublished ?publicationyear .  \
-                    ?doi schema:isPartOf ?venueid . \
-                    ?venueid schema:name ?publicationvenue . \
-                    } ')   
-            endpoint = self.getEndpointUrl()
-            result = get(endpoint, query, post = True)
-        
-        return result 
-        
-
     
     def getVenuesByPublisherId(self, publisher):
         if type(publisher) == str:
