@@ -1,4 +1,4 @@
-from graph import TriplestoreDataProcessor
+from impl import TriplestoreDataProcessor
 import os
 from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor
 from provagr import TriplestoreQueryprocessor
@@ -14,23 +14,26 @@ jsn0 = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
 
+
+
 cleanRelational = CleanRelationaldatabase(dbpath0)
 
 
 """
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
-obj.uploadData(jsn)
-obj.uploadData(csv0)
+obj.uploadData(jsn0)
+obj.uploadData(csv)
 rqp = RelationalQueryProcessor()
 rqp.getDbPath()
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
-
-
-dbpath0 = "publication.db"
+"""
+"""
+dbpath0 = "publicationgraph.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
-
+"""
+"""
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 tqp = TriplestoreQueryprocessor()
 
@@ -64,7 +67,7 @@ gqp.addQueryProcessor(tqp)
     #print(el.__str__())
 
 
-
+"""
 
 csv = "./relational_db/relational_publication.csv"
 
@@ -84,7 +87,7 @@ res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
 
-
+"""
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()
