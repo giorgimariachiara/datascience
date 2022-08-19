@@ -51,8 +51,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             raiseExceptions("The input parameter orcid is not a string!")
 
     def getMostCitedPublication(self):
-        query = ('PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \
-                  PREFIX schema: <https://schema.org/> \
+        query = ('prefix schema: <https://schema.org/> \
                  SELECT ?doi ?publicationyear ?title ?venuename WHERE {?citing schema:identifier ?doi . \
                 ?citing schema:name ?title . \
                 ?citing schema:datePublished ?publicationyear . \
@@ -69,9 +68,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         return results 
 
     def getMostCitedVenue(self):
-
-         query= ('prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                    prefix schema: <https://schema.org/> \
+         query= (' prefix schema: <https://schema.org/> \
                     SELECT ?venueid ?venuename ?publisher  WHERE {?citing schema:identifier ?doi . \
                     ?citing schema:isPartOf ?venueid . \
                     ?venueid schema:name ?venuename . \
