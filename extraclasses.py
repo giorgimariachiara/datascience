@@ -184,4 +184,10 @@ def AddToSparqlStore(endpoint, graph):
     store.close()        
     return graph.__len__()
 
+def Getstringofpythonobject(GP):
+    result=[]
+    for el in GP:
+        result.append(el.__str__())
+    return result 
+
 

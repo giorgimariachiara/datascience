@@ -5,31 +5,39 @@ from provagr import TriplestoreQueryprocessor
 import extraclasses
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from extraclasses import AddToSparqlStore,  CleanSparqlStore
-from extraclasses import CleanRelationaldatabase
+from extraclasses import CleanRelationaldatabase, Getstringofpythonobject
 
 
-jsn = "./graph_db/graph_other_data.json"
-csv0 = "./graph_db/graph_publications.csv"
-jsn0 = "./relational_db/relational_other_data.json"
+#jsn0 = "./graph_db/graph_other_data.json"
+#csv0 = "./graph_db/graph_publications.csv"
+
+
+jsn = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publication.db"
 
-
-
-cleanRelational = CleanRelationaldatabase(dbpath0)
-
-
-"""
+#cleanRelational = CleanRelationaldatabase(dbpath0)
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
-obj.uploadData(jsn0)
+obj.uploadData(jsn)
 obj.uploadData(csv)
 rqp = RelationalQueryProcessor()
-rqp.getDbPath()
-#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
+rqp.setDbPath(dbpath0)
+gqp = GenericQueryProcessor() 
+gqp.addQueryProcessor(rqp)
+#print(rqp.getPublicationInVenue("issn:0138-9130"))
+#print(rqp.getPublicationsPublishedInYear(2020))
+
+Getstringofpythonobject(gqp.getMostCitedPublication())
+
+
+#rint(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
+
+
+
+
 """
-"""
-dbpath0 = "publicationgraph.db"
+dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
 """

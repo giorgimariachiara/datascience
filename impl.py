@@ -361,6 +361,8 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             return False
 
         return True
+
+
 # TRIPLESTORE QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
         
 class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
@@ -680,7 +682,7 @@ class RelationalDataProcessor(RelationalProcessor):
                 JSN_Rdata.Person_DF.to_sql(
                     "Person", con, if_exists="replace", index=False)
                 
-                con.execute("DROP VIEW  IF EXISTS countCited")
+                con.execute("DROP VIEW IF EXISTS countCited")
                 con.execute("CREATE VIEW countCited AS "
                             "SELECT cited, count(*) AS N FROM Cites GROUP BY cited HAVING cited IS NOT NULL;")
                 con.execute("DROP VIEW  IF EXISTS maxCited")
@@ -732,7 +734,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getVenuesByPublisherId(self, publisher):
         if type(publisher) == str:
             with connect(self.getDbPath()) as con:
-                SQL = read_sql("SELECT B.id, B.title, B.publisherId FROM Organization AS A JOIN VenueId AS B ON B.publisherId == A.id WHERE A.id = '" + publisher + "'", con)
+                SQL = read_sql("SELECT id, title, publisherId FROM VenueId WHERE publisherId = '" + publisher + "'", con)
             return SQL.drop_duplicates(subset=['title', 'publisherId'])
         else: 
             raiseExceptions("The input parameter publisher is not a string!")  
@@ -745,19 +747,18 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         else: 
             raiseExceptions("The input parameter issn_isbn is not a string!")
 
-    def getJournalArticlesInIssue(self, issue, volume, issn_isbn): 
-        if type(issue) == str and type(volume) == str and type(issn_isbn) == str:
+    def getJournalArticlesInIssue(self, issue, volume, issn): 
+        if type(issue) == str and type(volume) == str and type(issn) == str:
             with connect(self.getDbPath()) as con: 
-                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn + "'"
             return read_sql(SQL, con)
         else: 
-            raiseExceptions("All or one of the input parameters issue, volume and issn_isbn is not a string!") 
-        
+            raiseExceptions("All or one of the input parameters issue, volume and issn_isbn is not a string!")    
 
-    def getJournalArticlesInVolume(self, volume, issn_isbn): 
-        if type(volume) == str and type(issn_isbn) == str:
+    def getJournalArticlesInVolume(self, volume, issn): 
+        if type(volume) == str and type(issn) == str:
             with connect(self.getDbPath()) as con: 
-                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn_isbn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn + "'"
             return read_sql(SQL, con) 
         else: 
             raiseExceptions("All or one of the input parameters volume and issn_isbn is not a string!") 
