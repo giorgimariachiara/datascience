@@ -28,7 +28,7 @@ gqp.addQueryProcessor(rqp)
 #print(rqp.getPublicationInVenue("issn:0138-9130"))
 #print(rqp.getPublicationsPublishedInYear(2020))
 
-Getstringofpythonobject(gqp.getMostCitedPublication())
+print(Getstringofpythonobject(gqp.getMostCitedPublication()))
 
 
 #rint(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
