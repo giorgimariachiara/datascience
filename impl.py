@@ -11,10 +11,10 @@ import json
 from json import load
 from mimetypes import init
 import os
-from extraclasses import DataCSV, DataJSON
+from extraclassesandfunctions import DataCSV, DataJSON
 from rdflib import Graph, URIRef, Literal, RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
-from extraclasses import AddToSparqlStore
+from extraclassesandfunctions import AddToSparqlStore
 from sparql_dataframe import get
 
 
@@ -248,7 +248,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 subj = URIRef(base_url + row["id"])
 
                 if row["title"] != "":
-                    my_graph.add((subj, name, Literal(row["title"])))
+                    my_graph.add((subj, name, Literal(row["venueName"])))
                 if row["id"] != "":
                     my_graph.add((subj, identifier, Literal(row["id"])))
                 if row["publisherId"] != "":
@@ -301,6 +301,8 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             endpointUrl = self.getEndpointUrl()
             AddToSparqlStore(endpointUrl, my_graph)
+
+            print("Data from CSV file has been uploaded!")
             
         elif f_ext.upper() == ".JSON":
             JSN_Rdata = DataJSON(path)
@@ -356,11 +358,11 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             endpointUrl = self.getEndpointUrl()
             AddToSparqlStore(endpointUrl, my_graph)
 
+            print("Data from JSON file has been uploaded!")
+
         else:
             raiseExceptions("Problem: the input file has not neither a .csv nor a .json extension!")
-            return False
-
-        return True
+            
 
 
 # TRIPLESTORE QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
@@ -373,9 +375,9 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         if type(publicationYear) == int:
             query = ('prefix schema:<https://schema.org/>  \
                     prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                    SELECT DISTINCT ?doi ?title ?publicationyear ?venue WHERE {?s rdf:type schema:CreativeWork.\
+                    SELECT DISTINCT ?doi ?publicationYear ?title ?venue WHERE {?s rdf:type schema:CreativeWork.\
                     ?s schema:datePublished "' + str(publicationYear) + '". \
-                    ?s schema:datePublished ?publicationyear .\
+                    ?s schema:datePublished ?publicationYear .\
                     ?s schema:name ?title . \
                     ?s schema:identifier ?doi. \
                     ?s schema:isPartOf ?publicationvenue . \
@@ -391,11 +393,11 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     def getPublicationsByAuthorId(self, orcid):
         if type(orcid) == str:
             query = ('prefix schema:<https://schema.org/>  \
-                     SELECT ?doiLiteral ?title ?publicationyear ?venue WHERE {?author schema:identifier "' + orcid + '" . \
+                     SELECT ?doiLiteral ?publicationYear ?title ?venue WHERE {?author schema:identifier "' + orcid + '" . \
                      ?author schema:author ?doi . \
                      ?doi schema:identifier ?doiLiteral . \
                      ?doi schema:name ?title .  \
-                     ?doi schema:datePublished ?publicationyear .  \
+                     ?doi schema:datePublished ?publicationYear .  \
                      ?doi schema:isPartOf ?publicationvenue . \
                      ?publicationvenue schema:name ?venue . \
                         }')
@@ -408,11 +410,11 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
 
     def getMostCitedPublication(self):
         query = ('prefix schema: <https://schema.org/> \
-                 SELECT ?doi ?publicationyear ?title ?venuename WHERE {?citing schema:identifier ?doi . \
+                 SELECT ?doi ?publicationYear ?title ?venueName WHERE {?citing schema:identifier ?doi . \
                 ?citing schema:name ?title . \
-                ?citing schema:datePublished ?publicationyear . \
+                ?citing schema:datePublished ?publicationYear . \
                 ?citing schema:isPartOf ?venueid . \
-                ?venueid schema:name ?venuename .{ \
+                ?venueid schema:name ?venueName .{ \
                 SELECT ?citing WHERE { \
                 { SELECT ?citing (COUNT(?x) as ?count) WHERE {   ?citing schema:citation ?x . } GROUP BY ?citing } \
                 { SELECT (MAX(?cited) AS ?count) WHERE { \
@@ -425,10 +427,10 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
 
     def getMostCitedVenue(self):
          query= (' prefix schema: <https://schema.org/> \
-                    SELECT ?id ?venuename ?publisher  WHERE {?citing schema:identifier ?doi . \
+                    SELECT ?venueId ?venueName ?publisher  WHERE {?citing schema:identifier ?doi . \
                     ?citing schema:isPartOf ?venueid . \
-                    ?venueid schema:identifier ?id . \
-                    ?venueid schema:name ?venuename . \
+                    ?venueid schema:identifier ?venueId . \
+                    ?venueid schema:name ?venueName . \
                     ?venueid schema:publisher ?publisher.  \
                     {SELECT ?citing WHERE { \
                     { SELECT ?citing (COUNT(?x) as ?count) WHERE {   ?citing schema:citation ?x . } GROUP BY ?citing } \
@@ -443,11 +445,11 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     def getVenuesByPublisherId(self, publisher):
         if type(publisher) == str:
             query = ('prefix schema:<https://schema.org/> \
-                    SELECT DISTINCT ?venueid ?publicationvenuename ?crossref WHERE { ?doi schema:isPartOf ?venue . \
-                      ?venue schema:identifier ?venueid . \
+                    SELECT DISTINCT ?venueId ?venueName ?crossref WHERE { ?doi schema:isPartOf ?venue . \
+                      ?venue schema:identifier ?venueId . \
                       ?venue schema:publisher "' + publisher + '" . \
                       ?venue schema:publisher ?crossref .  \
-                      ?venue schema:name ?publicationvenuename . \
+                      ?venue schema:name ?venueName . \
                        }')                                                       
                       
             endpoint = self.getEndpointUrl()
@@ -461,12 +463,12 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         if type(issn_isbn) == str:
             query = ('prefix dcterms:<http://purl.org/dc/terms/> \
                     prefix schema:<https://schema.org/> \
-                    SELECT ?doiLiteral ?title ?publicationyear ?venuename WHERE {?doi dcterms:identifier "' + issn_isbn + '" . \
-                        ?doi schema:identifier ?doiLiteral . \
+                    SELECT ?id ?publicationYear ?title  ?venueName WHERE {?doi dcterms:identifier "' + issn_isbn + '" . \
+                        ?doi schema:identifier ?id. \
                         ?doi schema:name ?title . \
-                        ?doi schema:datePublished ?publicationyear  . \
+                        ?doi schema:datePublished ?publicationYear  . \
                         ?doi schema:isPartOf ?publicationvenue . \
-                        ?publicationvenue schema:name ?venuename . \
+                        ?publicationvenue schema:name ?venueName . \
                                        }')
             endpoint = self.getEndpointUrl()
             results = get(endpoint, query, post = True)
@@ -479,9 +481,9 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         if type(eventPartialName) == str: 
             query = ('prefix dcterms:<http://purl.org/dc/terms/> \
                     prefix schema:<https://schema.org/>  \
-                    SELECT ?issn_isbn ?publication_venue ?publisher ?event WHERE {?s schema:event ?event. \
+                    SELECT ?issn_isbn ?venueName ?publisher ?event WHERE {?s schema:event ?event. \
                     ?s schema:name ?publication_venue . \
-                    ?doi schema:isPartOf ?publication_venue . \
+                    ?doi schema:isPartOf ?venueName . \
                     ?doi schema:publisher ?publisher . \
                     ?doi dcterms:identifier ?issn_isbn . \
                     filter contains(?event,"' + eventPartialName +'") \
@@ -493,20 +495,20 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         else: 
             raiseExceptions("The input parameter eventPartialName is not a string!")
     
-    def getJournalArticlesInVolume(self, volume, issn_isbn): 
-        if type(volume) == str and type(issn_isbn) == str: 
+    def getJournalArticlesInVolume(self, volume, issn): 
+        if type(volume) == str and type(issn) == str: 
             query = ('prefix dcterms:<http://purl.org/dc/terms/> \
                     prefix schema:<https://schema.org/>  \
                     prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \
-                    SELECT DISTINCT ?doi ?publicationYear ?venue ?title ?issue ?volume  \
+                    SELECT DISTINCT ?id ?publicationYear ?title ?venueName ?issue ?volume  \
                     WHERE { ?s rdf:type schema:ScholarlyArticle  .\
                     ?s schema:name ?title . \
-                    ?s schema:identifier ?doi .  \
-                    ?s dcterms:identifier "' + issn_isbn + '". \
+                    ?s schema:identifier ?id .  \
+                    ?s dcterms:identifier "' + issn+ '". \
                     ?s schema:volumeNumber "' + volume + '" . \
                     ?s schema:volumeNumber ?volume .\
                     ?s schema:isPartOf ?publicationVenue .\
-                    ?publicationVenue schema:name ?venue .\
+                    ?publicationVenue schema:name ?venueName .\
                     ?s schema:datePublished ?publicationYear . \
                     OPTIONAL {  \
                     ?s schema:issueNumber ?issue } \
@@ -518,20 +520,20 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         else:
             raiseExceptions("All or one of the input parameters volume and issn_isbn is not a string!") 
 
-    def getJournalArticlesInIssue(self, issue, volume, issn_isbn):
-        if type(issue) == str and type(volume) == str and type(issn_isbn) == str:
+    def getJournalArticlesInIssue(self, issue, volume, issn):
+        if type(issue) == str and type(volume) == str and type(issn) == str:
             query = ('prefix dcterms:<http://purl.org/dc/terms/> \
                     prefix schema:<https://schema.org/>  \
                     prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                    SELECT DISTINCT ?doi ?publicationYear ?venue ?title ?issue ?volume  \
+                    SELECT DISTINCT ?id ?publicationYear ?venueName ?title ?issue ?volume  \
                     WHERE { ?s rdf:type schema:ScholarlyArticle  . \
                     ?s schema:name ?title . \
-                    ?s schema:identifier ?doi . \
-                    ?s dcterms:identifier "'  + issn_isbn + '" . \
+                    ?s schema:identifier ?id . \
+                    ?s dcterms:identifier "'  + issn + '" . \
                     ?s schema:issueNumber "' + issue + '". \
                     ?s schema:volumeNumber "'+ volume +'" . \
                     ?s schema:isPartOf ?publicationVenue .\
-                    ?publicationVenue schema:name ?venue .\
+                    ?publicationVenue schema:name ?venueName .\
                     ?s schema:datePublished ?publicationYear .  \
                     }')
             endpoint = self.getEndpointUrl()
@@ -547,18 +549,18 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             query = ('prefix dcterms:<http://purl.org/dc/terms/> \
                     prefix schema:<https://schema.org/>  \
                     prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                    SELECT DISTINCT ?doi ?publicationYear ?venue ?title ?issue ?volume  \
+                    SELECT DISTINCT ?doi ?publicationYear ?title ?venueName ?issue ?volume  \
                     WHERE { ?s rdf:type schema:ScholarlyArticle  . \
                     ?s schema:name ?title . \
                     ?s schema:identifier ?doi . \
                     ?s dcterms:identifier "'  + issn + '". \
                     ?s schema:isPartOf ?publicationVenue .\
-                    ?publicationVenue schema:name ?venue .\
+                    ?publicationVenue schema:name ?venueName .\
                     ?s schema:datePublished ?publicationYear .  \
                     OPTIONAL { \
                     ?s schema:issueNumber ?issue }.\
                     OPTIONAL {?s schema:volumeNumber ?volume  \
-                    }')
+                    }}')
             endpoint = self.getEndpointUrl()
             results = get(endpoint, query, post = True)
             
@@ -587,14 +589,14 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
     def getPublicationsByAuthorName(self, name):
         if type(name) == str:
             query = ('prefix schema:<https://schema.org/>  \
-                    SELECT ?doiLiteral ?title ?publicationyear ?venue WHERE {?author schema:author ?doi . \
+                    SELECT DISTINCT ?id ?publicationYear ?title ?venueName WHERE {?author schema:author ?doi . \
                     ?author schema:givenName ?name. \
-                    ?doi schema:identifier ?doiLiteral . \
+                    ?doi schema:identifier ?id . \
                     ?doi schema:name ?title .  \
-                    ?doi schema:datePublished ?publicationyear .  \
-                    ?doi schema:isPartOf ?publicationvenue . \
-                    ?publicationVenue schema:name ?venue .\
-                    filter contains(?name,"' + name +'") }')
+                    ?doi schema:datePublished ?publicationYear . \
+                    ?doi schema:isPartOf ?publicationVenue . \
+                    ?publicationVenue schema:name ?venueName .\
+                    filter contains(?name, "'+ name + '") }')
             endpoint = self.getEndpointUrl()
             results = get(endpoint, query, post = True)
                     
@@ -606,21 +608,23 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
         for el in listOfDoi:
             if type(el) == str and type(listOfDoi) == list:
                 publisher = pd.DataFrame()
-                for el in listOfDoi:
-                    query = ('prefix schema:<https://schema.org/>  \
-                            prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                            SELECT DISTINCT ?name ?id WHERE {?doi rdf:type schema:CreativeWork . \
-                            ?doi schema:identifier "'+ el +'". \
-                            ?doi schema:publisher ?publisher . \
-                            ?publisher schema:name ?name . \
-                            ?publisher schema:identifier ?id . \
-                            }')
-                    endpoint = self.getEndpointUrl()
-                    results = get(endpoint, query, post= True)
-                    publisher = concat([publisher, results])
-                return publisher
+                query = ('prefix schema:<https://schema.org/>  \
+                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                        SELECT DISTINCT ?id ?name WHERE {?doi rdf:type schema:CreativeWork . \
+                        ?doi schema:identifier "'+ el +'". \
+                        ?doi schema:publisher ?publisher . \
+                        ?publisher schema:name ?name . \
+                        ?publisher schema:identifier ?id . \
+                        }')
+                endpoint = self.getEndpointUrl()
+                results = get(endpoint, query, post= True)
+                publisher = concat([publisher, results])
+
             else: 
                 raiseExceptions("The input parameter listOfDoi is not a list or one of its elements is not a string!")
+                
+        return publisher
+
     
 #  CLASSES FOR RELATIONAL DATABASE --------------------------------------------------------------------------------------------------------------#
 
@@ -691,10 +695,7 @@ class RelationalDataProcessor(RelationalProcessor):
 
             con.commit()
         else:
-            print("problem!!")
-            return False
-
-        return True
+            raiseExceptions("Problem: the input file has not neither a .csv nor a .json extension!")
 
 
 # RELATIONAL QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
@@ -707,7 +708,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsPublishedInYear(self, publicationYear):
         if type(publicationYear) == int:
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, B.title FROM Publications AS A LEFT JOIN VenueId AS B ON A.PublicationVenueId == B.id WHERE publicationYear = " + \
+                SQL = "SELECT A.id, A.publicationYear, A.title, B.venueName FROM Publications AS A LEFT JOIN VenueId AS B ON A.PublicationVenueId == B.id WHERE publicationYear = " + \
                     str(publicationYear) + ";"
                 return read_sql(SQL, con)
         else:
@@ -716,33 +717,33 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsByAuthorId(self, orcid):
         if type(orcid) == str:
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, C.title FROM Publications AS A JOIN Authors AS B ON A.id == B.doi JOIN VenueId AS C ON A.PublicationVenueId == C.id WHERE B.orc_id = '" + orcid + "';"
+                SQL = "SELECT A.id, A.publicationYear, A.title, C.venueName FROM Publications AS A JOIN Authors AS B ON A.id == B.doi JOIN VenueId AS C ON A.PublicationVenueId == C.id WHERE B.orc_id = '" + orcid + "';"
                 return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter orcid is not a string!")
 
     def getMostCitedPublication(self):
         with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.id, A.publicationYear, A.title, B.title FROM Publications AS A JOIN maxCited AS C ON A.id = C.cited JOIN VenueId AS B ON A.PublicationVenueId == B.id"
+            SQL = "SELECT A.id, A.publicationYear, A.title, B.venueName FROM Publications AS A JOIN maxCited AS C ON A.id = C.cited JOIN VenueId AS B ON A.PublicationVenueId == B.id"
             return read_sql(SQL, con)
 
     def getMostCitedVenue(self):
         with connect(self.getDbPath()) as con:
-            SQL = "SELECT A.id, A.title, A.publisherId FROM VenueId AS A JOIN Publications AS B ON B.publicationVenueId == A.id JOIN maxCited ON B.id == cited"
+            SQL = "SELECT A.id, A.venueName, A.publisherId FROM VenueId AS A JOIN Publications AS B ON B.publicationVenueId == A.id JOIN maxCited ON B.id == cited"
         return read_sql(SQL, con) 
 
     def getVenuesByPublisherId(self, publisher):
         if type(publisher) == str:
             with connect(self.getDbPath()) as con:
-                SQL = read_sql("SELECT id, title, publisherId FROM VenueId WHERE publisherId = '" + publisher + "'", con)
-            return SQL.drop_duplicates(subset=['title', 'publisherId'])
+                SQL = read_sql("SELECT id, venueName, publisherId FROM VenueId WHERE publisherId = '" + publisher + "'", con)
+            return SQL.drop_duplicates(subset=['venueName', 'publisherId'])
         else: 
             raiseExceptions("The input parameter publisher is not a string!")  
  
     def getPublicationInVenue(self, issn_isbn):
         if type(issn_isbn) == str:
             with connect(self.getDbPath()) as con:
-                SQL ="SELECT A.id, A.publicationYear, A.title, C.title FROM Publications AS A JOIN Venue AS B ON A.id == B.doi JOIN VenueId AS C ON C.id == A.publicationVenueId WHERE B.issn_isbn = '" + issn_isbn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, C.venueName FROM Publications AS A JOIN Venue AS B ON A.id == B.doi JOIN VenueId AS C ON C.id == A.publicationVenueId WHERE B.issn_isbn = '" + issn_isbn + "'"
                 return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter issn_isbn is not a string!")
@@ -750,7 +751,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getJournalArticlesInIssue(self, issue, volume, issn): 
         if type(issue) == str and type(volume) == str and type(issn) == str:
             with connect(self.getDbPath()) as con: 
-                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, D.venueName, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE  B.issue = '"+ str(issue) + "' AND B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn + "'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("All or one of the input parameters issue, volume and issn_isbn is not a string!")    
@@ -758,7 +759,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getJournalArticlesInVolume(self, volume, issn): 
         if type(volume) == str and type(issn) == str:
             with connect(self.getDbPath()) as con: 
-                SQL ="SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn + "'"
+                SQL ="SELECT A.id, A.publicationYear, A.title, D.venueName, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE B.volume = '" + str(volume) + "' AND C.issn_isbn = '"+ issn + "'"
             return read_sql(SQL, con) 
         else: 
             raiseExceptions("All or one of the input parameters volume and issn_isbn is not a string!") 
@@ -766,7 +767,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getJournalArticlesInJournal(self, issn):
         if type(issn) == str:
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, D.title, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE C.issn_isbn = '" + issn + "'"
+                SQL = "SELECT A.id, A.publicationYear, A.title, D.venueName, B.issue, B.volume FROM Publications AS A JOIN JournalArticle AS B ON A.id == B.id JOIN Venue AS C ON B.id == C.doi JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE C.issn_isbn = '" + issn + "'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter issn is not a string!") 
@@ -774,7 +775,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationAuthors(self, publication):
         if type(publication) == str:
             with connect(self.getDbPath()) as con: 
-                SQL = "SELECT orc_id, family_name, given_name FROM Person WHERE doi = '" + publication + "';"
+                SQL = "SELECT A.orc_id, A.given_name, A.family_name FROM Person AS A JOIN Authors AS B ON A.orc_id = B.orc_id WHERE B.doi = '" + publication + "';"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter publication is not a string!") 
@@ -782,7 +783,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
     def getPublicationsByAuthorName(self, name):
         if type(name) == str: 
             with connect(self.getDbPath()) as con:
-                SQL = "SELECT A.id, A.publicationYear, A.title, D.title FROM Publications AS A JOIN Authors AS B ON A.id == B.doi JOIN Person AS C ON C.orc_id == B.orc_id JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE C.given_name LIKE '%" + name + "%'"
+                SQL = "SELECT A.id, A.publicationYear, A.title, D.venueName FROM Publications AS A JOIN Authors AS B ON A.id == B.doi JOIN Person AS C ON C.orc_id == B.orc_id JOIN VenueId AS D ON D.id == A.publicationVenueId WHERE C.given_name LIKE '%" + name + "%'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter name is not a string!")
@@ -792,7 +793,7 @@ class RelationalQueryProcessor(RelationalProcessor, QueryProcessor):
         if type(eventPartialName) == str: 
             with connect(self.getDbPath()) as con:
                 eventPartialName.lower()
-                SQL = "SELECT A.id, B.title, B.publisherId, C.event FROM Publications AS A JOIN VenueId AS B ON A.publicationVenueId == B.id JOIN Proceeding AS C ON B.title == C.publicationVenueId WHERE C.event == '%" + eventPartialName + "%'"
+                SQL = "SELECT A.id, A.venueName, A.publisherId, B.event FROM VenueId AS A JOIN Proceeding AS B ON A.venueName == B.proceedingId WHERE B.event == '%" + eventPartialName + "%'"
             return read_sql(SQL, con)
         else: 
             raiseExceptions("The input parameter eventPartialName is not a string!")

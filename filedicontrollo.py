@@ -1,34 +1,36 @@
 from impl import TriplestoreDataProcessor
 import os
-from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor
-from provagr import TriplestoreQueryprocessor
-import extraclasses
+from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor, TriplestoreQueryprocessor
+import extraclassesandfunctions
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
-from extraclasses import AddToSparqlStore,  CleanSparqlStore
-from extraclasses import CleanRelationaldatabase, Getstringofpythonobject
+from extraclassesandfunctions import AddToSparqlStore,  CleanSparqlStore
+from extraclassesandfunctions import CleanRelationaldatabase
 
 
-#jsn0 = "./graph_db/graph_other_data.json"
-#csv0 = "./graph_db/graph_publications.csv"
+jsn0 = "./graph_db/graph_other_data.json"
+csv0 = "./graph_db/graph_publications.csv"
 
 
 jsn = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
-dbpath0 = "publication.db"
+dbpath0 = "publicationgraph.db"
 
 #cleanRelational = CleanRelationaldatabase(dbpath0)
 obj = RelationalDataProcessor() 
-obj.setDbPath(dbpath0) # primo setting del path al db per caricamento dati
-obj.uploadData(jsn)
-obj.uploadData(csv)
-rqp = RelationalQueryProcessor()
-rqp.setDbPath(dbpath0)
-gqp = GenericQueryProcessor() 
-gqp.addQueryProcessor(rqp)
+obj.setDbPath(dbpath0) #primo setting del path al db per caricamento dati
+obj.uploadData(jsn0)
+obj.uploadData(csv0)
+#qp = RelationalQueryProcessor()
+#rqp.setDbPath(dbpath0)
+#gqp = GenericQueryProcessor() 
+#gqp.addQueryProcessor(rqp)
 #print(rqp.getPublicationInVenue("issn:0138-9130"))
 #print(rqp.getPublicationsPublishedInYear(2020))
+#cosa = gqp.getMostCitedPublication()
+#print(gqp.Getstringofpythonobject())
 
-print(Getstringofpythonobject(gqp.getMostCitedPublication()))
+
+
 
 
 #rint(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
@@ -41,52 +43,53 @@ dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
 """
-"""
+
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 tqp = TriplestoreQueryprocessor()
 
 tqp.setEndpointUrl(endpointUrl)
-t = TriplestoreDataProcessor()
-clean = CleanSparqlStore(endpointUrl)
+#t = TriplestoreDataProcessor()
+#clean = CleanSparqlStore(endpointUrl)
 
 
-gqp = GenericQueryProcessor() 
-gqp.addQueryProcessor(rqp)
-gqp.addQueryProcessor(tqp)
-"""
-#print(gqp.getPublicationInVenue("issn:0138-9130"))
+#gqp = GenericQueryProcessor() 
+#gqp.addQueryProcessor(rqp)
+#gqp.addQueryProcessor(tqp)
+
+#print(tqp.getPublicationInVenue("issn:0138-9130"))
 #print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
 #print(rqp.getProceedingsByEvent("we"))
 #gqp = GenericQueryProcessor()
 #gqp.addQueryProcessor(rqp)
 #gqp.addQueryProcessor(rqp)
-#print(gqp.getPublicationsPublishedInYear(2020))
-#print(gqp.getProceedingsByEvent("name"))
-#print(gqp.getMostCitedVenue())
-#print(gqp.getVenuesByPublisherId("crossref:78"))
+#print(tqp.getPublicationsPublishedInYear(2019))
+#print(tqp.getProceedingsByEvent("nae"))
+#print(tqp.getMostCitedVenue())
+#print(tqp.getVenuesByPublisherId("crossref:78"))
 #print(tqp.getMostCitedPublication())
-#print(rqp.getPublicationsByAuthorName("Pe"))
-#print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
-#print(rqp.getJournalArticlesInJournal("issn:0138-9130"))
-#print(rqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
-#print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
-#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1080/21645515.2021.1910000", "doi:10.3390/ijfs9030035" ]))
+#print(tqp.getPublicationsByAuthorName("Pe"))
+#print(tqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
+#print(tqp.getJournalArticlesInJournal("issn:0138-9130"))
+#print(tqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
+#print(tqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+#print(tqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1016/j.websem.2014.06.002" ]))
+#print(rqp.getPublicationAuthors("doi:10.3390/ijfs9030035"))
 #for el in resultq1:
     #print(el.__str__())
-
-
 """
 
+endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+#cleansparql = CleanSparqlStore(endpointUrl)
 csv = "./relational_db/relational_publication.csv"
 
 jsn1 = "./graph_db/graph_other_data.json"
 csv1 = "./graph_db/graph_publications.csv"
-endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
+
 
 
 res = TriplestoreDataProcessor()
 res.setEndpointUrl(endpointUrl)
-res.uploadData(csv1)
+#res.uploadData(csv1)
 res.uploadData(jsn1)
 
 # res = TriplestoreDataProcessor()
@@ -94,8 +97,8 @@ res.uploadData(jsn1)
 # res.uploadData(jsn1)
 
 #print(res.my_graph.serialize())
-
 """
+
 """
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 obj = TriplestoreQueryprocessor()

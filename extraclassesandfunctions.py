@@ -11,7 +11,6 @@ from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
 class DataCSV(object): 
     def __init__(self, csv):
-        #self.csv = csv
 
         if os.path.exists(csv):
             PublicationsDF = pd.read_csv(csv , keep_default_na= False,
@@ -50,54 +49,43 @@ class DataCSV(object):
                 .dropna()
             VenueDF.insert(0, 'id', range(0, VenueDF.shape[0]))
             VenueDF['id'] = VenueDF['id'].apply(lambda x: 'venue-' + str(int(x)))
-            self.Venue_DF = VenueDF\
-                .rename(columns={"publication_venue" : "title", "publisher" : "publisherId"})\
-                .reindex(["id", "title", "venue_type", "publisherId"], axis = "columns")
+            self.Venue_DF = VenueDF.rename(columns={"publication_venue" : "venueName", "publisher" : "publisherId"})
 
             #PUBLICATION DATAFRAME 
             
             Publication_df = pd.merge(
             PublicationsDF[["id", "publicationYear", "title", "type", "event", "publication_venue"]],
-            self.Venue_DF.rename(columns={"id" : "publicationVenueId", 
-                                    "title" : "publication_venue"}), 
+            self.Venue_DF.rename(columns={"id" : "publicationVenueId", "venueName" : "publication_venue"}), 
             on="publication_venue")\
             .drop(columns=["publication_venue", "publisherId"])
-            Publication_DF = Publication_df.drop(columns=["event"])
-
-            self.Publications_DF = Publication_DF[["id", "title", "type", "publicationYear", "venue_type", "publicationVenueId"]]
+            self.Publications_DF = Publication_df[["id", "title", "type", "publicationYear", "venue_type", "publicationVenueId"]]
 
             #BOOK CHAPTER DATAFRAME
             book_chapter_df = PublicationsDF.query("type == 'book-chapter'")
-            book_chapter_df = book_chapter_df[["id", "chapter"]]
-            self.Book_chapter_DF = book_chapter_df
+            self.Book_chapter_DF = book_chapter_df[["id", "chapter"]]
             
             #JOURNAL ARTICLE DATAFRAME
             journal_article_df = PublicationsDF.query("type == 'journal-article'")
-            journal_article_df = journal_article_df[["id", "issue", "volume"]]
-            self.Journal_article_DF = journal_article_df
+            self.Journal_article_DF = journal_article_df[["id", "issue", "volume"]]
 
             #PROCEEDINGS PAPER DATAFRAME 
             proceedings_paper_df = PublicationsDF.query("type == 'proceeding-paper'")
-            proceedings_paper_df = proceedings_paper_df[["id"]]
-            self.Proceedings_paper_DF = proceedings_paper_df
+            self.Proceedings_paper_DF = proceedings_paper_df[["id"]]
             
             #BOOK DATAFRAME
             book_df = self.Publications_DF.query("venue_type == 'book'")
             book_df = book_df[["publicationVenueId"]]
-            book_df = book_df.rename(columns={"publicationVenueId":"bookId"})
-            self.Book_DF = book_df.drop_duplicates(subset=["bookId"])
+            self.Book_DF = book_df.rename(columns={"publicationVenueId":"bookId"}).drop_duplicates(subset=["bookId"])
 
             #JOURNAL DATAFRAME
             journal_df = self.Publications_DF.query("venue_type == 'journal'")
             journal_df= journal_df[["publicationVenueId"]]
-            journal_df = journal_df.rename(columns={"publicationVenueId":"journalId"})
-            self.Journal_DF = journal_df.drop_duplicates(subset=["journalId"])
+            self.Journal_DF = journal_df.rename(columns={"publicationVenueId":"journalId"}).drop_duplicates(subset=["journalId"])
            
             #PROCEEDINGS DATAFRAME
             proceedings_df= Publication_df.query("venue_type == 'proceedings'")
             proceedings_df = proceedings_df[["publicationVenueId", "event"]]
-            proceedings_df = proceedings_df.rename(columns={"publicationVenueId":"proceedingId"})
-            self.Proceedings_DF = proceedings_df.drop_duplicates(subset=["proceedingId"])
+            self.Proceedings_DF = proceedings_df.rename(columns={"publicationVenueId":"proceedingId"}).drop_duplicates(subset=["proceedingId"])
 
         else:
             raiseExceptions("CSV file '" + csv + "' does not exist!")
@@ -106,8 +94,7 @@ class DataCSV(object):
     
 class DataJSON(object):
     def __init__(self, jsn):
-        #self.jsn = jsn
-       
+
         if os.path.exists(jsn):
         # read JSON 
             with open(jsn, "r", encoding="utf-8") as f:
@@ -133,7 +120,7 @@ class DataJSON(object):
             cites_df=pd.DataFrame(References.items(),columns=['citing','cited']).explode('cited')
             cites_df=pd.json_normalize(json.loads(cites_df.to_json(orient="records")))
             cites_df.rename(columns={"References.keys()":"citing","References.values()":"cited"}, inplace = True)
-            self.Cites_DF = cites_df   #qui è da vedere se siamo sicuri di voelr togliere quelli che non citano nulla (o dobbiamo scrivere che se non lo trovi non cito nulla)
+            self.Cites_DF = cites_df   
             
 
             #PERSON DATAFRAME 
@@ -154,9 +141,11 @@ class DataJSON(object):
         else:
             raiseExceptions("JSON file '" + jsn + "' does not exist!")
 
-p = "./relational_db/relational_other_data.json"
-csv= "./relational_db/relational_publication.csv"
-Dataobject = DataCSV(csv)
+def getStringOfPythonObject(gp):
+        result=[]
+        for el in gp:
+            result.append(el.__str__())
+        return result  
 
 def CleanSparqlStore(endpoint):
     store = SPARQLUpdateStore()
@@ -170,7 +159,6 @@ def CleanRelationaldatabase(dbpath):
         os.remove(dbpath)
     print("Database at: '" + dbpath + "' has been cleaned!")
 
-
 def AddToSparqlStore(endpoint, graph):
     store = SPARQLUpdateStore()
     # The URL of the SPARQL endpoint is the same URL of the Blazegraph
@@ -182,12 +170,7 @@ def AddToSparqlStore(endpoint, graph):
         store.add(triple)
     # Once finished, remeber to close the connection
     store.close()        
-    return graph.__len__()
-
-def Getstringofpythonobject(GP):
-    result=[]
-    for el in GP:
-        result.append(el.__str__())
-    return result 
+    return graph.__len__() 
+   
 
 
