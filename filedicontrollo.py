@@ -14,7 +14,7 @@ csv0 = "./graph_db/graph_publications.csv"
 jsn = "./relational_db/relational_other_data.json"
 csv = "./relational_db/relational_publication.csv"
 dbpath0 = "publicationgraph.db"
-
+"""
 #cleanRelational = CleanRelationaldatabase(dbpath0)
 obj = RelationalDataProcessor() 
 obj.setDbPath(dbpath0) #primo setting del path al db per caricamento dati
@@ -28,7 +28,7 @@ obj.uploadData(csv0)
 #print(rqp.getPublicationsPublishedInYear(2020))
 #cosa = gqp.getMostCitedPublication()
 #print(gqp.Getstringofpythonobject())
-
+"""
 
 
 
@@ -72,7 +72,7 @@ tqp.setEndpointUrl(endpointUrl)
 #print(tqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(tqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
 #print(tqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
-#print(tqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1016/j.websem.2014.06.002" ]))
+print(tqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1016/j.websem.2014.06.002" ]))
 #print(rqp.getPublicationAuthors("doi:10.3390/ijfs9030035"))
 #for el in resultq1:
     #print(el.__str__())

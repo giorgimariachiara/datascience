@@ -609,14 +609,14 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             if type(el) == str and type(listOfDoi) == list:
                 publisher = pd.DataFrame()
                 query = ('prefix schema:<https://schema.org/>  \
-                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                        SELECT DISTINCT ?publisher ?name WHERE  \
-                        { ?doi schema:identifier "' + el + '" . \
-                        ?doi schema:isPartOf ?venue . \
-                        ?venue schema:name ?venueName  .    \    
-                        ?venue schema:publisher ?publisher . \
-                        ?s schema:identifier ?publisher . \
-                        ?s schema:name ?name . }  ')
+                     prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+                    SELECT DISTINCT ?publisher ?name WHERE {?doi schema:identifier "' + el + '" \
+                    ?doi schema:isPartOf ?venue . \
+                    ?venue schema:name ?venueName .  \
+                    ?venue schema:publisher ?publisher . \
+                    ?s schema:identifier ?publisher .\
+                    ?s schema:name ?name .\
+                     }')
                 endpoint = self.getEndpointUrl()
                 results = get(endpoint, query, post= True)
                 publisher = concat([publisher, results])
@@ -625,16 +625,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
             else: 
                 raiseExceptions("The input parameter listOfDoi is not a list or one of its elements is not a string!")
                 
-            query = ('prefix schema:<https://schema.org/>  \
-                        prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                        SELECT DISTINCT ?publisher ?name WHERE  \
-                        { ?doi schema:identifier "' + el + '" . \
-                        ?doi schema:isPartOf ?venue . \
-                        ?venue schema:name ?venueName  .    \    
-                        ?venue schema:publisher ?publisher . \
-                        ?s schema:identifier ?publisher . \
-                        ?s schema:name ?name . \
-                            }')
+           
     
 
     
