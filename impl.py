@@ -610,7 +610,7 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                 publisher = pd.DataFrame()
                 query = ('prefix schema:<https://schema.org/>  \
                      prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-                    SELECT DISTINCT ?publisher ?name WHERE {?doi schema:identifier "' + el + '" \
+                    SELECT DISTINCT ?publisher ?name WHERE {?doi schema:identifier "' + el + '" .\
                     ?doi schema:isPartOf ?venue . \
                     ?venue schema:name ?venueName .  \
                     ?venue schema:publisher ?publisher . \
@@ -621,13 +621,9 @@ class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
                 results = get(endpoint, query, post= True)
                 publisher = concat([publisher, results])
                 return publisher
-
             else: 
                 raiseExceptions("The input parameter listOfDoi is not a list or one of its elements is not a string!")
-                
-           
-    
-
+              
     
 #  CLASSES FOR RELATIONAL DATABASE --------------------------------------------------------------------------------------------------------------#
 

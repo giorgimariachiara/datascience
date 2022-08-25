@@ -72,10 +72,9 @@ tqp.setEndpointUrl(endpointUrl)
 #print(tqp.getJournalArticlesInJournal("issn:0138-9130"))
 #print(tqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
 #print(tqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
-print(tqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1016/j.websem.2014.06.002" ]))
+print(tqp.getDistinctPublisherOfPublications(["doi:10.3390/publications7030050", "doi:10.1016/j.websem.2021.100655", "doi:10.1016/j.websem.2014.06.002", "doi:10.3390/publications7030050" ]))
 #print(rqp.getPublicationAuthors("doi:10.3390/ijfs9030035"))
-#for el in resultq1:
-    #print(el.__str__())
+
 """
 
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
