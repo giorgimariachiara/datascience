@@ -1,6 +1,6 @@
 from impl import TriplestoreDataProcessor
 import os
-from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor, TriplestoreQueryprocessor
+from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor, TriplestoreQueryProcessor
 import extraclassesandfunctions
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from extraclassesandfunctions import AddToSparqlStore,  CleanSparqlStore
@@ -38,42 +38,42 @@ obj.uploadData(csv0)
 
 
 
-"""
+
 dbpath0 = "publication.db"
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath0)
-"""
+
 
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
-tqp = TriplestoreQueryprocessor()
+tqp = TriplestoreQueryProcessor()
 
 tqp.setEndpointUrl(endpointUrl)
 #t = TriplestoreDataProcessor()
 #clean = CleanSparqlStore(endpointUrl)
 
 
-#gqp = GenericQueryProcessor() 
-#gqp.addQueryProcessor(rqp)
-#gqp.addQueryProcessor(tqp)
+gqp = GenericQueryProcessor() 
+gqp.addQueryProcessor(rqp)
+gqp.addQueryProcessor(tqp)
 
-#print(tqp.getPublicationInVenue("issn:0138-9130"))
-#print(rqp.getDistinctPublisherOfPublications([ "doi:10.1016/j.websem.2021.100655", "doi:10.1093/nar/gkz997", "doi:10.3390/publications7030050", "doi:10.1007/978-3-030-33220-4_25"]))
+#print(tqp.getPublicationInVenue(2020))
+#print(tqp.getDistinctPublisherOfPublications("string"))
 #print(rqp.getProceedingsByEvent("we"))
 #gqp = GenericQueryProcessor()
 #gqp.addQueryProcessor(rqp)
 #gqp.addQueryProcessor(rqp)
-#print(tqp.getPublicationsPublishedInYear(2019))
-#print(tqp.getProceedingsByEvent("nae"))
-#print(tqp.getMostCitedVenue())
-#print(tqp.getVenuesByPublisherId("crossref:78"))
-#print(tqp.getMostCitedPublication())
-#print(tqp.getPublicationsByAuthorName("Pe"))
-#print(tqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
-#print(tqp.getJournalArticlesInJournal("issn:0138-9130"))
-#print(tqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
-#print(tqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
-print(tqp.getDistinctPublisherOfPublications(["doi:10.3390/publications7030050", "doi:10.1016/j.websem.2021.100655", "doi:10.1016/j.websem.2014.06.002", "doi:10.3390/publications7030050" ]))
-#print(rqp.getPublicationAuthors("doi:10.3390/ijfs9030035"))
+#print(rqp.getPublicationsPublishedInYear("s"))
+#print(gqp.getProceedingsByEvent("nae"))
+#print(gqp.getMostCitedVenue())
+#print(gqp.getVenuesByPublisherId("crossref:78"))
+#print(gqp.getMostCitedPublication())
+#print(gqp.getPublicationsByAuthorName("Pe"))
+#print(gqp.getPublicationsByAuthorId("0000-0003-0530-4305"))
+#print(gqp.getJournalArticlesInJournal("issn:0138-9130"))
+#print(gqp.getJournalArticlesInVolume("17", "issn:2164-5515"))
+#print(gqp.getJournalArticlesInIssue("9", "17", "issn:2164-5515"))
+#print(qp.getDistinctPublisherOfPublications(["doi:10.1016/j.websem.201.100655", "doi:10.1016/j.websem.2014.06.002", "doi:10.3390/publications7030050"]))
+#print(gqp.getPublicationAuthors("doi:10.3390/ijfs9030035"))
 
 """
 

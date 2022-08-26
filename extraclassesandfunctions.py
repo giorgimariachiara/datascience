@@ -1,11 +1,8 @@
-from importlib.resources import path
 import json
 from logging import raiseExceptions
-from numpy import cross
 import pandas as pd
-from json import load, loads
-from sqlite3 import connect
-from pandas import DataFrame, Series, merge
+from json import load
+from pandas import DataFrame
 import os.path
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 
