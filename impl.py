@@ -367,7 +367,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
 # TRIPLESTORE QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
         
-class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
+class TriplestoreQueryProcessor(TriplestoreProcessor, QueryProcessor):
     def __init__(self):
         super().__init__()
     
