@@ -1,19 +1,10 @@
-from importlib.resources import path
 from logging import raiseExceptions
 import pandas as pd
-from posixpath import split
-import sqlite3
 from sqlite3 import *
-from pandas import DataFrame, concat, read_sql
-from mimetypes import init
-from unicodedata import name
-import json
-from json import load
-from mimetypes import init
+from pandas import concat, read_sql
 import os
 from extraclassesandfunctions import DataCSV, DataJSON
 from rdflib import Graph, URIRef, Literal, RDF
-from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from extraclassesandfunctions import AddToSparqlStore
 from sparql_dataframe import get
 
@@ -367,7 +358,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
 # TRIPLESTORE QUERY PROCESSOR ----------------------------------------------------------------------------------------------------------#
         
-class TriplestoreQueryprocessor(TriplestoreProcessor, QueryProcessor):
+class TriplestoreQueryProcessor(TriplestoreProcessor, QueryProcessor):
     def __init__(self):
         super().__init__()
     

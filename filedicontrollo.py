@@ -1,6 +1,6 @@
 from impl import TriplestoreDataProcessor
 import os
-from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor, TriplestoreQueryprocessor
+from impl import GenericQueryProcessor, RelationalDataProcessor, RelationalQueryProcessor, TriplestoreProcessor, TriplestoreQueryProcessor
 import extraclassesandfunctions
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from extraclassesandfunctions import AddToSparqlStore,  CleanSparqlStore
@@ -45,7 +45,7 @@ rqp.setDbPath(dbpath0)
 
 
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
-tqp = TriplestoreQueryprocessor()
+tqp = TriplestoreQueryProcessor()
 
 tqp.setEndpointUrl(endpointUrl)
 #t = TriplestoreDataProcessor()
