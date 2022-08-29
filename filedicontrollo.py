@@ -3,7 +3,6 @@ from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
 from extraclassesandfunctions import AddToSparqlStore,  CleanSparqlStore
 from extraclassesandfunctions import CleanRelationaldatabase
 
-
 jsngraph = "./graph_db/graph_other_data.json"
 csvgraph = "./graph_db/graph_publications.csv"
 
