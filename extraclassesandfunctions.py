@@ -167,7 +167,3 @@ def AddToSparqlStore(endpoint, graph):
         store.add(triple)
     # Once finished, remeber to close the connection
     store.close()        
-    return graph.__len__() 
-   
-
-
