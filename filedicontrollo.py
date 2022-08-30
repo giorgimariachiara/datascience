@@ -8,19 +8,19 @@ csvgraph = "./graph_db/graph_publications.csv"
 
 jsnrel = "./relational_db/relational_other_data.json"
 csvrel  = "./relational_db/relational_publication.csv"
-dbpath = "publications.db"
+dbpathg = "publicationsgr.db"
 
 
 #RELATIONAL DATABASE STEPS 
-cleanRelational = CleanRelationaldatabase(dbpath)
+cleanRelational = CleanRelationaldatabase(dbpathg)
 obj = RelationalDataProcessor() 
-obj.setDbPath(dbpath) #primo setting del path al db per caricamento dati
-obj.uploadData(jsnrel)
-obj.uploadData(csvrel)
+obj.setDbPath(dbpathg) #primo setting del path al db per caricamento dati
+obj.uploadData(jsngraph)
+obj.uploadData(csvgraph)
 rqp = RelationalQueryProcessor()
-rqp.setDbPath(dbpath)
+rqp.setDbPath(dbpathg)
 
-
+"""
 #GRAPH DATABASE STEPS 
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 cleansparql = CleanSparqlStore(endpointUrl)
@@ -30,15 +30,15 @@ obj.uploadData(jsngraph)
 obj.uploadData(csvgraph)
 tqp = TriplestoreQueryProcessor()
 tqp.setEndpointUrl(endpointUrl)
+"""
 
-
-
+"""
 #GENERIC DATABASE STEP 
 
 gqp = GenericQueryProcessor() 
 gqp.addQueryProcessor(rqp)
 gqp.addQueryProcessor(tqp)
-
+"""
 
 
 #print(tqp.getPublicationInVenue(2020))

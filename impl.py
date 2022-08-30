@@ -238,7 +238,7 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             for idx, row in CSV_Rdata.Venue_DF.iterrows():
                 subj = URIRef(base_url + row["id"])
 
-                if row["title"] != "":
+                if row["venueName"] != "":
                     my_graph.add((subj, name, Literal(row["venueName"])))
                 if row["id"] != "":
                     my_graph.add((subj, identifier, Literal(row["id"])))
@@ -494,7 +494,7 @@ class TriplestoreQueryProcessor(TriplestoreProcessor, QueryProcessor):
                     WHERE { ?s rdf:type schema:ScholarlyArticle  .\
                     ?s schema:name ?title . \
                     ?s schema:identifier ?id .  \
-                    ?s dcterms:identifier "' + issn+ '". \
+                    ?s dcterms:identifier "' + issn + '". \
                     ?s schema:volumeNumber "' + volume + '" . \
                     ?s schema:volumeNumber ?volume .\
                     ?s schema:isPartOf ?publicationVenue .\
