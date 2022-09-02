@@ -318,8 +318,10 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
                 subj = URIRef(base_url + row["id"])
 
                 my_graph.add((subj, RDF.type, Organization))
-                my_graph.add((subj, name, Literal(row["name"])))  
-                my_graph.add((subj, identifier, Literal(row["id"])))
+                if row["name"] != "":
+                    my_graph.add((subj, name, Literal(row["name"])))
+                if row["id"] != "":  
+                    my_graph.add((subj, identifier, Literal(row["id"])))
 
             for idx, row in JSN_Rdata.Cites_DF.iterrows():
                 subj = URIRef(base_url + row["citing"])
@@ -329,16 +331,20 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
             
             for idx, row in JSN_Rdata.VenuesId_DF.iterrows():
                 subj = URIRef(base_url + row["doi"])
-                
-                my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))    
+
+                if row["issn_isbn"] != "": 
+                    my_graph.add((subj, issn_isbn, Literal(row["issn_isbn"])))    
 
             for idx, row in JSN_Rdata.Person_DF.iterrows():
                 subjperson = URIRef(base_url + row["orc_id"]) 
             
                 my_graph.add((subjperson, RDF.type, Person))
-                my_graph.add((subjperson, givenName, Literal(row["given_name"])))
-                my_graph.add((subjperson, familyName, Literal(row["family_name"])))
-                my_graph.add((subjperson, identifier, Literal(row["orc_id"])))
+                if row["given_name"] != "":
+                    my_graph.add((subjperson, givenName, Literal(row["given_name"])))
+                if row["family_name"] != "":
+                    my_graph.add((subjperson, familyName, Literal(row["family_name"])))
+                if row["orc_id"] != "":
+                    my_graph.add((subjperson, identifier, Literal(row["orc_id"])))
 
             for idx, row in JSN_Rdata.Author_DF.iterrows():     
                 

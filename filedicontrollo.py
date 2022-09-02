@@ -20,7 +20,7 @@ obj.uploadData(csvrel)
 rqp = RelationalQueryProcessor()
 rqp.setDbPath(dbpath)
 """
-"""
+
 #GRAPH DATABASE STEPS 
 endpointUrl = 'http://127.0.0.1:9999/blazegraph/sparql'
 cleansparql = CleanSparqlStore(endpointUrl)
@@ -30,7 +30,7 @@ obj.uploadData(jsngraph)
 obj.uploadData(csvgraph)
 tqp = TriplestoreQueryProcessor()
 tqp.setEndpointUrl(endpointUrl)
-"""
+
 
 """
 #GENERIC DATABASE STEP 
