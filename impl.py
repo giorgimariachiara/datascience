@@ -348,7 +348,8 @@ class TriplestoreDataProcessor(TriplestoreProcessor):
 
             for idx, row in JSN_Rdata.Author_DF.iterrows():     
                 
-                my_graph.add(((URIRef(base_url + row["orc_id"]), author, URIRef(base_url + row["doi"]))))
+                if row["doi"] != "":
+                    my_graph.add(((URIRef(base_url + row["orc_id"]), author, URIRef(base_url + row["doi"]))))
 
             self.my_graph = my_graph
 

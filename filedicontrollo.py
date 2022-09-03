@@ -31,7 +31,7 @@ obj.uploadData(csvgraph)
 tqp = TriplestoreQueryProcessor()
 tqp.setEndpointUrl(endpointUrl)
 
-
+print(tqp.getJournalArticlesInJournal("issn:0138-9130"))
 """
 #GENERIC DATABASE STEP 
 
